@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Paca Finance",
+    "slug": "paca-finance",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "pacafinance",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF8FB1"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pacafinance.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FF8FB1"
+      },
+      "package": "com.pacafinance.app"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-image-picker",
+      "expo-local-authentication"
+    ]
+  }
+}
