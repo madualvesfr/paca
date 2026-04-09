@@ -114,7 +114,7 @@ export default function ScanScreen() {
           couple_id: profile!.couple_id!,
           paid_by: profile!.id,
           type: t.type,
-          amount: t.amount,
+          amount: Math.abs(t.amount),
           description: t.description,
           category_id: getCategoryId(t.category),
           date: t.date ?? new Date().toISOString().split("T")[0],
