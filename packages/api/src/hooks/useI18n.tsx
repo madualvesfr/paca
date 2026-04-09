@@ -29,7 +29,7 @@ function getStoredLocale(): Locale {
   try {
     const stored = (typeof window !== "undefined" && localStorage.getItem(STORAGE_KEY)) ||
       (typeof globalThis !== "undefined" && (globalThis as any).__paca_locale);
-    if (stored === "en" || stored === "pt" || stored === "ru") return stored;
+    if (stored === "en" || stored === "pt" || stored === "ru" || stored === "uk") return stored;
   } catch {}
   return DEFAULT_LOCALE;
 }

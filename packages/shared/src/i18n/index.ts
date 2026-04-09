@@ -1,8 +1,9 @@
 import { en, type TranslationKeys } from "./en";
 import { pt } from "./pt";
 import { ru } from "./ru";
+import { uk } from "./uk";
 
-export type Locale = "en" | "pt" | "ru";
+export type Locale = "en" | "pt" | "ru" | "uk";
 
 export const DEFAULT_LOCALE: Locale = "en";
 
@@ -10,15 +11,17 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   en: "English",
   pt: "Portugues",
   ru: "Русский",
+  uk: "Українська",
 };
 
 export const LOCALE_DATE_MAP: Record<Locale, string> = {
   en: "en-US",
   pt: "pt-BR",
   ru: "ru-RU",
+  uk: "uk-UA",
 };
 
-const translations: Record<Locale, TranslationKeys> = { en, pt, ru };
+const translations: Record<Locale, TranslationKeys> = { en, pt, ru, uk };
 
 export function getTranslations(locale: Locale): TranslationKeys {
   return translations[locale] ?? translations[DEFAULT_LOCALE];
