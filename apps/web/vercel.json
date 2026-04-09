@@ -1,0 +1,9 @@
+{
+  "buildCommand": "cd ../.. && npm run build -- --filter=web",
+  "outputDirectory": "dist",
+  "installCommand": "cd ../.. && npm install",
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

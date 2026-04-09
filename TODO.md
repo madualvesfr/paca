@@ -13,8 +13,3 @@
 - [ ] **PWA** — Service worker + manifest para instalar como app no desktop/mobile
 - [ ] **Offline support** — Cache de dados com React Query persistor
 
-
-quero adicionar mais idiomas, poe igles e russo. e o idioma inicial vai ser ingles e a pesso apode mudar nas configuracoes
-
-
-quero uma tela oou algo que ue possa adicionar contas a pagar, como contas fixas e eu posso ir la e criar a lista como um checkbox e depois quando pago eu ir clicar no check
