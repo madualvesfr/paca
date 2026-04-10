@@ -179,9 +179,14 @@ function TransactionRow({ transaction: tx }: { transaction: TransactionWithCateg
         </Text>
       </View>
       <View className="flex-1">
-        <Text className="text-sm font-medium text-gray-800 dark:text-gray-100" numberOfLines={1}>
-          {tx.description}
-        </Text>
+        <View className="flex-row items-center gap-1.5">
+          <Text className="text-sm font-medium text-gray-800 dark:text-gray-100 flex-shrink" numberOfLines={1}>
+            {tx.description}
+          </Text>
+          {tx.notes && tx.notes.trim() !== "" && (
+            <Ionicons name="document-text" size={12} color="#FF8FB1" />
+          )}
+        </View>
         <Text className="text-xs text-gray-400">
           {categoryLabel} · {formatDate(tx.date)}
         </Text>

@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Bell,
   CalendarDays,
+  StickyNote,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DashboardSkeleton } from "@/components/ui/Skeleton";
@@ -409,9 +410,20 @@ function TransactionRow({ transaction: tx }: { transaction: TransactionWithCateg
         </span>
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
-          {tx.description}
-        </p>
+        <div className="flex items-center gap-1.5 min-w-0">
+          <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+            {tx.description}
+          </p>
+          {tx.notes && tx.notes.trim() !== "" && (
+            <span
+              className="shrink-0 text-pink-primary"
+              title={tx.notes}
+              aria-label={tx.notes}
+            >
+              <StickyNote className="w-3.5 h-3.5" />
+            </span>
+          )}
+        </div>
         <p className="text-xs text-gray-400 truncate">
           {categoryLabel} · {formatDate(tx.date)}
         </p>

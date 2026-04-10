@@ -14,6 +14,7 @@ import {
   Trash2,
   Pencil,
   FileDown,
+  StickyNote,
 } from "lucide-react";
 import { TransactionsSkeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/Toast";
@@ -295,9 +296,20 @@ export function TransactionsPage() {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
-                      {tx.description}
-                    </p>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
+                        {tx.description}
+                      </p>
+                      {tx.notes && tx.notes.trim() !== "" && (
+                        <span
+                          className="shrink-0 text-pink-primary"
+                          title={tx.notes}
+                          aria-label={tx.notes}
+                        >
+                          <StickyNote className="w-3.5 h-3.5" />
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-gray-400 truncate">
                       {translateCategory(tx.category?.name)} ·{" "}
                       {tx.paid_by_profile?.display_name ?? ""}
