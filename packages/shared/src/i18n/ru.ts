@@ -251,6 +251,7 @@ export const ru: TranslationKeys = {
     statementDesc: "Скриншот банковской выписки — ИИ найдёт все транзакции",
     clickToUpload: "Нажмите для загрузки изображения",
     fileTypes: "PNG, JPG или WEBP",
+    multipleHint: "Можно выбрать несколько изображений",
     analyzing: "Анализ изображения...",
     aiExtracting: "ИИ извлекает данные",
     aiExtractingSingle: "из транзакции",

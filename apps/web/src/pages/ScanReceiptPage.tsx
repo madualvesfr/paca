@@ -56,6 +56,7 @@ export function ScanReceiptPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [scanProgress, setScanProgress] = useState({ done: 0, total: 0 });
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -70,41 +71,77 @@ export function ScanReceiptPage() {
     if (profile?.couple_id) fetch();
   }, [profile?.couple_id]);
 
+  const readFileAsBase64 = (file: File) =>
+    new Promise<{ dataUrl: string; base64: string }>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result as string;
+        resolve({ dataUrl, base64: dataUrl.split(",")[1] });
+      };
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
+
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files ?? []);
+    // Reset the input so selecting the same files again re-fires change
+    e.target.value = "";
+    if (files.length === 0) return;
 
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const dataUrl = reader.result as string;
-      setPreview(dataUrl);
+    setStep("scanning");
+    setError("");
+    setScannedItems([]);
+    setScanProgress({ done: 0, total: files.length });
 
-      const base64 = dataUrl.split(",")[1];
-      setStep("scanning");
-      setError("");
+    // Show the first image as a preview while scanning
+    try {
+      const firstPreview = await readFileAsBase64(files[0]);
+      setPreview(firstPreview.dataUrl);
+    } catch {
+      // Preview is cosmetic — ignore read errors here
+    }
 
+    const allItems: ScannedTransaction[] = [];
+    let failures = 0;
+
+    // Process images sequentially so we can stream progress and keep the
+    // AI backend from hitting its rate limit on a big batch.
+    for (const file of files) {
       try {
+        const { base64 } = await readFileAsBase64(file);
         if (mode === "single") {
           const result = await scanReceipt.mutateAsync(base64);
-          // Pre-deselect rows with invalid amounts (cancelled / failed scans)
           const valid = Number.isFinite(result.amount) && Math.abs(result.amount) > 0;
-          setScannedItems([{ ...result, selected: valid }]);
+          if (result && result.amount != null) {
+            allItems.push({ ...result, selected: valid });
+          }
         } else {
           const result = await scanStatement.mutateAsync(base64);
-          setScannedItems(
-            result.transactions.map((t) => ({
-              ...t,
-              selected: Number.isFinite(t.amount) && Math.abs(t.amount) > 0,
-            }))
-          );
+          for (const tx of result.transactions) {
+            allItems.push({
+              ...tx,
+              selected: Number.isFinite(tx.amount) && Math.abs(tx.amount) > 0,
+            });
+          }
         }
-        setStep("review");
       } catch {
-        setError(t.scan.imageError);
-        setStep("upload");
+        failures++;
+      } finally {
+        setScanProgress((prev) => ({ ...prev, done: prev.done + 1 }));
       }
-    };
-    reader.readAsDataURL(file);
+    }
+
+    if (allItems.length === 0) {
+      setError(t.scan.imageError);
+      setStep("upload");
+      return;
+    }
+
+    setScannedItems(allItems);
+    if (failures > 0) {
+      setError(t.scan.imageError);
+    }
+    setStep("review");
   };
 
   const getCategoryId = (categoryName: string): string => {
@@ -249,10 +286,12 @@ export function ScanReceiptPage() {
             ref={fileRef}
             type="file"
             accept="image/*"
+            multiple
             className="hidden"
             onChange={handleFile}
           />
           <button
+            type="button"
             onClick={() => fileRef.current?.click()}
             className="w-full p-12 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-pink-primary dark:hover:border-pink-primary transition-colors flex flex-col items-center gap-4 group"
           >
@@ -264,7 +303,7 @@ export function ScanReceiptPage() {
                 {t.scan.clickToUpload}
               </p>
               <p className="text-xs text-gray-400 mt-1">
-                {t.scan.fileTypes}
+                {t.scan.fileTypes} · {t.scan.multipleHint}
               </p>
             </div>
           </button>
@@ -284,8 +323,22 @@ export function ScanReceiptPage() {
             {t.scan.aiExtracting}{" "}
             {mode === "single" ? t.scan.aiExtractingSingle : t.scan.aiExtractingMulti}
           </p>
+          {scanProgress.total > 1 && (
+            <p className="text-xs text-gray-400 mt-2 tabular-nums">
+              {scanProgress.done} / {scanProgress.total}
+            </p>
+          )}
           <div className="w-48 h-1.5 mx-auto mt-6 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-            <div className="h-full bg-pink-primary rounded-full animate-scan" />
+            <div
+              className={`h-full bg-pink-primary rounded-full ${
+                scanProgress.total > 1 ? "transition-all duration-300" : "animate-scan"
+              }`}
+              style={
+                scanProgress.total > 1
+                  ? { width: `${(scanProgress.done / scanProgress.total) * 100}%` }
+                  : undefined
+              }
+            />
           </div>
 
           {preview && (

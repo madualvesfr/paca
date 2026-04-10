@@ -259,6 +259,7 @@ export const en = {
     statementDesc: "Bank statement screenshot — AI identifies all transactions",
     clickToUpload: "Click to upload image",
     fileTypes: "PNG, JPG or WEBP",
+    multipleHint: "You can select multiple images",
     analyzing: "Analyzing image...",
     aiExtracting: "AI is extracting the data",
     aiExtractingSingle: "from the transaction",

@@ -251,6 +251,7 @@ export const pt: TranslationKeys = {
     statementDesc: "Print do extrato do banco — a IA identifica todas as transações",
     clickToUpload: "Clique para enviar imagem",
     fileTypes: "PNG, JPG ou WEBP",
+    multipleHint: "Você pode selecionar várias imagens",
     analyzing: "Analisando imagem...",
     aiExtracting: "A IA está extraindo os dados",
     aiExtractingSingle: "da transação",

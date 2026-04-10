@@ -251,6 +251,7 @@ export const uk: TranslationKeys = {
     statementDesc: "Скріншот банківської виписки — ШІ знайде всі транзакції",
     clickToUpload: "Натисніть для завантаження зображення",
     fileTypes: "PNG, JPG або WEBP",
+    multipleHint: "Можна вибрати кілька зображень",
     analyzing: "Аналіз зображення...",
     aiExtracting: "ШІ витягує дані",
     aiExtractingSingle: "з транзакції",

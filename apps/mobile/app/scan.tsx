@@ -55,6 +55,7 @@ export default function ScanScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [scanProgress, setScanProgress] = useState({ done: 0, total: 0 });
 
   useEffect(() => {
     const fetch = async () => {
@@ -69,41 +70,67 @@ export default function ScanScreen() {
   }, [profile?.couple_id]);
 
   const pickImage = async (useCamera: boolean) => {
-    const method = useCamera
-      ? ImagePicker.launchCameraAsync
-      : ImagePicker.launchImageLibraryAsync;
+    const result = useCamera
+      ? await ImagePicker.launchCameraAsync({
+          mediaTypes: ["images"],
+          base64: true,
+          quality: 0.8,
+        })
+      : await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ["images"],
+          base64: true,
+          quality: 0.8,
+          allowsMultipleSelection: true,
+          selectionLimit: 20,
+        });
 
-    const result = await method({
-      mediaTypes: ["images"],
-      base64: true,
-      quality: 0.8,
-    });
+    if (result.canceled || !result.assets?.length) return;
 
-    if (result.canceled || !result.assets[0].base64) return;
+    const assets = result.assets.filter((a) => a.base64);
+    if (assets.length === 0) return;
 
-    setPreview(result.assets[0].uri);
+    setPreview(assets[0].uri);
     setStep("scanning");
     setError("");
+    setScannedItems([]);
+    setScanProgress({ done: 0, total: assets.length });
 
-    try {
-      if (mode === "single") {
-        const data = await scanReceipt.mutateAsync(result.assets[0].base64);
-        const valid = Number.isFinite(data.amount) && Math.abs(data.amount) > 0;
-        setScannedItems([{ ...data, selected: valid }]);
-      } else {
-        const data = await scanStatement.mutateAsync(result.assets[0].base64);
-        setScannedItems(
-          data.transactions.map((tx) => ({
-            ...tx,
-            selected: Number.isFinite(tx.amount) && Math.abs(tx.amount) > 0,
-          }))
-        );
+    const allItems: ScannedTransaction[] = [];
+    let failures = 0;
+
+    for (const asset of assets) {
+      try {
+        if (mode === "single") {
+          const data = await scanReceipt.mutateAsync(asset.base64!);
+          const valid = Number.isFinite(data.amount) && Math.abs(data.amount) > 0;
+          if (data && data.amount != null) {
+            allItems.push({ ...data, selected: valid });
+          }
+        } else {
+          const data = await scanStatement.mutateAsync(asset.base64!);
+          for (const tx of data.transactions) {
+            allItems.push({
+              ...tx,
+              selected: Number.isFinite(tx.amount) && Math.abs(tx.amount) > 0,
+            });
+          }
+        }
+      } catch {
+        failures++;
+      } finally {
+        setScanProgress((prev) => ({ ...prev, done: prev.done + 1 }));
       }
-      setStep("review");
-    } catch {
+    }
+
+    if (allItems.length === 0) {
       setError(t.scan.imageError);
       setStep("upload");
+      return;
     }
+
+    setScannedItems(allItems);
+    if (failures > 0) setError(t.scan.imageError);
+    setStep("review");
   };
 
   const getCategoryId = (name: string) => {
@@ -266,6 +293,11 @@ export default function ScanScreen() {
             <Text className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">
               {t.scan.analyzing}
             </Text>
+            {scanProgress.total > 1 && (
+              <Text className="text-xs text-gray-400 mt-1">
+                {scanProgress.done} / {scanProgress.total}
+              </Text>
+            )}
             <ActivityIndicator color="#FF8FB1" className="mt-4" />
             {preview && (
               <Image
