@@ -5,10 +5,15 @@ import {
   useProfile,
   useUpdateProfile,
   useCouple,
+  useUpdateCouple,
   supabase,
   useI18n,
 } from "@paca/api";
-import { LOCALE_LABELS, type Locale } from "@paca/shared";
+import {
+  LOCALE_LABELS,
+  SUPPORTED_CURRENCIES,
+  type Locale,
+} from "@paca/shared";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import {
@@ -26,6 +31,7 @@ import {
   ChevronRight,
   Shield,
   Globe,
+  Coins,
 } from "lucide-react";
 
 export function ProfilePage() {
@@ -34,11 +40,22 @@ export function ProfilePage() {
   const { data: profile } = useProfile();
   const { data: couple } = useCouple();
   const updateProfile = useUpdateProfile();
-  const { t, dateLocale, locale, setLocale, translateCategory } = useI18n();
+  const updateCouple = useUpdateCouple();
+  const { t, dateLocale, locale, setLocale, currency, setCurrency, translateCategory } = useI18n();
 
   const handleLanguageChange = async (newLocale: Locale) => {
     setLocale(newLocale);
     await updateProfile.mutateAsync({ language: newLocale });
+  };
+
+  const handleCurrencyChange = async (newCurrency: string) => {
+    setCurrency(newCurrency);
+    try {
+      await updateCouple.mutateAsync({ primary_currency: newCurrency });
+    } catch {
+      // Revert on failure
+      if (couple?.primary_currency) setCurrency(couple.primary_currency);
+    }
   };
 
   const [editingName, setEditingName] = useState(false);
@@ -239,6 +256,25 @@ export function ProfilePage() {
                 </button>
               ))}
             </div>
+          }
+        />
+
+        <SettingRow
+          icon={<Coins className="w-5 h-5" />}
+          label={t.profile.primaryCurrency}
+          action={
+            <select
+              value={currency}
+              onChange={(e) => handleCurrencyChange(e.target.value)}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-0 focus:outline-none focus:ring-2 focus:ring-pink-primary/50 cursor-pointer"
+              aria-label={t.profile.primaryCurrency}
+            >
+              {SUPPORTED_CURRENCIES.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.code} · {c.symbol}
+                </option>
+              ))}
+            </select>
           }
         />
 

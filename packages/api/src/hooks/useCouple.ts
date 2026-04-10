@@ -133,3 +133,35 @@ export function useJoinCouple() {
     },
   });
 }
+
+export function useUpdateCouple() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (updates: { primary_currency?: string }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Não autenticado");
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("couple_id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (!profile?.couple_id) throw new Error("Perfil não encontrado");
+
+      const { data, error } = await supabase
+        .from("couples")
+        .update(updates)
+        .eq("id", profile.couple_id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["couple"] });
+    },
+  });
+}

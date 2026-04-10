@@ -316,17 +316,26 @@ export function TransactionsPage() {
                     </p>
                   </div>
 
-                  <p
-                    className={`text-sm font-semibold whitespace-nowrap tabular-nums shrink-0 ${
-                      tx.type === "expense"
-                        ? "text-red-primary"
-                        : "text-emerald-500"
-                    }`}
-                    title={formatCurrency(tx.amount)}
-                  >
-                    {tx.type === "expense" ? "- " : "+ "}
-                    {formatCurrencyCompact(tx.amount)}
-                  </p>
+                  <div className="flex flex-col items-end shrink-0">
+                    <p
+                      className={`text-sm font-semibold whitespace-nowrap tabular-nums ${
+                        tx.type === "expense"
+                          ? "text-red-primary"
+                          : "text-emerald-500"
+                      }`}
+                      title={formatCurrency(tx.amount)}
+                    >
+                      {tx.type === "expense" ? "- " : "+ "}
+                      {formatCurrencyCompact(tx.amount)}
+                    </p>
+                    {tx.original_currency &&
+                      tx.original_currency !== tx.currency &&
+                      tx.original_amount != null && (
+                        <p className="text-[10px] text-gray-400 tabular-nums whitespace-nowrap">
+                          {formatCurrency(tx.original_amount, tx.original_currency)}
+                        </p>
+                      )}
+                  </div>
 
                   {/* Actions (always visible on mobile, hover on desktop) */}
                   <div className="flex gap-1 shrink-0 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">

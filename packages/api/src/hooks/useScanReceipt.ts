@@ -3,6 +3,10 @@ import { supabase } from "../supabase";
 
 interface ScanResult {
   amount: number;
+  currency?: string;
+  original_amount?: number;
+  original_currency?: string;
+  exchange_rate?: number;
   description: string;
   category: string;
   date: string;
@@ -12,7 +16,8 @@ interface ScanResult {
 
 interface ScanBatchResult {
   transactions: ScanResult[];
-  duplicates: string[];
+  primary_currency?: string;
+  duplicates?: string[];
 }
 
 export function useScanReceipt() {

@@ -428,15 +428,24 @@ function TransactionRow({ transaction: tx }: { transaction: TransactionWithCateg
           {categoryLabel} · {formatDate(tx.date)}
         </p>
       </div>
-      <p
-        className={`text-sm font-semibold whitespace-nowrap tabular-nums shrink-0 ${
-          isExpense ? "text-red-primary" : "text-emerald-500"
-        }`}
-        title={formatCurrency(tx.amount)}
-      >
-        {isExpense ? "- " : "+ "}
-        {formatCurrencyCompact(tx.amount)}
-      </p>
+      <div className="flex flex-col items-end shrink-0">
+        <p
+          className={`text-sm font-semibold whitespace-nowrap tabular-nums ${
+            isExpense ? "text-red-primary" : "text-emerald-500"
+          }`}
+          title={formatCurrency(tx.amount)}
+        >
+          {isExpense ? "- " : "+ "}
+          {formatCurrencyCompact(tx.amount)}
+        </p>
+        {tx.original_currency &&
+          tx.original_currency !== tx.currency &&
+          tx.original_amount != null && (
+            <p className="text-[10px] text-gray-400 tabular-nums whitespace-nowrap">
+              {formatCurrency(tx.original_amount, tx.original_currency)}
+            </p>
+          )}
+      </div>
     </Link>
   );
 }

@@ -28,6 +28,10 @@ type ScanStep = "upload" | "scanning" | "review";
 
 interface ScannedTransaction {
   amount: number;
+  currency?: string;
+  original_amount?: number;
+  original_currency?: string;
+  exchange_rate?: number;
   description: string;
   category: string;
   date: string;
@@ -132,6 +136,10 @@ export function ScanReceiptPage() {
           paid_by: profile!.id,
           type: it.type,
           amount: Math.abs(it.amount),
+          currency: it.currency,
+          original_amount: it.original_amount != null ? Math.abs(it.original_amount) : null,
+          original_currency: it.original_currency,
+          exchange_rate: it.exchange_rate,
           description: it.description,
           category_id: getCategoryId(it.category),
           date: it.date ?? new Date().toISOString().split("T")[0],
@@ -362,6 +370,15 @@ export function ScanReceiptPage() {
                     <p className="text-xs text-gray-400">
                       {item.type === "expense" ? t.transactions.expense : t.transactions.income}
                     </p>
+                    {item.original_currency &&
+                      item.currency &&
+                      item.original_currency !== item.currency &&
+                      item.original_amount != null && (
+                        <p className="text-[10px] text-gray-400 mt-1">
+                          {item.original_currency}{" "}
+                          {(Math.abs(item.original_amount) / 100).toFixed(2)}
+                        </p>
+                      )}
                   </div>
                 </div>
 

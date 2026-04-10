@@ -16,22 +16,34 @@ import {
   useProfile,
   useUpdateProfile,
   useCouple,
+  useUpdateCouple,
   supabase,
   useI18n,
 } from "@paca/api";
-import { LOCALE_LABELS, type Locale } from "@paca/shared";
+import { LOCALE_LABELS, SUPPORTED_CURRENCIES, type Locale } from "@paca/shared";
 
 export default function Profile() {
   const router = useRouter();
-  const { t, dateLocale, locale, setLocale, translateCategory } = useI18n();
+  const { t, dateLocale, locale, setLocale, currency, setCurrency, translateCategory } = useI18n();
+
+  const { data: profile } = useProfile();
+  const { data: couple } = useCouple();
+  const updateProfile = useUpdateProfile();
+  const updateCouple = useUpdateCouple();
 
   const handleLanguageChange = async (newLocale: Locale) => {
     setLocale(newLocale);
     await updateProfile.mutateAsync({ language: newLocale });
   };
-  const { data: profile } = useProfile();
-  const { data: couple } = useCouple();
-  const updateProfile = useUpdateProfile();
+
+  const handleCurrencyChange = async (newCurrency: string) => {
+    setCurrency(newCurrency);
+    try {
+      await updateCouple.mutateAsync({ primary_currency: newCurrency });
+    } catch {
+      if (couple?.primary_currency) setCurrency(couple.primary_currency);
+    }
+  };
 
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState(profile?.display_name ?? "");
@@ -247,6 +259,41 @@ export default function Profile() {
                 </TouchableOpacity>
               ))}
             </View>
+          </View>
+
+          {/* Primary currency */}
+          <View className="px-5 py-4 border-b border-gray-50 dark:border-gray-700/50">
+            <View className="flex-row items-center gap-3 mb-3">
+              <Ionicons name="cash-outline" size={20} color="#9CA3AF" />
+              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t.profile.primaryCurrency}
+              </Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 8 }}
+            >
+              {SUPPORTED_CURRENCIES.map((c) => (
+                <TouchableOpacity
+                  key={c.code}
+                  onPress={() => handleCurrencyChange(c.code)}
+                  className={`px-3 py-1.5 rounded-lg ${
+                    currency === c.code
+                      ? "bg-pink-primary"
+                      : "bg-gray-100 dark:bg-gray-700"
+                  }`}
+                >
+                  <Text
+                    className={`text-xs font-semibold ${
+                      currency === c.code ? "text-white" : "text-gray-500"
+                    }`}
+                  >
+                    {c.code} · {c.symbol}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
 
           {/* Export */}

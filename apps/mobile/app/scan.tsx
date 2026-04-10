@@ -28,6 +28,10 @@ type ScanStep = "upload" | "scanning" | "review";
 
 interface ScannedTransaction {
   amount: number;
+  currency?: string;
+  original_amount?: number;
+  original_currency?: string;
+  exchange_rate?: number;
   description: string;
   category: string;
   date: string;
@@ -127,6 +131,10 @@ export default function ScanScreen() {
           paid_by: profile!.id,
           type: it.type,
           amount: Math.abs(it.amount),
+          currency: it.currency,
+          original_amount: it.original_amount != null ? Math.abs(it.original_amount) : null,
+          original_currency: it.original_currency,
+          exchange_rate: it.exchange_rate,
           description: it.description,
           category_id: getCategoryId(it.category),
           date: it.date ?? new Date().toISOString().split("T")[0],

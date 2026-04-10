@@ -1,11 +1,19 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useI18n, useProfile, useSyncLocaleFromProfile } from "@paca/api";
+import {
+  useI18n,
+  useProfile,
+  useCouple,
+  useSyncLocaleFromProfile,
+  useSyncCurrencyFromCouple,
+} from "@paca/api";
 
 export default function TabLayout() {
   const { t } = useI18n();
   const { data: profile } = useProfile();
+  const { data: couple } = useCouple();
   useSyncLocaleFromProfile(profile?.language);
+  useSyncCurrencyFromCouple(couple?.primary_currency);
 
   return (
     <Tabs

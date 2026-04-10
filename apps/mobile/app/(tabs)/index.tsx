@@ -191,14 +191,23 @@ function TransactionRow({ transaction: tx }: { transaction: TransactionWithCateg
           {categoryLabel} · {formatDate(tx.date)}
         </Text>
       </View>
-      <Text
-        className={`text-sm font-semibold ${
-          tx.type === "expense" ? "text-red-500" : "text-emerald-500"
-        }`}
-      >
-        {tx.type === "expense" ? "- " : "+ "}
-        {formatCurrency(tx.amount)}
-      </Text>
+      <View className="items-end">
+        <Text
+          className={`text-sm font-semibold ${
+            tx.type === "expense" ? "text-red-500" : "text-emerald-500"
+          }`}
+        >
+          {tx.type === "expense" ? "- " : "+ "}
+          {formatCurrency(tx.amount)}
+        </Text>
+        {tx.original_currency &&
+          tx.original_currency !== tx.currency &&
+          tx.original_amount != null && (
+            <Text className="text-[10px] text-gray-400">
+              {formatCurrency(tx.original_amount, tx.original_currency)}
+            </Text>
+          )}
+      </View>
     </View>
   );
 }

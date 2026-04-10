@@ -6,6 +6,10 @@ export interface Transaction {
   paid_by: string;
   type: TransactionType;
   amount: number;
+  currency: string;
+  original_amount: number | null;
+  original_currency: string | null;
+  exchange_rate: number | null;
   description: string;
   category_id: string;
   date: string;
@@ -22,6 +26,10 @@ export interface TransactionInsert {
   paid_by: string;
   type: TransactionType;
   amount: number;
+  currency?: string;
+  original_amount?: number | null;
+  original_currency?: string | null;
+  exchange_rate?: number | null;
   description: string;
   category_id: string;
   date: string;

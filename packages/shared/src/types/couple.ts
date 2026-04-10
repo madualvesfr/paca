@@ -2,6 +2,7 @@ export interface Couple {
   id: string;
   invite_code: string;
   partner_since: string;
+  primary_currency: string;
   created_by: string;
   created_at: string;
   updated_at: string;

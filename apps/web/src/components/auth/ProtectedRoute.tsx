@@ -1,5 +1,11 @@
 import { Navigate } from "react-router-dom";
-import { useAuth, useProfile, useSyncLocaleFromProfile } from "@paca/api";
+import {
+  useAuth,
+  useProfile,
+  useCouple,
+  useSyncLocaleFromProfile,
+  useSyncCurrencyFromCouple,
+} from "@paca/api";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -12,7 +18,9 @@ export function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, loading: authLoading } = useAuth();
   const { data: profile, isLoading: profileLoading } = useProfile();
+  const { data: couple } = useCouple();
   useSyncLocaleFromProfile(profile?.language);
+  useSyncCurrencyFromCouple(couple?.primary_currency);
 
   if (authLoading || profileLoading) {
     return (

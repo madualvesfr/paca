@@ -13,6 +13,43 @@ function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: corsHeaders });
 }
 
+// Fetch FX rates for a base currency using exchangerate-api.com free tier.
+// Returns a map { target: rate } where amount_in_target = amount_in_base * rate.
+async function fetchRates(base: string): Promise<Record<string, number>> {
+  try {
+    const res = await fetch(`https://open.er-api.com/v6/latest/${base}`);
+    if (!res.ok) return {};
+    const data = await res.json();
+    if (data?.result !== "success" || !data?.rates) return {};
+    return data.rates as Record<string, number>;
+  } catch (err) {
+    console.error("FX fetch failed for base", base, err);
+    return {};
+  }
+}
+
+// Convert an amount (in cents of `from`) to cents of `to`.
+// Returns { converted, rate }. If conversion fails, returns rate=1 (no-op).
+async function convert(
+  amount: number,
+  from: string,
+  to: string,
+  ratesCache: Map<string, Record<string, number>>
+): Promise<{ converted: number; rate: number }> {
+  if (from === to) return { converted: amount, rate: 1 };
+  let rates = ratesCache.get(from);
+  if (!rates) {
+    rates = await fetchRates(from);
+    ratesCache.set(from, rates);
+  }
+  const rate = rates[to];
+  if (!rate || !Number.isFinite(rate) || rate <= 0) {
+    // Fallback: store the original value, mark rate 1 so at least it saves
+    return { converted: amount, rate: 1 };
+  }
+  return { converted: Math.round(amount * rate), rate };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -39,6 +76,14 @@ Deno.serve(async (req) => {
 
     if (!profile?.couple_id) return jsonResponse({ error: "No couple found" }, 403);
 
+    // Fetch couple's primary currency (target for conversion)
+    const { data: couple } = await supabase
+      .from("couples")
+      .select("primary_currency")
+      .eq("id", profile.couple_id)
+      .single();
+    const primaryCurrency: string = (couple?.primary_currency ?? "BRL").toUpperCase();
+
     const { image } = await req.json();
     if (!image) return jsonResponse({ error: "Image required" }, 400);
 
@@ -59,7 +104,8 @@ Identify ALL visible transactions and return ONLY a valid JSON:
 {
   "transactions": [
     {
-      "amount": number in cents, ALWAYS POSITIVE (e.g. 1500 for $15.00 - never negative, use "type" to distinguish),
+      "amount": number in cents, ALWAYS POSITIVE (e.g. 1500 for 15.00 - never negative, use "type" to distinguish),
+      "currency": "ISO 4217 code of the currency for this line (e.g. BRL, USD, EUR, GBP, UAH, RUB, ARS, MXN, JPY). Detect it from symbols (R$ = BRL, $ = USD unless another country context is clear, € = EUR, £ = GBP, ₴ = UAH, ₽ = RUB, ¥ = JPY or CNY depending on context) or from account labels like 'Conta virtual USD'. If the statement header or account name shows a currency, use that for all lines unless a specific line shows a different one. Default to BRL if truly unknown.",
       "description": "transaction description",
       "category": "one of: Alimentacao, Transporte, Moradia, Lazer, Saude, Educacao, Compras, Entretenimento, Outros",
       "date": "YYYY-MM-DD - if the year is not visible in the statement, use the current year (${new Date().getFullYear()}). Never assume a past year.",
@@ -127,22 +173,53 @@ CRITICAL: SKIP CANCELLED AND DENIED TRANSACTIONS ENTIRELY.
       return jsonResponse({ error: "Unexpected AI response", details: data }, 502);
     }
 
+    let parsed: { transactions?: Array<Record<string, unknown>> } | null = null;
     try {
-      const parsed = JSON.parse(text);
-      return jsonResponse(parsed);
-    } catch (parseError) {
+      parsed = JSON.parse(text);
+    } catch {
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         console.error("Could not extract JSON from:", text);
         return jsonResponse({ error: "Could not extract data", raw: text }, 422);
       }
       try {
-        return jsonResponse(JSON.parse(jsonMatch[0]));
+        parsed = JSON.parse(jsonMatch[0]);
       } catch (e) {
         console.error("JSON parse failed:", e, "raw:", text);
         return jsonResponse({ error: "Invalid JSON from AI", raw: text }, 422);
       }
     }
+
+    const rawTransactions = parsed?.transactions ?? [];
+    const ratesCache = new Map<string, Record<string, number>>();
+
+    // Convert each transaction to the couple's primary currency.
+    const converted = await Promise.all(
+      rawTransactions.map(async (tx) => {
+        const rawAmount = Math.abs(Number(tx.amount) || 0);
+        const rawCurrency = String(tx.currency ?? primaryCurrency)
+          .toUpperCase()
+          .slice(0, 3) || primaryCurrency;
+
+        const { converted: convertedAmount, rate } = await convert(
+          rawAmount,
+          rawCurrency,
+          primaryCurrency,
+          ratesCache
+        );
+
+        return {
+          ...tx,
+          amount: convertedAmount,
+          currency: primaryCurrency,
+          original_amount: rawAmount,
+          original_currency: rawCurrency,
+          exchange_rate: rate,
+        };
+      })
+    );
+
+    return jsonResponse({ transactions: converted, primary_currency: primaryCurrency });
   } catch (error) {
     console.error("scan-statement error:", error);
     return jsonResponse({ error: "Error processing statement", details: String(error) }, 500);

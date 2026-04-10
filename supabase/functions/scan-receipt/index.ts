@@ -13,6 +13,33 @@ function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: corsHeaders });
 }
 
+async function fetchRates(base: string): Promise<Record<string, number>> {
+  try {
+    const res = await fetch(`https://open.er-api.com/v6/latest/${base}`);
+    if (!res.ok) return {};
+    const data = await res.json();
+    if (data?.result !== "success" || !data?.rates) return {};
+    return data.rates as Record<string, number>;
+  } catch (err) {
+    console.error("FX fetch failed for base", base, err);
+    return {};
+  }
+}
+
+async function convert(
+  amount: number,
+  from: string,
+  to: string
+): Promise<{ converted: number; rate: number }> {
+  if (from === to) return { converted: amount, rate: 1 };
+  const rates = await fetchRates(from);
+  const rate = rates[to];
+  if (!rate || !Number.isFinite(rate) || rate <= 0) {
+    return { converted: amount, rate: 1 };
+  }
+  return { converted: Math.round(amount * rate), rate };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -39,6 +66,13 @@ Deno.serve(async (req) => {
 
     if (!profile?.couple_id) return jsonResponse({ error: "No couple found" }, 403);
 
+    const { data: couple } = await supabase
+      .from("couples")
+      .select("primary_currency")
+      .eq("id", profile.couple_id)
+      .single();
+    const primaryCurrency: string = (couple?.primary_currency ?? "BRL").toUpperCase();
+
     const { image } = await req.json();
     if (!image) return jsonResponse({ error: "Image required" }, 400);
 
@@ -57,7 +91,8 @@ Deno.serve(async (req) => {
 Today's date is ${new Date().toISOString().split("T")[0]}.
 Extract the following information and return ONLY a valid JSON:
 {
-  "amount": number in cents, ALWAYS POSITIVE (e.g. 1500 for $15.00 - never negative, use "type" to distinguish),
+  "amount": number in cents, ALWAYS POSITIVE (e.g. 1500 for 15.00 - never negative, use "type" to distinguish),
+  "currency": "ISO 4217 code of the currency (e.g. BRL, USD, EUR, GBP, UAH, RUB, ARS, MXN, JPY). Detect it from symbols (R$ = BRL, $ = USD unless another country context is clear, € = EUR, £ = GBP, ₴ = UAH, ₽ = RUB, ¥ = JPY or CNY depending on context) or from text. Default to BRL if truly unknown.",
   "description": "store name or description",
   "category": "one of: Alimentacao, Transporte, Moradia, Lazer, Saude, Educacao, Compras, Entretenimento, Outros",
   "date": "YYYY-MM-DD - if the year is not visible, use the current year (${new Date().getFullYear()}). Never assume a past year.",
@@ -122,8 +157,9 @@ If you cannot identify a field, use null.`,
       return jsonResponse({ error: "Unexpected AI response", details: data }, 502);
     }
 
+    let parsed: Record<string, unknown> | null = null;
     try {
-      return jsonResponse(JSON.parse(text));
+      parsed = JSON.parse(text);
     } catch {
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
@@ -131,12 +167,33 @@ If you cannot identify a field, use null.`,
         return jsonResponse({ error: "Could not extract data", raw: text }, 422);
       }
       try {
-        return jsonResponse(JSON.parse(jsonMatch[0]));
+        parsed = JSON.parse(jsonMatch[0]);
       } catch (e) {
         console.error("JSON parse failed:", e, "raw:", text);
         return jsonResponse({ error: "Invalid JSON from AI", raw: text }, 422);
       }
     }
+
+    if (!parsed || parsed.amount == null) {
+      // Nothing to convert — return as is (will be filtered client-side)
+      return jsonResponse(parsed ?? {});
+    }
+
+    const rawAmount = Math.abs(Number(parsed.amount) || 0);
+    const rawCurrency = String(parsed.currency ?? primaryCurrency)
+      .toUpperCase()
+      .slice(0, 3) || primaryCurrency;
+
+    const { converted, rate } = await convert(rawAmount, rawCurrency, primaryCurrency);
+
+    return jsonResponse({
+      ...parsed,
+      amount: converted,
+      currency: primaryCurrency,
+      original_amount: rawAmount,
+      original_currency: rawCurrency,
+      exchange_rate: rate,
+    });
   } catch (error) {
     console.error("scan-receipt error:", error);
     return jsonResponse({ error: "Error processing image", details: String(error) }, 500);
