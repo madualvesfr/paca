@@ -204,8 +204,12 @@
 }
 
 /* === Blend multiply (remove white/light bg from images) === */
+/* Only apply in light mode — on dark backgrounds multiply turns the logo invisible */
 .blend-multiply {
   mix-blend-mode: multiply;
+}
+.dark .blend-multiply {
+  mix-blend-mode: normal;
 }
 
 /* === Accessibility === */
