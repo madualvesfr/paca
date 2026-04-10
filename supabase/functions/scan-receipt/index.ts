@@ -64,6 +64,19 @@ Extract the following information and return ONLY a valid JSON:
   "type": "expense" or "income",
   "confidence": number from 0 to 1 indicating extraction confidence
 }
+
+CRITICAL rules for classifying "type":
+- REFUNDS, REIMBURSEMENTS, CHARGEBACKS and REVERSALS are INCOME, not expenses.
+  Detect these keywords anywhere in the image (case-insensitive, any language):
+  "reembolso", "estorno", "devolução", "devolucao", "cashback", "refund",
+  "reversal", "chargeback", "возврат", "повернення", "restituição", "crédito de estorno".
+  These represent money RETURNING to the user, so type = "income".
+- A receipt/proof for a PURCHASE = "expense"
+- A receipt/proof for a REFUND or money RECEIVED (Pix received, deposit, salary) = "income"
+- If the image clearly shows a refund of a previous purchase, set type = "income"
+  and keep the original merchant name in description, optionally prefixed with
+  "Reembolso: ".
+
 If you cannot identify a field, use null.`,
                 },
               ],

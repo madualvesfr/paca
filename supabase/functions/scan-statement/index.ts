@@ -67,7 +67,22 @@ Identify ALL visible transactions and return ONLY a valid JSON:
       "confidence": number from 0 to 1
     }
   ]
-}`,
+}
+
+CRITICAL rules for classifying "type":
+- REFUNDS, REIMBURSEMENTS, CHARGEBACKS and REVERSALS are INCOME, not expenses.
+  Detect these keywords in the description (case-insensitive, any language):
+  "reembolso", "estorno", "devolução", "devolucao", "cashback", "refund",
+  "reversal", "chargeback", "возврат", "повернення", "restituição", "crédito de estorno".
+  These represent money RETURNING to the account, so type = "income".
+- Money going OUT (purchases, bills, Pix sent, withdrawals) = "expense"
+- Money coming IN (salary, Pix received, deposits, interest) = "income"
+- On credit card statements, a line with a NEGATIVE sign next to an otherwise
+  expense-looking merchant usually means a refund of that purchase → "income"
+- Use the sign/direction shown in the statement (+ / - / credit / debit / IN / OUT)
+  as the primary signal, and keywords as a secondary signal. If both agree it's
+  a refund, set type = "income" and keep the original merchant name in description
+  prefixed with "Reembolso: " (or leave the original if that already makes it clear).`,
                 },
               ],
             },
