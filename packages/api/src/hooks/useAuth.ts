@@ -65,15 +65,6 @@ export function useAuth() {
     return data;
   }, []);
 
-  const signInWithGoogle = useCallback(async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: window.location.origin },
-    });
-    if (error) throw error;
-    return data;
-  }, []);
-
   const signInWithApple = useCallback(async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "apple",
@@ -94,7 +85,6 @@ export function useAuth() {
     ...authState,
     signUp,
     signIn,
-    signInWithGoogle,
     signInWithApple,
     signOut,
   };
