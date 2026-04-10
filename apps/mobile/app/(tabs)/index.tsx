@@ -84,6 +84,31 @@ export default function Dashboard() {
           </View>
         </View>
 
+        {/* Advisor CTA */}
+        <TouchableOpacity
+          onPress={() => router.push("/advisor")}
+          className="mx-6 mb-6 rounded-2xl overflow-hidden border border-indigo-100 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-500/10"
+          activeOpacity={0.85}
+        >
+          <View className="flex-row items-center gap-3 p-4">
+            <View className="w-11 h-11 rounded-2xl bg-indigo-500 items-center justify-center">
+              <Ionicons name="bulb" size={20} color="#fff" />
+            </View>
+            <View className="flex-1 min-w-0">
+              <Text
+                className="text-sm font-semibold text-gray-800 dark:text-gray-100"
+                numberOfLines={1}
+              >
+                {t.advisor.cardCtaTitle}
+              </Text>
+              <Text className="text-xs text-gray-500 dark:text-gray-400" numberOfLines={1}>
+                {t.advisor.cardCtaBody}
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color="#6366F1" />
+          </View>
+        </TouchableOpacity>
+
         {/* Income / Expenses */}
         <View className="flex-row gap-3 mx-6 mb-6">
           <View className="flex-1 bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700">

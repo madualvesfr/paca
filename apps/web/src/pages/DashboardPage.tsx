@@ -11,6 +11,7 @@ import {
   Bell,
   CalendarDays,
   StickyNote,
+  Lightbulb,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DashboardSkeleton } from "@/components/ui/Skeleton";
@@ -271,6 +272,30 @@ export function DashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Advisor CTA */}
+      <Link
+        to="/advisor"
+        className="group relative block mb-6 sm:mb-8 rounded-2xl overflow-hidden border border-indigo-100 dark:border-indigo-500/20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-500/10 dark:via-purple-500/10 dark:to-pink-500/10 hover:shadow-lg transition-all"
+      >
+        <div className="flex items-center gap-4 p-5">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shrink-0 shadow-md">
+            <Lightbulb className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
+              {t.advisor.cardCtaTitle}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+              {t.advisor.cardCtaBody}
+            </p>
+          </div>
+          <div className="shrink-0 flex items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 group-hover:gap-2 transition-all">
+            <span className="hidden sm:inline">{t.advisor.cardCtaButton}</span>
+            <ArrowRight className="w-4 h-4" />
+          </div>
+        </div>
+      </Link>
 
       {/* Income / Expenses / Weekly Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 sm:mb-8 animate-stagger">

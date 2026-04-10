@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/Toast";
-import { ArrowLeft, ScanLine } from "lucide-react";
+import { ArrowLeft, ScanLine, Lightbulb } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function NewTransactionPage() {
@@ -108,6 +108,15 @@ export function NewTransactionPage() {
           <span className="hidden sm:inline">{t.transactions.scan}</span>
         </Link>
       </div>
+
+      {/* Advisor shortcut */}
+      <Link
+        to="/advisor"
+        className="flex items-center gap-2 mb-5 px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 text-xs font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors w-fit"
+      >
+        <Lightbulb className="w-3.5 h-3.5" />
+        {t.advisor.linkShortcut}
+      </Link>
 
       {error && (
         <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-primary/10 border border-red-200 dark:border-red-primary/20 text-red-primary text-sm">

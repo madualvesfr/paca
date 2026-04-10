@@ -106,6 +106,18 @@ export default function AddTransaction() {
         </View>
 
         <ScrollView className="flex-1 px-6" keyboardShouldPersistTaps="handled">
+          {/* Advisor shortcut */}
+          <TouchableOpacity
+            onPress={() => router.push("/advisor")}
+            className="flex-row items-center gap-2 mt-4 self-start px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-500/10"
+            activeOpacity={0.8}
+          >
+            <Ionicons name="bulb-outline" size={14} color="#6366F1" />
+            <Text className="text-indigo-600 dark:text-indigo-300 text-xs font-semibold">
+              {t.advisor.linkShortcut}
+            </Text>
+          </TouchableOpacity>
+
           {error ? (
             <View className="bg-red-50 dark:bg-red-900/20 rounded-2xl p-4 mt-4">
               <Text className="text-red-500 text-sm text-center">{error}</Text>
