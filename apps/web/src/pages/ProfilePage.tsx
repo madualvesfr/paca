@@ -32,6 +32,7 @@ import {
   Shield,
   Globe,
   Coins,
+  GraduationCap,
 } from "lucide-react";
 
 export function ProfilePage() {
@@ -56,6 +57,11 @@ export function ProfilePage() {
       // Revert on failure
       if (couple?.primary_currency) setCurrency(couple.primary_currency);
     }
+  };
+
+  const handleReplayTutorial = async () => {
+    // Reset the flag — AppLayout's effect re-opens the modal on next profile fetch
+    await updateProfile.mutateAsync({ tutorial_completed: false });
   };
 
   const [editingName, setEditingName] = useState(false);
@@ -275,6 +281,20 @@ export function ProfilePage() {
                 </option>
               ))}
             </select>
+          }
+        />
+
+        <SettingRow
+          icon={<GraduationCap className="w-5 h-5" />}
+          label={t.tutorial.replay}
+          action={
+            <button
+              type="button"
+              onClick={handleReplayTutorial}
+              className="text-sm text-pink-primary font-medium hover:underline"
+            >
+              {t.common.ok}
+            </button>
           }
         />
 

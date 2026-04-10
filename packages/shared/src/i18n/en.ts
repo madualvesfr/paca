@@ -284,6 +284,45 @@ export const en = {
     nextMonth: "Next month",
   },
 
+  // Welcome tutorial — shown once after onboarding, re-openable from Profile
+  tutorial: {
+    title: "Welcome to Paca!",
+    subtitle: "Let's show you what you can do here in 1 minute.",
+    skip: "Skip",
+    next: "Next",
+    back: "Back",
+    finish: "Got it!",
+    step: "Step",
+    of: "of",
+    replay: "Watch tutorial again",
+    slides: {
+      dashboard: {
+        title: "See everything at a glance",
+        body: "Your couple balance, this month's income and expenses, and a weekly comparison — all on the home screen.",
+      },
+      addTransaction: {
+        title: "Record every cent together",
+        body: "Tap the + button to add a transaction. Pick a category, who paid, and (optionally) a note. It instantly shows up for your partner too.",
+      },
+      scan: {
+        title: "Scan receipts and statements with AI",
+        body: "No time to type? Upload a photo of a receipt, a Pix notification, or a full bank statement and the AI extracts every line for you. Supports multiple images at once.",
+      },
+      budget: {
+        title: "Set a monthly budget",
+        body: "Decide how much you want to spend per category. Paca keeps track and warns you when you're close to the limit.",
+      },
+      multiCurrency: {
+        title: "Any currency, any country",
+        body: "Living abroad? Pick your primary currency in the Profile. The AI detects the currency of each transaction and converts it automatically.",
+      },
+      couple: {
+        title: "Built for two",
+        body: "Share the same invite code with your partner so both of you can add and see every transaction. The profile page is where you find the code.",
+      },
+    },
+  },
+
   // Default category translations — keys match DEFAULT_CATEGORIES names
   categories: {
     Alimentacao: "Food",

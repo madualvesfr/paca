@@ -275,6 +275,44 @@ export const pt: TranslationKeys = {
     nextMonth: "Próximo mês",
   },
 
+  tutorial: {
+    title: "Bem-vindos ao Paca!",
+    subtitle: "Vamos te mostrar o que dá pra fazer aqui em 1 minuto.",
+    skip: "Pular",
+    next: "Próximo",
+    back: "Voltar",
+    finish: "Entendi!",
+    step: "Passo",
+    of: "de",
+    replay: "Ver tutorial novamente",
+    slides: {
+      dashboard: {
+        title: "Veja tudo num lugar só",
+        body: "O saldo do casal, as receitas e despesas do mês e uma comparação semanal — tudo na tela inicial.",
+      },
+      addTransaction: {
+        title: "Registre cada centavo juntos",
+        body: "Toque no + para adicionar uma transação. Escolha a categoria, quem pagou e (se quiser) uma observação. Aparece na hora pro seu parceiro também.",
+      },
+      scan: {
+        title: "Escaneie recibos e extratos com IA",
+        body: "Sem tempo para digitar? Envie uma foto de um recibo, notificação de Pix ou extrato do banco inteiro e a IA extrai cada linha para você. Aceita várias imagens de uma vez.",
+      },
+      budget: {
+        title: "Defina um orçamento mensal",
+        body: "Decida quanto querem gastar por categoria. O Paca acompanha e avisa quando vocês estão perto do limite.",
+      },
+      multiCurrency: {
+        title: "Qualquer moeda, qualquer país",
+        body: "Morando fora? Escolha a moeda principal no Perfil. A IA detecta a moeda de cada transação e converte automaticamente.",
+      },
+      couple: {
+        title: "Feito pra dois",
+        body: "Compartilhe o código de convite com seu parceiro para que vocês dois possam adicionar e ver todas as transações. O código fica na tela de Perfil.",
+      },
+    },
+  },
+
   categories: {
     Alimentacao: "Alimentação",
     Transporte: "Transporte",

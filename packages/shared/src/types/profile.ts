@@ -7,6 +7,7 @@ export interface Profile {
   display_name: string;
   avatar_url: string | null;
   language: Locale;
+  tutorial_completed: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -17,6 +18,7 @@ export interface ProfileInsert {
   couple_id?: string | null;
   avatar_url?: string | null;
   language?: Locale;
+  tutorial_completed?: boolean;
 }
 
 export interface ProfileUpdate {
@@ -24,4 +26,5 @@ export interface ProfileUpdate {
   avatar_url?: string | null;
   couple_id?: string | null;
   language?: Locale;
+  tutorial_completed?: boolean;
 }

@@ -45,6 +45,11 @@ export default function Profile() {
     }
   };
 
+  const handleReplayTutorial = async () => {
+    // Reset the flag — the tabs layout re-opens the modal on next profile fetch
+    await updateProfile.mutateAsync({ tutorial_completed: false });
+  };
+
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState(profile?.display_name ?? "");
 
@@ -295,6 +300,20 @@ export default function Profile() {
               ))}
             </ScrollView>
           </View>
+
+          {/* Replay tutorial */}
+          <TouchableOpacity
+            onPress={handleReplayTutorial}
+            className="flex-row items-center justify-between px-5 py-4 border-b border-gray-50 dark:border-gray-700/50"
+          >
+            <View className="flex-row items-center gap-3">
+              <Ionicons name="school-outline" size={20} color="#9CA3AF" />
+              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t.tutorial.replay}
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color="#D1D5DB" />
+          </TouchableOpacity>
 
           {/* Export */}
           <TouchableOpacity
