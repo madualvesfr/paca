@@ -275,6 +275,18 @@ export const pt: TranslationKeys = {
     nextMonth: "Próximo mês",
   },
 
+  notifications: {
+    title: "Notificações",
+    empty: "Nenhuma notificação ainda",
+    emptyBody: "Alertas de orçamento e atividade do casal aparecem aqui.",
+    markAllRead: "Marcar todas como lidas",
+    unread: "não lidas",
+    justNow: "agora",
+    minutesAgo: "há {count}min",
+    hoursAgo: "há {count}h",
+    daysAgo: "há {count}d",
+  },
+
   advisor: {
     title: "Devo comprar isso?",
     subtitle: "Conta pra Paca o que você quer comprar e ela te dá uma opinião honesta com base nos seus números de verdade.",

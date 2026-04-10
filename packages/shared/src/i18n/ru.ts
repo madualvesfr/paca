@@ -275,6 +275,18 @@ export const ru: TranslationKeys = {
     nextMonth: "Следующий месяц",
   },
 
+  notifications: {
+    title: "Уведомления",
+    empty: "Пока нет уведомлений",
+    emptyBody: "Здесь появятся оповещения о бюджете и активность пары.",
+    markAllRead: "Отметить все как прочитанные",
+    unread: "непрочитанных",
+    justNow: "только что",
+    minutesAgo: "{count} мин назад",
+    hoursAgo: "{count} ч назад",
+    daysAgo: "{count} дн назад",
+  },
+
   advisor: {
     title: "Стоит ли это покупать?",
     subtitle: "Расскажите Paca, что вы присматриваете, и получите честный взгляд на основе ваших реальных цифр.",

@@ -8,7 +8,6 @@ import {
   TrendingUp,
   TrendingDown,
   ArrowRight,
-  Bell,
   CalendarDays,
   StickyNote,
   Lightbulb,
@@ -16,6 +15,7 @@ import {
 import { Link } from "react-router-dom";
 import { DashboardSkeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { NotificationsPopover } from "@/components/NotificationsPopover";
 
 // Greeting emoji based on time of day
 function getGreetingEmoji(): string {
@@ -228,14 +228,7 @@ export function DashboardPage() {
             {t.dashboard.coupleSummary}
           </p>
         </div>
-        <button
-          type="button"
-          className="relative p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shrink-0"
-        >
-          <Bell className="w-5 h-5 text-gray-500" />
-          {/* Notification badge */}
-          <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-pink-primary rounded-full border-2 border-white dark:border-gray-800" />
-        </button>
+        <NotificationsPopover />
       </div>
 
       {/* Balance Card */}

@@ -284,6 +284,18 @@ export const en = {
     nextMonth: "Next month",
   },
 
+  notifications: {
+    title: "Notifications",
+    empty: "No notifications yet",
+    emptyBody: "You'll see budget alerts and couple activity here.",
+    markAllRead: "Mark all as read",
+    unread: "unread",
+    justNow: "just now",
+    minutesAgo: "{count}m ago",
+    hoursAgo: "{count}h ago",
+    daysAgo: "{count}d ago",
+  },
+
   // "Should I buy this?" advisor
   advisor: {
     title: "Should I buy this?",

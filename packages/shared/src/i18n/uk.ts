@@ -275,6 +275,18 @@ export const uk: TranslationKeys = {
     nextMonth: "Наступний місяць",
   },
 
+  notifications: {
+    title: "Сповіщення",
+    empty: "Поки немає сповіщень",
+    emptyBody: "Тут з'являться сповіщення про бюджет і активність пари.",
+    markAllRead: "Позначити всі як прочитані",
+    unread: "непрочитаних",
+    justNow: "щойно",
+    minutesAgo: "{count} хв тому",
+    hoursAgo: "{count} год тому",
+    daysAgo: "{count} д тому",
+  },
+
   advisor: {
     title: "Чи варто це купувати?",
     subtitle: "Розкажіть Paca, що ви придивляєтесь, і отримайте чесний погляд на основі ваших реальних цифр.",

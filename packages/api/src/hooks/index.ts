@@ -7,3 +7,4 @@ export * from "./useScanReceipt";
 export * from "./useBills";
 export * from "./useI18n";
 export * from "./usePurchaseAdvice";
+export * from "./useNotifications";
