@@ -20,7 +20,7 @@ type TypeFilter = "all" | "income" | "expense";
 
 export default function Transactions() {
   const router = useRouter();
-  const { t, formatCurrency, formatDate, formatMonthYear } = useI18n();
+  const { t, formatCurrency, formatDate, formatMonthYear, translateCategory } = useI18n();
   const { data: profile } = useProfile();
   const coupleId = profile?.couple_id ?? "";
 
@@ -41,11 +41,12 @@ export default function Transactions() {
     if (!searchQuery) return transactions;
     const q = searchQuery.toLowerCase();
     return transactions.filter(
-      (t) =>
-        t.description.toLowerCase().includes(q) ||
-        t.category?.name?.toLowerCase().includes(q)
+      (tx) =>
+        tx.description.toLowerCase().includes(q) ||
+        tx.category?.name?.toLowerCase().includes(q) ||
+        translateCategory(tx.category?.name).toLowerCase().includes(q)
     );
-  }, [transactions, searchQuery]);
+  }, [transactions, searchQuery, translateCategory]);
 
   const prevMonth = () => {
     const d = new Date(month + "T00:00:00");
@@ -160,37 +161,40 @@ export default function Transactions() {
             </View>
           )
         }
-        renderItem={({ item: t }) => (
+        renderItem={({ item: tx }) => {
+          const categoryLabel = translateCategory(tx.category?.name);
+          return (
           <View className="flex-row items-center gap-3 py-3 border-b border-gray-100 dark:border-gray-700/50">
             <View
               className="w-10 h-10 rounded-xl items-center justify-center"
-              style={{ backgroundColor: `${t.category?.color ?? "#AEB6BF"}20` }}
+              style={{ backgroundColor: `${tx.category?.color ?? "#AEB6BF"}20` }}
             >
               <Text
                 className="text-sm font-bold"
-                style={{ color: t.category?.color ?? "#AEB6BF" }}
+                style={{ color: tx.category?.color ?? "#AEB6BF" }}
               >
-                {t.category?.name?.charAt(0) ?? "?"}
+                {categoryLabel.charAt(0) || "?"}
               </Text>
             </View>
             <View className="flex-1">
               <Text className="text-sm font-medium text-gray-800 dark:text-gray-100" numberOfLines={1}>
-                {t.description}
+                {tx.description}
               </Text>
               <Text className="text-xs text-gray-400">
-                {t.category?.name} · {formatDate(t.date)}
+                {categoryLabel} · {formatDate(tx.date)}
               </Text>
             </View>
             <Text
               className={`text-sm font-semibold ${
-                t.type === "expense" ? "text-red-500" : "text-emerald-500"
+                tx.type === "expense" ? "text-red-500" : "text-emerald-500"
               }`}
             >
-              {t.type === "expense" ? "- " : "+ "}
-              {formatCurrency(t.amount)}
+              {tx.type === "expense" ? "- " : "+ "}
+              {formatCurrency(tx.amount)}
             </Text>
           </View>
-        )}
+          );
+        }}
       />
 
       {/* FAB */}

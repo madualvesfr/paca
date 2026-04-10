@@ -283,6 +283,19 @@ export const en = {
     previousMonth: "Previous month",
     nextMonth: "Next month",
   },
+
+  // Default category translations — keys match DEFAULT_CATEGORIES names
+  categories: {
+    Alimentacao: "Food",
+    Transporte: "Transport",
+    Moradia: "Housing",
+    Lazer: "Leisure",
+    Saude: "Health",
+    Educacao: "Education",
+    Compras: "Shopping",
+    Entretenimento: "Entertainment",
+    Outros: "Other",
+  },
 } as const;
 
 // Deep-convert literal string types to `string` so other locales can assign freely

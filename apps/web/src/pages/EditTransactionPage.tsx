@@ -18,7 +18,7 @@ export function EditTransactionPage() {
   const { data: profile } = useProfile();
   const updateTransaction = useUpdateTransaction();
   const { toast } = useToast();
-  const { t } = useI18n();
+  const { t, translateCategory } = useI18n();
 
   const [type, setType] = useState<TransactionType>("expense");
   const [amount, setAmount] = useState("");
@@ -186,7 +186,9 @@ export function EditTransactionPage() {
             {t.transactions.category}
           </label>
           <div className="grid grid-cols-3 gap-2">
-            {categories.map((cat) => (
+            {categories.map((cat) => {
+              const catLabel = translateCategory(cat.name);
+              return (
               <button
                 key={cat.id}
                 type="button"
@@ -204,11 +206,12 @@ export function EditTransactionPage() {
                     color: cat.color,
                   }}
                 >
-                  {cat.name.charAt(0)}
+                  {catLabel.charAt(0)}
                 </span>
-                <span className="truncate">{cat.name}</span>
+                <span className="truncate">{catLabel}</span>
               </button>
-            ))}
+              );
+            })}
           </div>
         </div>
 

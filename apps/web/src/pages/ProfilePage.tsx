@@ -34,7 +34,7 @@ export function ProfilePage() {
   const { data: profile } = useProfile();
   const { data: couple } = useCouple();
   const updateProfile = useUpdateProfile();
-  const { t, dateLocale, locale, setLocale } = useI18n();
+  const { t, dateLocale, locale, setLocale, translateCategory } = useI18n();
 
   const handleLanguageChange = async (newLocale: Locale) => {
     setLocale(newLocale);
@@ -86,7 +86,7 @@ export function ProfilePage() {
     const rows = data
       .map((row: any) => {
         const val = (row.amount / 100).toFixed(2);
-        const cat = row.category?.name ?? "";
+        const cat = translateCategory(row.category?.name);
         return `${row.date},"${row.description}",${row.type === "income" ? t.profile.csvIncome : t.profile.csvExpense},${val},"${cat}"`;
       })
       .join("\n");

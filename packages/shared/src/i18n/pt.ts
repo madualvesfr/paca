@@ -274,4 +274,16 @@ export const pt: TranslationKeys = {
     previousMonth: "Mes anterior",
     nextMonth: "Proximo mes",
   },
+
+  categories: {
+    Alimentacao: "Alimentação",
+    Transporte: "Transporte",
+    Moradia: "Moradia",
+    Lazer: "Lazer",
+    Saude: "Saúde",
+    Educacao: "Educação",
+    Compras: "Compras",
+    Entretenimento: "Entretenimento",
+    Outros: "Outros",
+  },
 } as const;

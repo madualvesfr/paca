@@ -20,6 +20,8 @@ interface I18nContextValue {
   formatCurrency: (value: number) => string;
   /** Compact currency for tight spaces: 1.2K, 3.4M, 1.2B. Falls back to full format for values < 10000 cents (R$100). */
   formatCurrencyCompact: (value: number) => string;
+  /** Translates default category names (Alimentacao, Transporte…). Falls back to the original name for custom categories. */
+  translateCategory: (name: string | null | undefined) => string;
   dateLocale: string;
 }
 
@@ -91,6 +93,15 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     [currencyFormatter, compactCurrencyFormatter]
   );
 
+  const translateCategory = useCallback(
+    (name: string | null | undefined) => {
+      if (!name) return "";
+      const map = t.categories as Record<string, string>;
+      return map[name] ?? name;
+    },
+    [t]
+  );
+
   const value: I18nContextValue = {
     locale,
     setLocale,
@@ -100,6 +111,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     formatMonthYear,
     formatCurrency,
     formatCurrencyCompact,
+    translateCategory,
     dateLocale: LOCALE_DATE_MAP[locale],
   };
 

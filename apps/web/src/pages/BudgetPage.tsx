@@ -115,7 +115,7 @@ function NoBudget({ onSetup }: { onSetup: () => void }) {
 }
 
 function BudgetOverview({ budget }: { budget: BudgetWithCategories }) {
-  const { t, formatCurrency, formatCurrencyCompact } = useI18n();
+  const { t, formatCurrency, formatCurrencyCompact, translateCategory } = useI18n();
   const totalSpent = budget.categories.reduce((sum, c) => sum + c.spent, 0);
   const totalRatio = budget.total_amount > 0 ? totalSpent / budget.total_amount : 0;
   const totalPercent = Math.round(totalRatio * 100);
@@ -169,12 +169,12 @@ function BudgetOverview({ budget }: { budget: BudgetWithCategories }) {
                       className="text-sm font-bold"
                       style={{ color: bc.category?.color ?? "#AEB6BF" }}
                     >
-                      {bc.category?.name?.charAt(0) ?? "?"}
+                      {translateCategory(bc.category?.name).charAt(0) || "?"}
                     </span>
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
-                      {bc.category?.name}
+                      {translateCategory(bc.category?.name)}
                     </p>
                     <p
                       className="text-xs text-gray-400 tabular-nums truncate"
@@ -221,7 +221,7 @@ function BudgetSetup({
   existingBudget: BudgetWithCategories | null;
   onDone: () => void;
 }) {
-  const { t } = useI18n();
+  const { t, translateCategory } = useI18n();
   const createBudget = useCreateBudget();
   const [totalAmount, setTotalAmount] = useState(
     existingBudget ? String(existingBudget.total_amount / 100) : ""
@@ -349,18 +349,20 @@ function BudgetSetup({
         {t.budget.limitPerCategory}
       </p>
       <div className="space-y-3 mb-4">
-        {categories.map((cat) => (
+        {categories.map((cat) => {
+          const catLabel = translateCategory(cat.name);
+          return (
           <div key={cat.id} className="flex items-center gap-3">
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
               style={{ backgroundColor: `${cat.color}20` }}
             >
               <span className="text-xs font-bold" style={{ color: cat.color }}>
-                {cat.name.charAt(0)}
+                {catLabel.charAt(0)}
               </span>
             </div>
             <span className="text-sm text-gray-600 dark:text-gray-400 w-32 truncate">
-              {cat.name}
+              {catLabel}
             </span>
             <input
               type="text"
@@ -376,7 +378,8 @@ function BudgetSetup({
               className="flex-1 px-3 py-2 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm text-gray-800 dark:text-gray-100 text-right focus:outline-none focus:ring-2 focus:ring-pink-primary/50 transition-all"
             />
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* New category */}

@@ -163,7 +163,8 @@ export default function Dashboard() {
 }
 
 function TransactionRow({ transaction: tx }: { transaction: TransactionWithCategory }) {
-  const { formatCurrency, formatDate } = useI18n();
+  const { formatCurrency, formatDate, translateCategory } = useI18n();
+  const categoryLabel = translateCategory(tx.category?.name);
   return (
     <View className="flex-row items-center gap-3 px-4 py-3 border-t border-gray-50 dark:border-gray-700/50">
       <View
@@ -174,7 +175,7 @@ function TransactionRow({ transaction: tx }: { transaction: TransactionWithCateg
           className="text-sm font-bold"
           style={{ color: tx.category?.color ?? "#AEB6BF" }}
         >
-          {tx.category?.name?.charAt(0) ?? "?"}
+          {categoryLabel.charAt(0) || "?"}
         </Text>
       </View>
       <View className="flex-1">
@@ -182,7 +183,7 @@ function TransactionRow({ transaction: tx }: { transaction: TransactionWithCateg
           {tx.description}
         </Text>
         <Text className="text-xs text-gray-400">
-          {tx.category?.name} · {formatDate(tx.date)}
+          {categoryLabel} · {formatDate(tx.date)}
         </Text>
       </View>
       <Text

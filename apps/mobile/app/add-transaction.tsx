@@ -19,7 +19,7 @@ export default function AddTransaction() {
   const router = useRouter();
   const { data: profile } = useProfile();
   const { data: couple } = useCouple();
-  const { t } = useI18n();
+  const { t, translateCategory } = useI18n();
   const addTransaction = useAddTransaction();
 
   const [type, setType] = useState<TransactionType>("expense");
@@ -179,7 +179,9 @@ export default function AddTransaction() {
               {t.transactions.category}
             </Text>
             <View className="flex-row flex-wrap gap-2">
-              {categories.map((cat) => (
+              {categories.map((cat) => {
+                const catLabel = translateCategory(cat.name);
+                return (
                 <TouchableOpacity
                   key={cat.id}
                   onPress={() => setCategoryId(cat.id)}
@@ -197,7 +199,7 @@ export default function AddTransaction() {
                       className="text-xs font-bold"
                       style={{ color: cat.color }}
                     >
-                      {cat.name.charAt(0)}
+                      {catLabel.charAt(0)}
                     </Text>
                   </View>
                   <Text
@@ -207,10 +209,11 @@ export default function AddTransaction() {
                         : "text-gray-600 dark:text-gray-400"
                     }`}
                   >
-                    {cat.name}
+                    {catLabel}
                   </Text>
                 </TouchableOpacity>
-              ))}
+                );
+              })}
             </View>
           </View>
 

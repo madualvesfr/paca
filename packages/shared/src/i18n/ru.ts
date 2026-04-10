@@ -274,4 +274,16 @@ export const ru: TranslationKeys = {
     previousMonth: "Предыдущий месяц",
     nextMonth: "Следующий месяц",
   },
+
+  categories: {
+    Alimentacao: "Питание",
+    Transporte: "Транспорт",
+    Moradia: "Жильё",
+    Lazer: "Досуг",
+    Saude: "Здоровье",
+    Educacao: "Образование",
+    Compras: "Покупки",
+    Entretenimento: "Развлечения",
+    Outros: "Прочее",
+  },
 } as const;

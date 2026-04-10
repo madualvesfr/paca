@@ -42,7 +42,7 @@ export default function ScanScreen() {
   const addTransaction = useAddTransaction();
   const scanReceipt = useScanReceipt();
   const scanStatement = useScanStatement();
-  const { t } = useI18n();
+  const { t, translateCategory } = useI18n();
 
   const [mode, setMode] = useState<Mode>("choose");
   const [step, setStep] = useState<ScanStep>("upload");
@@ -297,7 +297,7 @@ export default function ScanScreen() {
                         {item.description}
                       </Text>
                       <Text className="text-xs text-gray-400">
-                        {item.category} · {item.date} ·{" "}
+                        {translateCategory(item.category)} · {item.date} ·{" "}
                         <Text className="text-pink-primary">
                           {Math.round(item.confidence * 100)}%
                         </Text>

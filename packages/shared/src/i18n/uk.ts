@@ -274,4 +274,16 @@ export const uk: TranslationKeys = {
     previousMonth: "Попередній місяць",
     nextMonth: "Наступний місяць",
   },
+
+  categories: {
+    Alimentacao: "Харчування",
+    Transporte: "Транспорт",
+    Moradia: "Житло",
+    Lazer: "Дозвілля",
+    Saude: "Здоров'я",
+    Educacao: "Освіта",
+    Compras: "Покупки",
+    Entretenimento: "Розваги",
+    Outros: "Інше",
+  },
 } as const;

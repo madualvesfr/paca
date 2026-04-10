@@ -174,7 +174,7 @@ function WeeklySummary({ transactions }: { transactions: TransactionWithCategory
 export function DashboardPage() {
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: couple } = useCouple();
-  const { t, greeting, formatCurrency, formatCurrencyCompact } = useI18n();
+  const { t, greeting, formatCurrency, formatCurrencyCompact, translateCategory } = useI18n();
   const month = getCurrentMonth();
   const coupleId = profile?.couple_id ?? "";
 
@@ -197,19 +197,20 @@ export function DashboardPage() {
   // Category breakdown for donut chart
   const categoryData = useMemo(() => {
     const map = new Map<string, { name: string; color: string; value: number }>();
-    for (const t of transactions ?? []) {
-      if (t.type !== "expense") continue;
-      const name = t.category?.name ?? "Outros";
-      const color = t.category?.color ?? "#AEB6BF";
-      const existing = map.get(name);
+    for (const tx of transactions ?? []) {
+      if (tx.type !== "expense") continue;
+      const rawName = tx.category?.name ?? "Outros";
+      const displayName = translateCategory(rawName);
+      const color = tx.category?.color ?? "#AEB6BF";
+      const existing = map.get(rawName);
       if (existing) {
-        existing.value += t.amount;
+        existing.value += tx.amount;
       } else {
-        map.set(name, { name, color, value: t.amount });
+        map.set(rawName, { name: displayName, color, value: tx.amount });
       }
     }
     return Array.from(map.values()).sort((a, b) => b.value - a.value);
-  }, [transactions]);
+  }, [transactions, translateCategory]);
 
   if (profileLoading || txLoading) return <DashboardSkeleton />;
 
@@ -386,42 +387,43 @@ export function DashboardPage() {
   );
 }
 
-function TransactionRow({ transaction: t }: { transaction: TransactionWithCategory }) {
-  const { formatCurrency, formatCurrencyCompact, formatDate } = useI18n();
-  const isExpense = t.type === "expense";
+function TransactionRow({ transaction: tx }: { transaction: TransactionWithCategory }) {
+  const { formatCurrency, formatCurrencyCompact, formatDate, translateCategory } = useI18n();
+  const isExpense = tx.type === "expense";
+  const categoryLabel = translateCategory(tx.category?.name);
 
   return (
     <Link
-      to={`/transactions/${t.id}/edit`}
+      to={`/transactions/${tx.id}/edit`}
       className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors cursor-pointer min-w-0"
     >
       <div
         className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
-        style={{ backgroundColor: `${t.category?.color ?? "#AEB6BF"}15` }}
+        style={{ backgroundColor: `${tx.category?.color ?? "#AEB6BF"}15` }}
       >
         <span
           className="text-sm font-bold"
-          style={{ color: t.category?.color ?? "#AEB6BF" }}
+          style={{ color: tx.category?.color ?? "#AEB6BF" }}
         >
-          {t.category?.name?.charAt(0) ?? "?"}
+          {categoryLabel.charAt(0) || "?"}
         </span>
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
-          {t.description}
+          {tx.description}
         </p>
         <p className="text-xs text-gray-400 truncate">
-          {t.category?.name} · {formatDate(t.date)}
+          {categoryLabel} · {formatDate(tx.date)}
         </p>
       </div>
       <p
         className={`text-sm font-semibold whitespace-nowrap tabular-nums shrink-0 ${
           isExpense ? "text-red-primary" : "text-emerald-500"
         }`}
-        title={formatCurrency(t.amount)}
+        title={formatCurrency(tx.amount)}
       >
         {isExpense ? "- " : "+ "}
-        {formatCurrencyCompact(t.amount)}
+        {formatCurrencyCompact(tx.amount)}
       </p>
     </Link>
   );

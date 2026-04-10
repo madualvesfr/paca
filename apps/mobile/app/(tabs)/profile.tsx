@@ -23,7 +23,7 @@ import { LOCALE_LABELS, type Locale } from "@paca/shared";
 
 export default function Profile() {
   const router = useRouter();
-  const { t, dateLocale, locale, setLocale } = useI18n();
+  const { t, dateLocale, locale, setLocale, translateCategory } = useI18n();
 
   const handleLanguageChange = async (newLocale: Locale) => {
     setLocale(newLocale);
@@ -83,7 +83,7 @@ export default function Profile() {
     const rows = data
       .map((row: any) => {
         const val = (row.amount / 100).toFixed(2);
-        return `${row.date},"${row.description}",${row.type === "income" ? t.profile.csvIncome : t.profile.csvExpense},${val},"${row.category?.name ?? ""}"`;
+        return `${row.date},"${row.description}",${row.type === "income" ? t.profile.csvIncome : t.profile.csvExpense},${val},"${translateCategory(row.category?.name)}"`;
       })
       .join("\n");
 

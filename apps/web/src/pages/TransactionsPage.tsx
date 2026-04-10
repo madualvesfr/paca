@@ -26,7 +26,7 @@ type PaidByFilter = "all" | "me" | "partner";
 export function TransactionsPage() {
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: couple } = useCouple();
-  const { t, formatCurrency, formatCurrencyCompact, formatDate, formatMonthYear } = useI18n();
+  const { t, formatCurrency, formatCurrencyCompact, formatDate, formatMonthYear, translateCategory } = useI18n();
   const coupleId = profile?.couple_id ?? "";
 
   const [month, setMonth] = useState(getCurrentMonth());
@@ -55,18 +55,19 @@ export function TransactionsPage() {
       result = result.filter((t) => t.paid_by !== profile.id);
     }
 
-    // Filter by search
+    // Filter by search (match both raw and translated category names)
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
-        (t) =>
-          t.description.toLowerCase().includes(q) ||
-          t.category?.name?.toLowerCase().includes(q)
+        (tx) =>
+          tx.description.toLowerCase().includes(q) ||
+          tx.category?.name?.toLowerCase().includes(q) ||
+          translateCategory(tx.category?.name).toLowerCase().includes(q)
       );
     }
 
     return result;
-  }, [transactions, searchQuery, paidByFilter, profile]);
+  }, [transactions, searchQuery, paidByFilter, profile, translateCategory]);
 
   // Month navigation
   const prevMonth = () => {
@@ -121,7 +122,8 @@ export function TransactionsPage() {
                 await exportMonthlyReport(
                   transactions!,
                   month,
-                  profile?.display_name ?? "Paca"
+                  profile?.display_name ?? "Paca",
+                  translateCategory
                 );
                 toast(t.transactions.pdfExported);
               }}
@@ -288,7 +290,7 @@ export function TransactionsPage() {
                       className="text-sm font-bold"
                       style={{ color: tx.category?.color ?? "#AEB6BF" }}
                     >
-                      {tx.category?.name?.charAt(0) ?? "?"}
+                      {translateCategory(tx.category?.name).charAt(0) || "?"}
                     </span>
                   </div>
 
@@ -297,7 +299,7 @@ export function TransactionsPage() {
                       {tx.description}
                     </p>
                     <p className="text-xs text-gray-400 truncate">
-                      {tx.category?.name} ·{" "}
+                      {translateCategory(tx.category?.name)} ·{" "}
                       {tx.paid_by_profile?.display_name ?? ""}
                     </p>
                   </div>

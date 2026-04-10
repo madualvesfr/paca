@@ -43,7 +43,7 @@ export function ScanReceiptPage() {
   const addTransaction = useAddTransaction();
   const scanReceipt = useScanReceipt();
   const scanStatement = useScanStatement();
-  const { t } = useI18n();
+  const { t, translateCategory } = useI18n();
 
   const [mode, setMode] = useState<Mode>("choose");
   const [step, setStep] = useState<ScanStep>("upload");
@@ -321,7 +321,7 @@ export function ScanReceiptPage() {
                         className="text-sm font-semibold text-gray-800 dark:text-gray-100 bg-transparent border-none outline-none w-full"
                       />
                       <p className="text-xs text-gray-400">
-                        {item.category} · {item.date} ·{" "}
+                        {translateCategory(item.category)} · {item.date} ·{" "}
                         <span className="text-pink-primary">
                           {Math.round(item.confidence * 100)}% {t.scan.confidence}
                         </span>

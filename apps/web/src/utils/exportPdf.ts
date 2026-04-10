@@ -1,10 +1,13 @@
 import { formatCurrency, formatDate, formatMonthYear } from "@paca/shared";
 import type { TransactionWithCategory } from "@paca/shared";
 
+type CategoryTranslator = (name: string | null | undefined) => string;
+
 export async function exportMonthlyReport(
   transactions: TransactionWithCategory[],
   month: string,
-  coupleName: string
+  coupleName: string,
+  translateCategory: CategoryTranslator = (name) => name ?? "—"
 ) {
   const { jsPDF } = await import("jspdf");
   const { default: autoTable } = await import("jspdf-autotable");
@@ -52,13 +55,13 @@ export async function exportMonthlyReport(
   doc.line(14, 55, 196, 55);
 
   // Table
-  const rows = transactions.map((t) => [
-    formatDate(t.date),
-    t.description,
-    t.category?.name ?? "—",
-    t.type === "income" ? "Receita" : "Despesa",
-    t.paid_by_profile?.display_name ?? "—",
-    (t.type === "expense" ? "- " : "+ ") + formatCurrency(t.amount),
+  const rows = transactions.map((tx) => [
+    formatDate(tx.date),
+    tx.description,
+    translateCategory(tx.category?.name) || "—",
+    tx.type === "income" ? "Receita" : "Despesa",
+    tx.paid_by_profile?.display_name ?? "—",
+    (tx.type === "expense" ? "- " : "+ ") + formatCurrency(tx.amount),
   ]);
 
   autoTable(doc, {
@@ -84,10 +87,10 @@ export async function exportMonthlyReport(
 
   // Category breakdown
   const catMap = new Map<string, number>();
-  for (const t of transactions) {
-    if (t.type !== "expense") continue;
-    const name = t.category?.name ?? "Outros";
-    catMap.set(name, (catMap.get(name) ?? 0) + t.amount);
+  for (const tx of transactions) {
+    if (tx.type !== "expense") continue;
+    const name = translateCategory(tx.category?.name) || "Outros";
+    catMap.set(name, (catMap.get(name) ?? 0) + tx.amount);
   }
 
   if (catMap.size > 0) {
