@@ -82,11 +82,16 @@ export function ScanReceiptPage() {
       try {
         if (mode === "single") {
           const result = await scanReceipt.mutateAsync(base64);
-          setScannedItems([{ ...result, selected: true }]);
+          // Pre-deselect rows with invalid amounts (cancelled / failed scans)
+          const valid = Number.isFinite(result.amount) && Math.abs(result.amount) > 0;
+          setScannedItems([{ ...result, selected: valid }]);
         } else {
           const result = await scanStatement.mutateAsync(base64);
           setScannedItems(
-            result.transactions.map((t) => ({ ...t, selected: true }))
+            result.transactions.map((t) => ({
+              ...t,
+              selected: Number.isFinite(t.amount) && Math.abs(t.amount) > 0,
+            }))
           );
         }
         setStep("review");
@@ -109,17 +114,27 @@ export function ScanReceiptPage() {
     setSaving(true);
     setError("");
 
-    const selected = scannedItems.filter((t) => t.selected);
+    // Filter out any scanned row with an invalid amount — the DB has
+    // CHECK (amount > 0), so zero/NaN would fail the whole batch.
+    const selected = scannedItems.filter(
+      (it) => it.selected && Number.isFinite(it.amount) && Math.abs(it.amount) > 0
+    );
+    if (selected.length === 0) {
+      setError(t.scan.saveError);
+      setSaving(false);
+      return;
+    }
+
     try {
-      for (const t of selected) {
+      for (const it of selected) {
         await addTransaction.mutateAsync({
           couple_id: profile!.couple_id!,
           paid_by: profile!.id,
-          type: t.type,
-          amount: Math.abs(t.amount),
-          description: t.description,
-          category_id: getCategoryId(t.category),
-          date: t.date ?? new Date().toISOString().split("T")[0],
+          type: it.type,
+          amount: Math.abs(it.amount),
+          description: it.description,
+          category_id: getCategoryId(it.category),
+          date: it.date ?? new Date().toISOString().split("T")[0],
           ai_scanned: true,
         });
       }

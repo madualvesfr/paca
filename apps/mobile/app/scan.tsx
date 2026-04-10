@@ -84,11 +84,15 @@ export default function ScanScreen() {
     try {
       if (mode === "single") {
         const data = await scanReceipt.mutateAsync(result.assets[0].base64);
-        setScannedItems([{ ...data, selected: true }]);
+        const valid = Number.isFinite(data.amount) && Math.abs(data.amount) > 0;
+        setScannedItems([{ ...data, selected: valid }]);
       } else {
         const data = await scanStatement.mutateAsync(result.assets[0].base64);
         setScannedItems(
-          data.transactions.map((t) => ({ ...t, selected: true }))
+          data.transactions.map((tx) => ({
+            ...tx,
+            selected: Number.isFinite(tx.amount) && Math.abs(tx.amount) > 0,
+          }))
         );
       }
       setStep("review");
@@ -107,17 +111,25 @@ export default function ScanScreen() {
 
   const handleSave = async () => {
     setSaving(true);
-    const selected = scannedItems.filter((t) => t.selected);
+    // Filter out rows with invalid/zero amounts — DB has CHECK (amount > 0)
+    const selected = scannedItems.filter(
+      (it) => it.selected && Number.isFinite(it.amount) && Math.abs(it.amount) > 0
+    );
+    if (selected.length === 0) {
+      setError(t.scan.saveError);
+      setSaving(false);
+      return;
+    }
     try {
-      for (const t of selected) {
+      for (const it of selected) {
         await addTransaction.mutateAsync({
           couple_id: profile!.couple_id!,
           paid_by: profile!.id,
-          type: t.type,
-          amount: Math.abs(t.amount),
-          description: t.description,
-          category_id: getCategoryId(t.category),
-          date: t.date ?? new Date().toISOString().split("T")[0],
+          type: it.type,
+          amount: Math.abs(it.amount),
+          description: it.description,
+          category_id: getCategoryId(it.category),
+          date: it.date ?? new Date().toISOString().split("T")[0],
           ai_scanned: true,
         });
       }
