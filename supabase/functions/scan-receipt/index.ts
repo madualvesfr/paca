@@ -77,6 +77,23 @@ CRITICAL rules for classifying "type":
   and keep the original merchant name in description, optionally prefixed with
   "Reembolso: ".
 
+CRITICAL: CANCELLED OR DENIED TRANSACTIONS MUST NOT BE EXTRACTED.
+- If the image clearly shows the transaction was CANCELLED, DENIED, REFUSED,
+  FAILED, NOT AUTHORIZED, REJECTED, or otherwise did not complete — return
+  an error response with all fields set to null and confidence 0. The money
+  did not move, so there is nothing to record.
+- Keywords indicating the transaction FAILED (any language, case-insensitive):
+  "cancelado", "cancelada", "cancelled", "canceled",
+  "negado", "negada", "denied", "recusado", "recusada", "declined",
+  "não autorizado", "nao autorizado", "not authorized", "unauthorized",
+  "falhou", "falha", "failed", "failure",
+  "rejeitado", "rejeitada", "rejected",
+  "отменено", "отклонено", "скасовано", "відхилено".
+- Also skip if the image is a screenshot of a pending payment that was
+  never confirmed, or an authorization hold that was released.
+- When in doubt, set confidence low rather than fabricating a completed
+  transaction.
+
 If you cannot identify a field, use null.`,
                 },
               ],

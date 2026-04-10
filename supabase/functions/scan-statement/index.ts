@@ -82,7 +82,24 @@ CRITICAL rules for classifying "type":
 - Use the sign/direction shown in the statement (+ / - / credit / debit / IN / OUT)
   as the primary signal, and keywords as a secondary signal. If both agree it's
   a refund, set type = "income" and keep the original merchant name in description
-  prefixed with "Reembolso: " (or leave the original if that already makes it clear).`,
+  prefixed with "Reembolso: " (or leave the original if that already makes it clear).
+
+CRITICAL: SKIP CANCELLED AND DENIED TRANSACTIONS ENTIRELY.
+- DO NOT include transactions that were cancelled, denied, refused, failed or
+  not authorized. They did not move money and must be OMITTED from the output.
+- Keywords indicating a transaction should be SKIPPED (any language,
+  case-insensitive):
+  "cancelado", "cancelada", "cancelled", "canceled",
+  "negado", "negada", "denied", "recusado", "recusada", "declined",
+  "não autorizado", "nao autorizado", "not authorized", "unauthorized",
+  "falhou", "falha", "failed", "failure",
+  "pendente" (if explicitly shown as never completed), "pending",
+  "rejeitado", "rejeitada", "rejected",
+  "отменено", "отклонено", "скасовано", "відхилено".
+- Also skip any line visually struck through, greyed out, or marked with an
+  "X" / warning icon indicating it did not go through.
+- If you're unsure whether a transaction completed, DO NOT include it —
+  better to miss one than to add a phantom entry.`,
                 },
               ],
             },
