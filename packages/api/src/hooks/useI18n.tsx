@@ -18,6 +18,8 @@ interface I18nContextValue {
   formatDate: (dateStr: string) => string;
   formatMonthYear: (dateStr: string) => string;
   formatCurrency: (value: number) => string;
+  /** Compact currency for tight spaces: 1.2K, 3.4M, 1.2B. Falls back to full format for values < 10000 cents (R$100). */
+  formatCurrencyCompact: (value: number) => string;
   dateLocale: string;
 }
 
@@ -51,14 +53,26 @@ function createCurrencyFormatter(locale: Locale) {
   });
 }
 
+function createCompactCurrencyFormatter(locale: Locale) {
+  const dateLocale = LOCALE_DATE_MAP[locale];
+  return new Intl.NumberFormat(dateLocale, {
+    style: "currency",
+    currency: "BRL",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  });
+}
+
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(getStoredLocale);
   const [currencyFormatter, setCurrencyFormatter] = useState(() => createCurrencyFormatter(getStoredLocale()));
+  const [compactCurrencyFormatter, setCompactCurrencyFormatter] = useState(() => createCompactCurrencyFormatter(getStoredLocale()));
 
   const setLocale = useCallback((newLocale: Locale) => {
     setLocaleState(newLocale);
     storeLocale(newLocale);
     setCurrencyFormatter(createCurrencyFormatter(newLocale));
+    setCompactCurrencyFormatter(createCompactCurrencyFormatter(newLocale));
   }, []);
 
   const t = getTranslations(locale);
@@ -67,6 +81,15 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const formatDate = useCallback((dateStr: string) => formatDateLocalized(dateStr, locale), [locale]);
   const formatMonthYear = useCallback((dateStr: string) => formatMonthYearLocalized(dateStr, locale), [locale]);
   const formatCurrency = useCallback((value: number) => currencyFormatter.format(value / 100), [currencyFormatter]);
+  const formatCurrencyCompact = useCallback(
+    (value: number) => {
+      const reais = value / 100;
+      // Use full format for small values where compact adds no benefit
+      if (Math.abs(reais) < 10000) return currencyFormatter.format(reais);
+      return compactCurrencyFormatter.format(reais);
+    },
+    [currencyFormatter, compactCurrencyFormatter]
+  );
 
   const value: I18nContextValue = {
     locale,
@@ -76,6 +99,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     formatDate,
     formatMonthYear,
     formatCurrency,
+    formatCurrencyCompact,
     dateLocale: LOCALE_DATE_MAP[locale],
   };
 

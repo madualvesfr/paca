@@ -19,7 +19,7 @@ import {
 
 export function BudgetPage() {
   const { data: profile } = useProfile();
-  const { t, formatCurrency, formatMonthYear } = useI18n();
+  const { t, formatMonthYear } = useI18n();
   const coupleId = profile?.couple_id ?? "";
   const [month, setMonth] = useState(getCurrentMonth());
   const [showSetup, setShowSetup] = useState(false);
@@ -46,10 +46,10 @@ export function BudgetPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto page-enter">
+    <div className="max-w-4xl mx-auto page-enter min-w-0">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-display font-bold text-gray-800 dark:text-gray-100">
+      <div className="flex items-center justify-between gap-3 mb-6 sm:mb-8 min-w-0">
+        <h1 className="text-xl sm:text-2xl font-display font-bold text-gray-800 dark:text-gray-100 truncate">
           {t.budget.title}
         </h1>
         {budget && (
@@ -59,20 +59,20 @@ export function BudgetPage() {
             onClick={() => setShowSetup(true)}
           >
             <Settings className="w-4 h-4" />
-            {t.budget.editBudget}
+            <span className="hidden sm:inline">{t.budget.editBudget}</span>
           </Button>
         )}
       </div>
 
       {/* Month nav */}
-      <div className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 mb-6">
-        <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+      <div className="flex items-center justify-between gap-2 bg-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 border border-gray-100 dark:border-gray-700 mb-6">
+        <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0">
           <ChevronLeft className="w-5 h-5 text-gray-500" />
         </button>
-        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 capitalize">
+        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 capitalize truncate">
           {formatMonthYear(month)}
         </span>
-        <button onClick={nextMonth} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+        <button onClick={nextMonth} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0">
           <ChevronRight className="w-5 h-5 text-gray-500" />
         </button>
       </div>
@@ -115,7 +115,7 @@ function NoBudget({ onSetup }: { onSetup: () => void }) {
 }
 
 function BudgetOverview({ budget }: { budget: BudgetWithCategories }) {
-  const { t, formatCurrency } = useI18n();
+  const { t, formatCurrency, formatCurrencyCompact } = useI18n();
   const totalSpent = budget.categories.reduce((sum, c) => sum + c.spent, 0);
   const totalRatio = budget.total_amount > 0 ? totalSpent / budget.total_amount : 0;
   const totalPercent = Math.round(totalRatio * 100);
@@ -127,15 +127,18 @@ function BudgetOverview({ budget }: { budget: BudgetWithCategories }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-w-0">
       {/* Total budget card */}
-      <div className="bg-gradient-to-br from-pink-primary via-pink-light to-pink-200 rounded-3xl p-8 text-white shadow-xl shadow-pink-primary/20">
+      <div className="bg-gradient-to-br from-pink-primary via-pink-light to-pink-200 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-pink-primary/20 overflow-hidden">
         <p className="text-white/70 text-sm mb-1">{t.budget.totalBudget}</p>
-        <p className="text-3xl font-display font-bold mb-1">
-          {formatCurrency(budget.total_amount)}
+        <p
+          className="text-2xl sm:text-3xl font-display font-bold mb-1 tabular-nums break-words"
+          title={formatCurrency(budget.total_amount)}
+        >
+          {formatCurrencyCompact(budget.total_amount)}
         </p>
-        <p className="text-white/70 text-sm mb-4">
-          {formatCurrency(totalSpent)} {t.budget.spent} · {totalPercent}%
+        <p className="text-white/70 text-sm mb-4 truncate" title={`${formatCurrency(totalSpent)} ${t.budget.spent}`}>
+          {formatCurrencyCompact(totalSpent)} {t.budget.spent} · {totalPercent}%
         </p>
         <div className="w-full h-3 bg-white/20 rounded-full overflow-hidden">
           <div
@@ -154,12 +157,12 @@ function BudgetOverview({ budget }: { budget: BudgetWithCategories }) {
           return (
             <div
               key={bc.id}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700"
+              className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 min-w-0"
             >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between gap-3 mb-3 min-w-0">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                     style={{ backgroundColor: `${bc.category?.color ?? "#AEB6BF"}15` }}
                   >
                     <span
@@ -169,17 +172,20 @@ function BudgetOverview({ budget }: { budget: BudgetWithCategories }) {
                       {bc.category?.name?.charAt(0) ?? "?"}
                     </span>
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
                       {bc.category?.name}
                     </p>
-                    <p className="text-xs text-gray-400">
-                      {formatCurrency(bc.spent)} / {formatCurrency(bc.allocated_amount)}
+                    <p
+                      className="text-xs text-gray-400 tabular-nums truncate"
+                      title={`${formatCurrency(bc.spent)} / ${formatCurrency(bc.allocated_amount)}`}
+                    >
+                      {formatCurrencyCompact(bc.spent)} / {formatCurrencyCompact(bc.allocated_amount)}
                     </p>
                   </div>
                 </div>
                 <span
-                  className={`text-sm font-bold ${
+                  className={`text-sm font-bold shrink-0 ${
                     ratio >= BUDGET_THRESHOLDS.exceeded
                       ? "text-red-primary"
                       : ratio >= BUDGET_THRESHOLDS.normal

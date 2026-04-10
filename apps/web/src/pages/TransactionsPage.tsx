@@ -26,7 +26,7 @@ type PaidByFilter = "all" | "me" | "partner";
 export function TransactionsPage() {
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: couple } = useCouple();
-  const { t, formatCurrency, formatDate, formatMonthYear } = useI18n();
+  const { t, formatCurrency, formatCurrencyCompact, formatDate, formatMonthYear } = useI18n();
   const coupleId = profile?.couple_id ?? "";
 
   const [month, setMonth] = useState(getCurrentMonth());
@@ -107,13 +107,13 @@ export function TransactionsPage() {
   if (profileLoading) return <TransactionsSkeleton />;
 
   return (
-    <div className="max-w-6xl mx-auto page-enter">
+    <div className="max-w-6xl mx-auto page-enter min-w-0">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-display font-bold text-gray-800 dark:text-gray-100">
+      <div className="flex items-center justify-between gap-3 mb-6 sm:mb-8 min-w-0">
+        <h1 className="text-xl sm:text-2xl font-display font-bold text-gray-800 dark:text-gray-100 truncate">
           {t.transactions.title}
         </h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {(transactions?.length ?? 0) > 0 && (
             <button
               type="button"
@@ -125,7 +125,7 @@ export function TransactionsPage() {
                 );
                 toast(t.transactions.pdfExported);
               }}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               <FileDown className="w-4 h-4" />
               <span className="hidden sm:inline">{t.transactions.exportPdf}</span>
@@ -133,62 +133,71 @@ export function TransactionsPage() {
           )}
           <Link
             to="/transactions/new"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-primary to-pink-light text-white font-semibold text-sm shadow-lg shadow-pink-primary/25 hover:shadow-xl transition-all duration-200 active:scale-[0.98]"
+            className="flex items-center gap-2 px-3 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-primary to-pink-light text-white font-semibold text-sm shadow-lg shadow-pink-primary/25 hover:shadow-xl transition-all duration-200 active:scale-[0.98]"
           >
             <Plus className="w-4 h-4" />
-            {t.transactions.newTransaction}
+            <span className="hidden sm:inline">{t.transactions.newTransaction}</span>
           </Link>
         </div>
       </div>
 
       {/* Month selector + Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
         {/* Month nav */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 flex items-center justify-between">
+        <div className="col-span-2 lg:col-span-1 bg-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 border border-gray-100 dark:border-gray-700 flex items-center justify-between gap-2">
           <button
             onClick={prevMonth}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0"
           >
             <ChevronLeft className="w-5 h-5 text-gray-500" />
           </button>
-          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 capitalize">
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 capitalize truncate">
             {formatMonthYear(month)}
           </span>
           <button
             onClick={nextMonth}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0"
           >
             <ChevronRight className="w-5 h-5 text-gray-500" />
           </button>
         </div>
 
         {/* Income summary */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 card-hover">
-          <p className="text-xs text-gray-400 mb-1">{t.transactions.incomes}</p>
-          <p className="text-lg font-bold text-emerald-500">
-            {formatCurrency(income)}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 border border-gray-100 dark:border-gray-700 card-hover min-w-0">
+          <p className="text-xs text-gray-400 mb-1 truncate">{t.transactions.incomes}</p>
+          <p
+            className="text-base sm:text-lg font-bold text-emerald-500 tabular-nums truncate"
+            title={formatCurrency(income)}
+          >
+            {formatCurrencyCompact(income)}
           </p>
         </div>
 
         {/* Expenses summary */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 card-hover">
-          <p className="text-xs text-gray-400 mb-1">{t.transactions.expenses}</p>
-          <p className="text-lg font-bold text-red-primary">
-            {formatCurrency(expenses)}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 border border-gray-100 dark:border-gray-700 card-hover min-w-0">
+          <p className="text-xs text-gray-400 mb-1 truncate">{t.transactions.expenses}</p>
+          <p
+            className="text-base sm:text-lg font-bold text-red-primary tabular-nums truncate"
+            title={formatCurrency(expenses)}
+          >
+            {formatCurrencyCompact(expenses)}
           </p>
         </div>
 
         {/* Balance */}
-        <div className={`rounded-2xl p-4 border card-hover ${
+        <div className={`col-span-2 lg:col-span-1 rounded-2xl p-3 sm:p-4 border card-hover min-w-0 ${
           income - expenses >= 0
             ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20"
             : "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20"
         }`}>
-          <p className="text-xs text-gray-400 mb-1">{t.transactions.balance}</p>
-          <p className={`text-lg font-bold ${
-            income - expenses >= 0 ? "text-emerald-500" : "text-red-primary"
-          }`}>
-            {formatCurrency(income - expenses)}
+          <p className="text-xs text-gray-400 mb-1 truncate">{t.transactions.balance}</p>
+          <p
+            className={`text-base sm:text-lg font-bold tabular-nums truncate ${
+              income - expenses >= 0 ? "text-emerald-500" : "text-red-primary"
+            }`}
+            title={formatCurrency(income - expenses)}
+          >
+            {formatCurrencyCompact(income - expenses)}
           </p>
         </div>
       </div>
@@ -259,62 +268,65 @@ export function TransactionsPage() {
         ) : (
           grouped.map(([date, items]) => (
             <div key={date}>
-              <div className="px-6 py-3 bg-gray-50 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700">
+              <div className="px-4 sm:px-6 py-3 bg-gray-50 dark:bg-gray-700/30 border-b border-gray-100 dark:border-gray-700">
                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
                   {formatDate(date)}
                 </span>
               </div>
-              {items.map((t) => (
+              {items.map((tx) => (
                 <div
-                  key={t.id}
-                  className="flex items-center gap-4 px-6 py-4 border-b border-gray-50 dark:border-gray-700/50 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700/20 transition-colors group"
+                  key={tx.id}
+                  className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 border-b border-gray-50 dark:border-gray-700/50 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700/20 transition-colors group min-w-0"
                 >
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                     style={{
-                      backgroundColor: `${t.category?.color ?? "#AEB6BF"}15`,
+                      backgroundColor: `${tx.category?.color ?? "#AEB6BF"}15`,
                     }}
                   >
                     <span
                       className="text-sm font-bold"
-                      style={{ color: t.category?.color ?? "#AEB6BF" }}
+                      style={{ color: tx.category?.color ?? "#AEB6BF" }}
                     >
-                      {t.category?.name?.charAt(0) ?? "?"}
+                      {tx.category?.name?.charAt(0) ?? "?"}
                     </span>
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
-                      {t.description}
+                      {tx.description}
                     </p>
-                    <p className="text-xs text-gray-400">
-                      {t.category?.name} ·{" "}
-                      {t.paid_by_profile?.display_name ?? ""}
+                    <p className="text-xs text-gray-400 truncate">
+                      {tx.category?.name} ·{" "}
+                      {tx.paid_by_profile?.display_name ?? ""}
                     </p>
                   </div>
 
                   <p
-                    className={`text-sm font-semibold whitespace-nowrap ${
-                      t.type === "expense"
+                    className={`text-sm font-semibold whitespace-nowrap tabular-nums shrink-0 ${
+                      tx.type === "expense"
                         ? "text-red-primary"
                         : "text-emerald-500"
                     }`}
+                    title={formatCurrency(tx.amount)}
                   >
-                    {t.type === "expense" ? "- " : "+ "}
-                    {formatCurrency(t.amount)}
+                    {tx.type === "expense" ? "- " : "+ "}
+                    {formatCurrencyCompact(tx.amount)}
                   </p>
 
-                  {/* Actions (visible on hover) */}
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {/* Actions (always visible on mobile, hover on desktop) */}
+                  <div className="flex gap-1 shrink-0 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                     <Link
-                      to={`/transactions/${t.id}/edit`}
+                      to={`/transactions/${tx.id}/edit`}
                       className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 transition-colors"
+                      aria-label={t.transactions.editTransaction}
                     >
                       <Pencil className="w-4 h-4" />
                     </Link>
                     <button
-                      onClick={() => handleDelete(t.id)}
+                      onClick={() => handleDelete(tx.id)}
                       className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-400 hover:text-red-primary transition-colors"
+                      aria-label={t.common.delete}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

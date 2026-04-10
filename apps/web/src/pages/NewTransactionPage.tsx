@@ -88,24 +88,24 @@ export function NewTransactionPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto page-enter">
+    <div className="max-w-2xl mx-auto page-enter min-w-0">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex items-center gap-2 sm:gap-4 mb-6 sm:mb-8 min-w-0">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0"
         >
           <ArrowLeft className="w-5 h-5 text-gray-500" />
         </button>
-        <h1 className="text-2xl font-display font-bold text-gray-800 dark:text-gray-100 flex-1">
+        <h1 className="text-xl sm:text-2xl font-display font-bold text-gray-800 dark:text-gray-100 flex-1 truncate">
           {t.transactions.newTransaction}
         </h1>
         <Link
           to="/scan"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-pink-50 dark:bg-pink-primary/10 text-pink-primary text-sm font-semibold hover:bg-pink-100 dark:hover:bg-pink-primary/20 transition-colors"
+          className="flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl bg-pink-50 dark:bg-pink-primary/10 text-pink-primary text-sm font-semibold hover:bg-pink-100 dark:hover:bg-pink-primary/20 transition-colors shrink-0"
         >
           <ScanLine className="w-4 h-4" />
-          {t.transactions.scan}
+          <span className="hidden sm:inline">{t.transactions.scan}</span>
         </Link>
       </div>
 
@@ -153,7 +153,7 @@ export function NewTransactionPage() {
             placeholder="0,00"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full px-4 py-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-3xl font-display font-bold text-center text-gray-800 dark:text-gray-100 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-primary/50 focus:border-pink-primary transition-all"
+            className="w-full px-3 sm:px-4 py-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-2xl sm:text-3xl font-display font-bold text-center tabular-nums text-gray-800 dark:text-gray-100 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-primary/50 focus:border-pink-primary transition-all"
           />
         </div>
 

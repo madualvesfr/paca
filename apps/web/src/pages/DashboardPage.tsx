@@ -79,24 +79,27 @@ function DonutChart({ data }: { data: { name: string; color: string; value: numb
 
 // Budget mini progress bar
 function BudgetProgress({ spent, total }: { spent: number; total: number }) {
-  const { t, formatCurrency } = useI18n();
+  const { t, formatCurrency, formatCurrencyCompact } = useI18n();
   const percent = total > 0 ? Math.min(Math.round((spent / total) * 100), 100) : 0;
   const isOver = spent > total;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 card-hover">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t.dashboard.monthBudget}</span>
-        <Link to="/budget" className="text-xs text-pink-primary font-semibold hover:underline">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 card-hover min-w-0">
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <span className="text-sm text-gray-500 dark:text-gray-400 font-medium truncate">{t.dashboard.monthBudget}</span>
+        <Link to="/budget" className="text-xs text-pink-primary font-semibold hover:underline shrink-0">
           {t.dashboard.seeDetails}
         </Link>
       </div>
-      <div className="flex items-end justify-between mb-2">
-        <p className="text-lg font-display font-bold text-gray-800 dark:text-gray-100">
-          {formatCurrency(spent)}
-          <span className="text-sm font-normal text-gray-400"> / {formatCurrency(total)}</span>
+      <div className="flex items-end justify-between gap-3 mb-2 min-w-0">
+        <p
+          className="text-base sm:text-lg font-display font-bold text-gray-800 dark:text-gray-100 tabular-nums truncate min-w-0 flex-1"
+          title={`${formatCurrency(spent)} / ${formatCurrency(total)}`}
+        >
+          {formatCurrencyCompact(spent)}
+          <span className="text-xs sm:text-sm font-normal text-gray-400"> / {formatCurrencyCompact(total)}</span>
         </p>
-        <span className={`text-sm font-bold ${isOver ? "text-red-primary" : "text-emerald-500"}`}>
+        <span className={`text-sm font-bold shrink-0 ${isOver ? "text-red-primary" : "text-emerald-500"}`}>
           {percent}%
         </span>
       </div>
@@ -114,7 +117,7 @@ function BudgetProgress({ spent, total }: { spent: number; total: number }) {
 
 // Weekly comparison card
 function WeeklySummary({ transactions }: { transactions: TransactionWithCategory[] }) {
-  const { t, formatCurrency } = useI18n();
+  const { t, formatCurrency, formatCurrencyCompact } = useI18n();
   const { thisWeek, lastWeek } = useMemo(() => {
     const now = new Date();
     const startOfThisWeek = new Date(now);
@@ -141,21 +144,24 @@ function WeeklySummary({ transactions }: { transactions: TransactionWithCategory
   const isUp = diff > 0;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 card-hover">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 card-hover min-w-0">
       <div className="flex items-center gap-2 mb-3">
-        <CalendarDays className="w-4 h-4 text-gray-400" />
-        <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t.dashboard.weeklySummary}</span>
+        <CalendarDays className="w-4 h-4 text-gray-400 shrink-0" />
+        <span className="text-sm text-gray-500 dark:text-gray-400 font-medium truncate">{t.dashboard.weeklySummary}</span>
       </div>
-      <p className="text-lg font-display font-bold text-gray-800 dark:text-gray-100 mb-1">
-        {formatCurrency(thisWeek)}
+      <p
+        className="text-base sm:text-lg md:text-xl font-display font-bold text-gray-800 dark:text-gray-100 mb-1 tabular-nums truncate"
+        title={formatCurrency(thisWeek)}
+      >
+        {formatCurrencyCompact(thisWeek)}
       </p>
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-gray-400 truncate">
         {lastWeek > 0 ? (
           <>
             <span className={isUp ? "text-red-primary font-semibold" : "text-emerald-500 font-semibold"}>
               {isUp ? "+" : ""}{diff}%
             </span>
-            {" "}{t.dashboard.vsLastWeek} ({formatCurrency(lastWeek)})
+            {" "}{t.dashboard.vsLastWeek} ({formatCurrencyCompact(lastWeek)})
           </>
         ) : (
           t.dashboard.firstWeekData
@@ -168,7 +174,7 @@ function WeeklySummary({ transactions }: { transactions: TransactionWithCategory
 export function DashboardPage() {
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: couple } = useCouple();
-  const { t, greeting, formatCurrency, formatDate } = useI18n();
+  const { t, greeting, formatCurrency, formatCurrencyCompact } = useI18n();
   const month = getCurrentMonth();
   const coupleId = profile?.couple_id ?? "";
 
@@ -208,20 +214,20 @@ export function DashboardPage() {
   if (profileLoading || txLoading) return <DashboardSkeleton />;
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto min-w-0">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 animate-stagger">
-        <div>
-          <h1 className="text-2xl font-display font-bold text-gray-800 dark:text-gray-100">
+      <div className="flex items-center justify-between gap-3 mb-6 sm:mb-8 animate-stagger min-w-0">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xl sm:text-2xl font-display font-bold text-gray-800 dark:text-gray-100 truncate">
             {getGreetingEmoji()} {greeting()}, {profile?.display_name ?? ""}!
           </h1>
-          <p className="text-gray-400 mt-1 text-sm">
+          <p className="text-gray-400 mt-1 text-sm truncate">
             {t.dashboard.coupleSummary}
           </p>
         </div>
         <button
           type="button"
-          className="relative p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          className="relative p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shrink-0"
         >
           <Bell className="w-5 h-5 text-gray-500" />
           {/* Notification badge */}
@@ -230,14 +236,17 @@ export function DashboardPage() {
       </div>
 
       {/* Balance Card */}
-      <div className="bg-gradient-to-br from-pink-primary via-pink-light to-pink-200 rounded-3xl p-8 mb-8 text-white shadow-xl shadow-pink-primary/20 animate-fadeIn">
+      <div className="bg-gradient-to-br from-pink-primary via-pink-light to-pink-200 rounded-3xl p-6 sm:p-8 mb-6 sm:mb-8 text-white shadow-xl shadow-pink-primary/20 animate-fadeIn overflow-hidden">
         <p className="text-white/70 text-sm font-medium mb-1">
           {t.dashboard.coupleBalance}
         </p>
-        <p className="text-4xl font-display font-bold mb-4">
-          {formatCurrency(balance)}
+        <p
+          className="text-2xl sm:text-3xl md:text-4xl font-display font-bold mb-4 tabular-nums break-words"
+          title={formatCurrency(balance)}
+        >
+          {formatCurrencyCompact(balance)}
         </p>
-        <div className="flex gap-6">
+        <div className="flex flex-wrap gap-4 sm:gap-6">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
               <span className="text-sm">
@@ -262,36 +271,44 @@ export function DashboardPage() {
       </div>
 
       {/* Income / Expenses / Weekly Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 animate-stagger">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 card-hover">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 sm:mb-8 animate-stagger">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 sm:p-6 border border-gray-100 dark:border-gray-700 card-hover min-w-0">
+          <div className="flex items-center gap-3 mb-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center shrink-0">
               <TrendingUp className="w-5 h-5 text-emerald-500" />
             </div>
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+            <span className="text-sm text-gray-500 dark:text-gray-400 font-medium truncate">
               {t.dashboard.income}
             </span>
           </div>
-          <p className="text-2xl font-display font-bold text-emerald-500">
-            {formatCurrency(income)}
+          <p
+            className="text-xl sm:text-2xl font-display font-bold text-emerald-500 tabular-nums truncate"
+            title={formatCurrency(income)}
+          >
+            {formatCurrencyCompact(income)}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 card-hover">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 sm:p-6 border border-gray-100 dark:border-gray-700 card-hover min-w-0">
+          <div className="flex items-center gap-3 mb-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center shrink-0">
               <TrendingDown className="w-5 h-5 text-red-primary" />
             </div>
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+            <span className="text-sm text-gray-500 dark:text-gray-400 font-medium truncate">
               {t.dashboard.expenses}
             </span>
           </div>
-          <p className="text-2xl font-display font-bold text-red-primary">
-            {formatCurrency(expenses)}
+          <p
+            className="text-xl sm:text-2xl font-display font-bold text-red-primary tabular-nums truncate"
+            title={formatCurrency(expenses)}
+          >
+            {formatCurrencyCompact(expenses)}
           </p>
         </div>
 
-        <WeeklySummary transactions={transactions ?? []} />
+        <div className="sm:col-span-2 lg:col-span-1">
+          <WeeklySummary transactions={transactions ?? []} />
+        </div>
       </div>
 
       {/* Budget Progress + Category Donut */}
@@ -370,13 +387,13 @@ export function DashboardPage() {
 }
 
 function TransactionRow({ transaction: t }: { transaction: TransactionWithCategory }) {
-  const { formatCurrency, formatDate } = useI18n();
+  const { formatCurrency, formatCurrencyCompact, formatDate } = useI18n();
   const isExpense = t.type === "expense";
 
   return (
     <Link
       to={`/transactions/${t.id}/edit`}
-      className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors cursor-pointer"
+      className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors cursor-pointer min-w-0"
     >
       <div
         className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
@@ -393,17 +410,18 @@ function TransactionRow({ transaction: t }: { transaction: TransactionWithCatego
         <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
           {t.description}
         </p>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-400 truncate">
           {t.category?.name} · {formatDate(t.date)}
         </p>
       </div>
       <p
-        className={`text-sm font-semibold whitespace-nowrap ${
+        className={`text-sm font-semibold whitespace-nowrap tabular-nums shrink-0 ${
           isExpense ? "text-red-primary" : "text-emerald-500"
         }`}
+        title={formatCurrency(t.amount)}
       >
         {isExpense ? "- " : "+ "}
-        {formatCurrency(t.amount)}
+        {formatCurrencyCompact(t.amount)}
       </p>
     </Link>
   );

@@ -54,12 +54,13 @@ Deno.serve(async (req) => {
                 { inlineData: { mimeType: "image/png", data: image } },
                 {
                   text: `Analyze this receipt/payment proof/payment notification image.
+Today's date is ${new Date().toISOString().split("T")[0]}.
 Extract the following information and return ONLY a valid JSON:
 {
-  "amount": number in cents (e.g. 1500 for $15.00),
+  "amount": number in cents, ALWAYS POSITIVE (e.g. 1500 for $15.00 - never negative, use "type" to distinguish),
   "description": "store name or description",
   "category": "one of: Alimentacao, Transporte, Moradia, Lazer, Saude, Educacao, Compras, Entretenimento, Outros",
-  "date": "YYYY-MM-DD",
+  "date": "YYYY-MM-DD - if the year is not visible, use the current year (${new Date().getFullYear()}). Never assume a past year.",
   "type": "expense" or "income",
   "confidence": number from 0 to 1 indicating extraction confidence
 }
@@ -68,7 +69,12 @@ If you cannot identify a field, use null.`,
               ],
             },
           ],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 1024 },
+          generationConfig: {
+            temperature: 0.1,
+            maxOutputTokens: 4096,
+            responseMimeType: "application/json",
+            thinkingConfig: { thinkingBudget: 0 },
+          },
         }),
       }
     );
@@ -81,14 +87,28 @@ If you cannot identify a field, use null.`,
     }
 
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) return jsonResponse({ error: "Unexpected AI response" }, 502);
+    if (!text) {
+      console.error("Unexpected AI response:", JSON.stringify(data));
+      return jsonResponse({ error: "Unexpected AI response", details: data }, 502);
+    }
 
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return jsonResponse({ error: "Could not extract data" }, 422);
-
-    return jsonResponse(JSON.parse(jsonMatch[0]));
+    try {
+      return jsonResponse(JSON.parse(text));
+    } catch {
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.error("Could not extract JSON from:", text);
+        return jsonResponse({ error: "Could not extract data", raw: text }, 422);
+      }
+      try {
+        return jsonResponse(JSON.parse(jsonMatch[0]));
+      } catch (e) {
+        console.error("JSON parse failed:", e, "raw:", text);
+        return jsonResponse({ error: "Invalid JSON from AI", raw: text }, 422);
+      }
+    }
   } catch (error) {
     console.error("scan-receipt error:", error);
-    return jsonResponse({ error: "Error processing image" }, 500);
+    return jsonResponse({ error: "Error processing image", details: String(error) }, 500);
   }
 });
