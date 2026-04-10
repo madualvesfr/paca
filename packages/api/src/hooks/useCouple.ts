@@ -8,7 +8,7 @@ export function useCouple() {
     queryKey: ["couple"],
     queryFn: async (): Promise<CoupleWithPartner | null> => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Nao autenticado");
+      if (!user) throw new Error("Não autenticado");
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -44,7 +44,7 @@ export function useCreateCouple() {
   return useMutation({
     mutationFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Nao autenticado");
+      if (!user) throw new Error("Não autenticado");
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -52,8 +52,8 @@ export function useCreateCouple() {
         .eq("user_id", user.id)
         .single();
 
-      if (!profile) throw new Error("Perfil nao encontrado");
-      if (profile.couple_id) throw new Error("Voce ja esta em um casal");
+      if (!profile) throw new Error("Perfil não encontrado");
+      if (profile.couple_id) throw new Error("Você já está em um casal");
 
       // Generate unique invite code
       let inviteCode: string;
@@ -114,10 +114,10 @@ export function useJoinCouple() {
         .eq("invite_code", inviteCode.toUpperCase())
         .single();
 
-      if (findError) throw new Error("Codigo de convite invalido");
+      if (findError) throw new Error("Código de convite inválido");
 
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Nao autenticado");
+      if (!user) throw new Error("Não autenticado");
 
       const { error } = await supabase
         .from("profiles")

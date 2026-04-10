@@ -9,7 +9,7 @@ export const joinCoupleSchema = z.object({
   invite_code: z
     .string()
     .transform((v) => v.toUpperCase().trim())
-    .pipe(z.string().regex(codePattern, "Codigo de convite invalido")),
+    .pipe(z.string().regex(codePattern, "Código de convite inválido")),
 });
 
 export type JoinCoupleInput = z.infer<typeof joinCoupleSchema>;

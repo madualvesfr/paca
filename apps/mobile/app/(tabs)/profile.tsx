@@ -88,7 +88,7 @@ export default function Profile() {
       .join("\n");
 
     try {
-      await Share.share({ message: header + rows, title: "Transacoes Paca Finance" });
+      await Share.share({ message: header + rows, title: "Transações Paca Finance" });
     } catch {}
   };
 

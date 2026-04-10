@@ -58,8 +58,8 @@ Deno.serve(async (req) => {
             couple_id: budget.couple_id,
             target_user_id: member.id,
             type: "budget_alert",
-            title: "Orcamento quase no limite!",
-            body: `Voces ja gastaram ${Math.round(ratio * 100)}% do orcamento do mes.`,
+            title: "Orçamento quase no limite!",
+            body: `Vocês já gastaram ${Math.round(ratio * 100)}% do orçamento do mês.`,
           });
           alertsSent++;
         }
@@ -72,8 +72,8 @@ Deno.serve(async (req) => {
             couple_id: budget.couple_id,
             target_user_id: member.id,
             type: "budget_alert",
-            title: "Orcamento estourado!",
-            body: `O orcamento do mes foi ultrapassado (${Math.round(ratio * 100)}%).`,
+            title: "Orçamento estourado!",
+            body: `O orçamento do mês foi ultrapassado (${Math.round(ratio * 100)}%).`,
           });
           alertsSent++;
         }
@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
       { headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
-    return new Response(JSON.stringify({ error: "Erro ao verificar orcamentos" }), {
+    return new Response(JSON.stringify({ error: "Erro ao verificar orçamentos" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

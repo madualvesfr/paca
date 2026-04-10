@@ -56,12 +56,12 @@ export default function Onboarding() {
         .eq("invite_code", code)
         .single();
 
-      if (findError) throw new Error("Codigo nao encontrado");
+      if (findError) throw new Error("Código não encontrado");
 
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) throw new Error("Nao autenticado");
+      if (!user) throw new Error("Não autenticado");
 
       const { error: updateError } = await supabase
         .from("profiles")

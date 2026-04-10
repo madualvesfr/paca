@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      return new Response(JSON.stringify({ error: "Nao autenticado" }), {
+      return new Response(JSON.stringify({ error: "Não autenticado" }), {
         status: 401,
         headers: { "Content-Type": "application/json" },
       });
@@ -45,14 +45,14 @@ Deno.serve(async (req) => {
       .single();
 
     if (!profile) {
-      return new Response(JSON.stringify({ error: "Perfil nao encontrado" }), {
+      return new Response(JSON.stringify({ error: "Perfil não encontrado" }), {
         status: 404,
         headers: { "Content-Type": "application/json" },
       });
     }
 
     if (profile.couple_id) {
-      return new Response(JSON.stringify({ error: "Voce ja esta em um casal" }), {
+      return new Response(JSON.stringify({ error: "Você já está em um casal" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });

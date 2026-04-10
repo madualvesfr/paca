@@ -30,7 +30,7 @@ export async function exportMonthlyReport(
 
   doc.setFontSize(10);
   doc.setTextColor(150, 150, 150);
-  doc.text(`Relatorio Mensal — ${monthLabel}`, 14, 30);
+  doc.text(`Relatório Mensal — ${monthLabel}`, 14, 30);
   doc.text(coupleName, 14, 36);
 
   // Summary boxes
@@ -66,7 +66,7 @@ export async function exportMonthlyReport(
 
   autoTable(doc, {
     startY: 60,
-    head: [["Data", "Descricao", "Categoria", "Tipo", "Pago por", "Valor"]],
+    head: [["Data", "Descrição", "Categoria", "Tipo", "Pago por", "Valor"]],
     body: rows,
     styles: {
       fontSize: 9,
