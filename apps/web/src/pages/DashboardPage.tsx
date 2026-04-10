@@ -218,8 +218,10 @@ export function DashboardPage() {
 
   return (
     <div className="max-w-6xl mx-auto min-w-0">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-3 mb-6 sm:mb-8 animate-stagger min-w-0">
+      {/* Header — relative + z-40 so the notifications popover renders
+          above the balance card below (its animate-fadeIn creates its own
+          stacking context). */}
+      <div className="relative z-40 flex items-center justify-between gap-3 mb-6 sm:mb-8 animate-stagger min-w-0">
         <div className="min-w-0 flex-1">
           <h1 className="text-xl sm:text-2xl font-display font-bold text-gray-800 dark:text-gray-100 truncate">
             {getGreetingEmoji()} {greeting()}, {profile?.display_name ?? ""}!
