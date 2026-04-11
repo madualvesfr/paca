@@ -130,7 +130,7 @@ export const pt: TranslationKeys = {
     tryOtherSearch: "Tente buscar com outros termos",
     addFirstMonth: "Adicione sua primeira transação do mês",
     noResults: "Nenhum resultado",
-    scan: "Escanear",
+    scan: "Foto / Print",
   },
 
   budget: {
@@ -243,12 +243,12 @@ export const pt: TranslationKeys = {
   },
 
   scan: {
-    title: "Scan Inteligente",
-    subtitle: "Envie uma foto e a IA extrai os dados",
-    receiptTitle: "Recibo / Comprovante",
-    receiptDesc: "Foto de um recibo, notificação de Pix, comprovante de cartão",
-    statementTitle: "Extrato Completo",
-    statementDesc: "Print do extrato do banco — a IA identifica todas as transações",
+    title: "Foto ou print → transação",
+    subtitle: "Envie um recibo, um print do seu app do banco ou uma notificação de Pix. A IA preenche os dados e você só confere.",
+    receiptTitle: "Recibo ou comprovante",
+    receiptDesc: "Foto do recibo, print da notificação de Pix, comprovante de cartão — uma transação por vez",
+    statementTitle: "Extrato do banco inteiro",
+    statementDesc: "Print da tela de extrato do seu banco — a IA identifica todas as transações de uma vez",
     clickToUpload: "Clique para enviar imagem",
     fileTypes: "PNG, JPG ou WEBP",
     multipleHint: "Você pode selecionar várias imagens",
@@ -361,8 +361,8 @@ export const pt: TranslationKeys = {
         body: "Toque no + para adicionar uma transação. Escolha a categoria, quem pagou e (se quiser) uma observação. Aparece na hora pro seu parceiro também.",
       },
       scan: {
-        title: "Escaneie recibos e extratos com IA",
-        body: "Sem tempo para digitar? Envie uma foto de um recibo, notificação de Pix ou extrato do banco inteiro e a IA extrai cada linha para você. Aceita várias imagens de uma vez.",
+        title: "Print do banco vira transação",
+        body: "Sem tempo pra digitar? Tira um print da tela do seu app do banco — ou de uma notificação de Pix, ou de um recibo — e a IA extrai cada linha pra você conferir e salvar. Aceita várias imagens de uma vez.",
       },
       budget: {
         title: "Defina um orçamento mensal",

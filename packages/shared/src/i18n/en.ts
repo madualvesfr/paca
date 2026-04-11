@@ -133,7 +133,7 @@ export const en = {
     tryOtherSearch: "Try different search terms",
     addFirstMonth: "Add your first transaction this month",
     noResults: "No results",
-    scan: "Scan",
+    scan: "Photo / Screenshot",
   },
 
   // Budget
@@ -251,12 +251,12 @@ export const en = {
 
   // Scan
   scan: {
-    title: "Smart Scan",
-    subtitle: "Send a photo and AI extracts the data",
-    receiptTitle: "Receipt / Proof",
-    receiptDesc: "Photo of a receipt, Pix notification, card proof",
-    statementTitle: "Full Statement",
-    statementDesc: "Bank statement screenshot — AI identifies all transactions",
+    title: "Photo or screenshot → transaction",
+    subtitle: "Send a receipt, a screenshot from your banking app or a payment notification. The AI fills in the details and you just double-check.",
+    receiptTitle: "Receipt or proof",
+    receiptDesc: "Photo of a receipt, payment notification, card proof — one transaction at a time",
+    statementTitle: "Full bank statement",
+    statementDesc: "Screenshot of your bank's transactions screen — the AI identifies every line at once",
     clickToUpload: "Click to upload image",
     fileTypes: "PNG, JPG or WEBP",
     multipleHint: "You can select multiple images",
@@ -372,8 +372,8 @@ export const en = {
         body: "Tap the + button to add a transaction. Pick a category, who paid, and (optionally) a note. It instantly shows up for your partner too.",
       },
       scan: {
-        title: "Scan receipts and statements with AI",
-        body: "No time to type? Upload a photo of a receipt, a Pix notification, or a full bank statement and the AI extracts every line for you. Supports multiple images at once.",
+        title: "Banking app screenshot → transaction",
+        body: "No time to type? Just take a screenshot from your banking app — or a receipt, or a payment notification — and the AI pulls every line out so you only have to check and save. Accepts multiple images at once.",
       },
       budget: {
         title: "Set a monthly budget",
