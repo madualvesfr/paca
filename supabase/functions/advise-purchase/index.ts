@@ -441,6 +441,24 @@ ${factsForPrompt}`;
       return jsonResponse({ error: "Could not save advice", details: insertError.message }, 500);
     }
 
+    // Log usage (fire-and-forget)
+    supabase
+      .from("usage_stats")
+      .insert({
+        profile_id: profile.id,
+        couple_id: profile.couple_id,
+        action: "advise",
+        metadata: {
+          verdict,
+          urgency: body.urgency,
+          primary_currency: primaryCurrency,
+          original_currency: rawCurrency,
+        },
+      })
+      .then((res: { error: unknown }) => {
+        if (res.error) console.error("usage log failed:", res.error);
+      });
+
     return jsonResponse(saved);
   } catch (error) {
     console.error("advise-purchase error:", error);

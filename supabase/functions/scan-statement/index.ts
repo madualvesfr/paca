@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("couple_id")
+      .select("id, couple_id")
       .eq("user_id", user.id)
       .single();
 
@@ -218,6 +218,25 @@ CRITICAL: SKIP CANCELLED AND DENIED TRANSACTIONS ENTIRELY.
         };
       })
     );
+
+    // Log usage (fire-and-forget)
+    supabase
+      .from("usage_stats")
+      .insert({
+        profile_id: profile.id,
+        couple_id: profile.couple_id,
+        action: "scan_statement",
+        metadata: {
+          transactions_count: converted.length,
+          primary_currency: primaryCurrency,
+          currencies_detected: Array.from(
+            new Set(converted.map((t) => t.original_currency))
+          ),
+        },
+      })
+      .then((res: { error: unknown }) => {
+        if (res.error) console.error("usage log failed:", res.error);
+      });
 
     return jsonResponse({ transactions: converted, primary_currency: primaryCurrency });
   } catch (error) {

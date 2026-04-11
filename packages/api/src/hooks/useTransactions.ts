@@ -59,6 +59,27 @@ export function useAddTransaction() {
         .single();
 
       if (error) throw error;
+
+      // Log only manual additions — AI scans are already tracked by the
+      // scan edge functions so we don't want to double-count them.
+      if (!transaction.ai_scanned) {
+        supabase
+          .from("usage_stats")
+          .insert({
+            profile_id: transaction.paid_by,
+            couple_id: transaction.couple_id,
+            action: "transaction_added",
+            metadata: {
+              type: transaction.type,
+              currency: transaction.currency ?? null,
+              has_notes: !!transaction.notes,
+            },
+          })
+          .then(({ error: logError }) => {
+            if (logError) console.error("usage log failed:", logError);
+          });
+      }
+
       return data;
     },
     onSuccess: () => {

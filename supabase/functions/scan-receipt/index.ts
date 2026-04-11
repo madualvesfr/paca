@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("couple_id")
+      .select("id, couple_id")
       .eq("user_id", user.id)
       .single();
 
@@ -185,6 +185,24 @@ If you cannot identify a field, use null.`,
       .slice(0, 3) || primaryCurrency;
 
     const { converted, rate } = await convert(rawAmount, rawCurrency, primaryCurrency);
+
+    // Log usage (fire-and-forget — don't block the response on it)
+    supabase
+      .from("usage_stats")
+      .insert({
+        profile_id: profile.id,
+        couple_id: profile.couple_id,
+        action: "scan_receipt",
+        metadata: {
+          currency: rawCurrency,
+          primary_currency: primaryCurrency,
+          confidence: parsed.confidence ?? null,
+          converted: rawCurrency !== primaryCurrency,
+        },
+      })
+      .then((res: { error: unknown }) => {
+        if (res.error) console.error("usage log failed:", res.error);
+      });
 
     return jsonResponse({
       ...parsed,

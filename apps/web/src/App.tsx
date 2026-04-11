@@ -13,6 +13,7 @@ import { ScanReceiptPage } from "@/pages/ScanReceiptPage";
 import { EditTransactionPage } from "@/pages/EditTransactionPage";
 import { BillsPage } from "@/pages/BillsPage";
 import { AdvisorPage } from "@/pages/AdvisorPage";
+import { AdminUsagePage } from "@/pages/AdminUsagePage";
 
 export function App() {
   return (
@@ -62,6 +63,7 @@ export function App() {
         <Route path="profile" element={<ProfilePage />} />
         <Route path="scan" element={<ScanReceiptPage />} />
         <Route path="advisor" element={<AdvisorPage />} />
+        <Route path="admin/usage" element={<AdminUsagePage />} />
       </Route>
 
       {/* Fallback */}

@@ -10,21 +10,26 @@ import {
   Plus,
   Menu,
   X,
+  Activity,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { isAdminEmail } from "@/lib/admin";
 
 export function Sidebar() {
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const { data: profile } = useProfile();
   const { t } = useI18n();
 
-  const navItems = [
+  const baseNav = [
     { to: "/", icon: LayoutDashboard, label: t.nav.dashboard },
     { to: "/transactions", icon: ArrowLeftRight, label: t.nav.transactions },
     { to: "/budget", icon: PieChart, label: t.nav.budget },
     { to: "/bills", icon: ClipboardCheck, label: t.nav.bills },
     { to: "/profile", icon: User, label: t.nav.profile },
   ];
+  const navItems = isAdminEmail(user?.email)
+    ? [...baseNav, { to: "/admin/usage", icon: Activity, label: "Usage" }]
+    : baseNav;
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
