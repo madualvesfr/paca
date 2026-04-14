@@ -189,7 +189,7 @@ export default function Dashboard() {
 
 function TransactionRow({ transaction: tx }: { transaction: TransactionWithCategory }) {
   const { formatCurrency, formatDate, translateCategory } = useI18n();
-  const categoryLabel = translateCategory(tx.category?.name);
+  const categoryLabel = translateCategory(tx.category);
   return (
     <View className="flex-row items-center gap-3 px-4 py-3 border-t border-gray-50 dark:border-gray-700/50">
       <View

@@ -145,9 +145,14 @@ export function ScanReceiptPage() {
   };
 
   const getCategoryId = (categoryName: string): string => {
-    const found = categories.find(
-      (c) => c.name.toLowerCase() === categoryName.toLowerCase()
-    );
+    const target = categoryName.toLowerCase().trim();
+    const found = categories.find((c) => {
+      if (c.name.toLowerCase() === target) return true;
+      const translations = c.name_translations ?? {};
+      return Object.values(translations).some(
+        (v) => typeof v === "string" && v.toLowerCase() === target
+      );
+    });
     return found?.id ?? categories[0]?.id ?? "";
   };
 

@@ -192,7 +192,7 @@ export default function AddTransaction() {
             </Text>
             <View className="flex-row flex-wrap gap-2">
               {categories.map((cat) => {
-                const catLabel = translateCategory(cat.name);
+                const catLabel = translateCategory(cat);
                 return (
                 <TouchableOpacity
                   key={cat.id}

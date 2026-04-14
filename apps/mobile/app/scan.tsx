@@ -134,9 +134,14 @@ export default function ScanScreen() {
   };
 
   const getCategoryId = (name: string) => {
-    const found = categories.find(
-      (c) => c.name.toLowerCase() === name.toLowerCase()
-    );
+    const target = name.toLowerCase().trim();
+    const found = categories.find((c) => {
+      if (c.name.toLowerCase() === target) return true;
+      const translations = c.name_translations ?? {};
+      return Object.values(translations).some(
+        (v) => typeof v === "string" && v.toLowerCase() === target
+      );
+    });
     return found?.id ?? categories[0]?.id ?? "";
   };
 

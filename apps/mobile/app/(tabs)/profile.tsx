@@ -50,6 +50,17 @@ export default function Profile() {
     await updateProfile.mutateAsync({ tutorial_completed: false });
   };
 
+  const handleToggleAutoConvert = async () => {
+    if (!couple) return;
+    try {
+      await updateCouple.mutateAsync({
+        auto_convert_currency: !couple.auto_convert_currency,
+      });
+    } catch {
+      // ignore — UI reflects server state on next fetch
+    }
+  };
+
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState(profile?.display_name ?? "");
 
@@ -300,6 +311,58 @@ export default function Profile() {
               ))}
             </ScrollView>
           </View>
+
+          {/* Auto convert currency */}
+          <View className="px-5 py-4 border-b border-gray-50 dark:border-gray-700/50">
+            <View className="flex-row items-center justify-between gap-3">
+              <View className="flex-row items-start gap-3 flex-1">
+                <Ionicons name="swap-horizontal-outline" size={20} color="#9CA3AF" />
+                <View className="flex-1">
+                  <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t.profile.autoConvertCurrency}
+                  </Text>
+                  <Text className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                    {t.profile.autoConvertCurrencyHint}
+                  </Text>
+                </View>
+              </View>
+              <TouchableOpacity
+                onPress={handleToggleAutoConvert}
+                accessibilityLabel={t.profile.autoConvertCurrency}
+                className={`relative w-12 h-7 rounded-full ${
+                  couple?.auto_convert_currency
+                    ? "bg-pink-primary"
+                    : "bg-gray-200 dark:bg-gray-700"
+                }`}
+              >
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 2,
+                    left: couple?.auto_convert_currency ? 22 : 2,
+                    width: 24,
+                    height: 24,
+                    borderRadius: 12,
+                    backgroundColor: "white",
+                  }}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Categories management */}
+          <TouchableOpacity
+            onPress={() => router.push("/categories")}
+            className="flex-row items-center justify-between px-5 py-4 border-b border-gray-50 dark:border-gray-700/50"
+          >
+            <View className="flex-row items-center gap-3">
+              <Ionicons name="pricetags-outline" size={20} color="#9CA3AF" />
+              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t.categoryManager.title}
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color="#D1D5DB" />
+          </TouchableOpacity>
 
           {/* Replay tutorial */}
           <TouchableOpacity

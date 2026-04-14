@@ -171,10 +171,11 @@ Deno.serve(async (req) => {
 
     const { data: couple } = await supabase
       .from("couples")
-      .select("primary_currency")
+      .select("primary_currency, auto_convert_currency")
       .eq("id", profile.couple_id)
       .single();
     const primaryCurrency: string = (couple?.primary_currency ?? "BRL").toUpperCase();
+    const autoConvert: boolean = couple?.auto_convert_currency ?? true;
 
     const body = (await req.json()) as AdvisorRequest;
     if (!body?.item?.trim() || !body?.amount || body.amount <= 0) {
@@ -183,11 +184,10 @@ Deno.serve(async (req) => {
 
     const rawAmount = Math.abs(Math.round(body.amount));
     const rawCurrency = (body.currency ?? primaryCurrency).toUpperCase().slice(0, 3) || primaryCurrency;
-    const { converted: convertedAmount, rate } = await convert(
-      rawAmount,
-      rawCurrency,
-      primaryCurrency
-    );
+    const { converted: convertedAmount, rate } = autoConvert
+      ? await convert(rawAmount, rawCurrency, primaryCurrency)
+      : { converted: rawAmount, rate: 1 };
+    const storedCurrency = autoConvert ? primaryCurrency : rawCurrency;
 
     // ---- Gather financial context from the last 3 months ----
     const now = new Date();
@@ -420,7 +420,7 @@ ${factsForPrompt}`;
         asked_by: profile.id,
         item: body.item.trim(),
         amount: convertedAmount,
-        currency: primaryCurrency,
+        currency: storedCurrency,
         original_amount: rawAmount,
         original_currency: rawCurrency,
         exchange_rate: rate,

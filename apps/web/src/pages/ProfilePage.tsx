@@ -33,6 +33,7 @@ import {
   Globe,
   Coins,
   GraduationCap,
+  Repeat,
 } from "lucide-react";
 
 export function ProfilePage() {
@@ -56,6 +57,16 @@ export function ProfilePage() {
     } catch {
       // Revert on failure
       if (couple?.primary_currency) setCurrency(couple.primary_currency);
+    }
+  };
+
+  const handleToggleAutoConvert = async () => {
+    if (!couple) return;
+    const next = !couple.auto_convert_currency;
+    try {
+      await updateCouple.mutateAsync({ auto_convert_currency: next });
+    } catch {
+      // swallow — UI will reflect server state on next fetch
     }
   };
 
@@ -285,6 +296,27 @@ export function ProfilePage() {
         />
 
         <SettingRow
+          icon={<Repeat className="w-5 h-5" />}
+          label={t.profile.autoConvertCurrency}
+          hint={t.profile.autoConvertCurrencyHint}
+          action={
+            <button
+              onClick={handleToggleAutoConvert}
+              aria-label={t.profile.autoConvertCurrency}
+              className={`relative w-12 h-7 rounded-full transition-colors ${
+                couple?.auto_convert_currency ? "bg-pink-primary" : "bg-gray-200 dark:bg-gray-700"
+              }`}
+            >
+              <div
+                className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${
+                  couple?.auto_convert_currency ? "translate-x-5" : "translate-x-0.5"
+                }`}
+              />
+            </button>
+          }
+        />
+
+        <SettingRow
           icon={<GraduationCap className="w-5 h-5" />}
           label={t.tutorial.replay}
           action={
@@ -294,6 +326,21 @@ export function ProfilePage() {
               className="text-sm text-pink-primary font-medium hover:underline"
             >
               {t.common.ok}
+            </button>
+          }
+        />
+
+        <SettingRow
+          icon={<Shield className="w-5 h-5" />}
+          label={t.categoryManager.title}
+          action={
+            <button
+              type="button"
+              onClick={() => navigate("/categories")}
+              aria-label={t.categoryManager.title}
+              className="text-sm text-pink-primary font-medium hover:underline"
+            >
+              <ChevronRight className="w-4 h-4 text-gray-400" />
             </button>
           }
         />
@@ -364,21 +411,30 @@ function Section({
 function SettingRow({
   icon,
   label,
+  hint,
   action,
 }: {
   icon: React.ReactNode;
   label: string;
+  hint?: string;
   action: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between px-5 py-4">
-      <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400">
-        {icon}
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          {label}
-        </span>
+    <div className="flex items-center justify-between gap-4 px-5 py-4">
+      <div className="flex items-start gap-3 text-gray-500 dark:text-gray-400 min-w-0">
+        <div className="shrink-0 mt-0.5">{icon}</div>
+        <div className="min-w-0">
+          <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            {label}
+          </div>
+          {hint && (
+            <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+              {hint}
+            </div>
+          )}
+        </div>
       </div>
-      {action}
+      <div className="shrink-0">{action}</div>
     </div>
   );
 }

@@ -5,6 +5,7 @@ export interface Category {
   icon: string;
   color: string;
   is_default: boolean;
+  name_translations: Record<string, string> | null;
   created_at: string;
   updated_at: string;
 }
@@ -15,4 +16,5 @@ export interface CategoryInsert {
   icon: string;
   color: string;
   is_default?: boolean;
+  name_translations?: Record<string, string> | null;
 }

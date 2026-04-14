@@ -182,7 +182,7 @@ export function NewTransactionPage() {
             </label>
             <div className="grid grid-cols-3 gap-2">
               {categories.map((cat) => {
-                const catLabel = translateCategory(cat.name);
+                const catLabel = translateCategory(cat);
                 return (
                 <button
                   key={cat.id}

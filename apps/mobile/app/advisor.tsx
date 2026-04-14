@@ -197,7 +197,7 @@ export default function AdvisorScreen() {
                     </Text>
                   </TouchableOpacity>
                   {categories.map((cat) => {
-                    const label = translateCategory(cat.name);
+                    const label = translateCategory(cat);
                     const selected = categoryId === cat.id;
                     return (
                       <TouchableOpacity

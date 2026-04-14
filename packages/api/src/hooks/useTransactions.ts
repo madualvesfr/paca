@@ -25,7 +25,7 @@ export function useTransactions(options: UseTransactionsOptions) {
         .from("transactions")
         .select(`
           *,
-          category:categories(name, icon, color),
+          category:categories(name, icon, color, name_translations),
           paid_by_profile:profiles!paid_by(display_name, avatar_url)
         `)
         .eq("couple_id", coupleId)

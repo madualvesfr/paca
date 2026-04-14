@@ -137,12 +137,12 @@ function BudgetOverviewMobile({ budget }: { budget: BudgetWithCategories }) {
                       className="text-sm font-bold"
                       style={{ color: bc.category?.color ?? "#AEB6BF" }}
                     >
-                      {translateCategory(bc.category?.name).charAt(0) || "?"}
+                      {translateCategory(bc.category).charAt(0) || "?"}
                     </Text>
                   </View>
                   <View>
                     <Text className="text-sm font-semibold text-gray-800 dark:text-gray-100">
-                      {translateCategory(bc.category?.name)}
+                      {translateCategory(bc.category)}
                     </Text>
                     <Text className="text-xs text-gray-400">
                       {formatCurrency(bc.spent)} / {formatCurrency(bc.allocated_amount)}
@@ -280,7 +280,7 @@ function BudgetSetupMobile({
       </Text>
 
       {categories.map((cat) => {
-        const catLabel = translateCategory(cat.name);
+        const catLabel = translateCategory(cat);
         return (
         <View key={cat.id} className="flex-row items-center gap-3 mb-3">
           <View

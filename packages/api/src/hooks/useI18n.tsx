@@ -24,8 +24,14 @@ interface I18nContextValue {
   formatCurrency: (value: number, overrideCurrency?: string | null) => string;
   /** Compact currency for tight spaces: 1.2K, 3.4M, 1.2B. Falls back to full format for small values. */
   formatCurrencyCompact: (value: number, overrideCurrency?: string | null) => string;
-  /** Translates default category names (Alimentacao, Transporte…). Falls back to the original name for custom categories. */
-  translateCategory: (name: string | null | undefined) => string;
+  /** Translates a category. Pass a Category object (with name_translations) for custom-category support, or a raw name for the legacy defaults path. */
+  translateCategory: (
+    nameOrCategory:
+      | string
+      | { name?: string | null; name_translations?: Record<string, string> | null }
+      | null
+      | undefined
+  ) => string;
   dateLocale: string;
 }
 
@@ -151,12 +157,26 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   );
 
   const translateCategory = useCallback(
-    (name: string | null | undefined) => {
-      if (!name) return "";
+    (
+      nameOrCategory:
+        | string
+        | {
+            name?: string | null;
+            name_translations?: Record<string, string> | null;
+          }
+        | null
+        | undefined
+    ) => {
+      if (!nameOrCategory) return "";
+      const isObject = typeof nameOrCategory === "object";
+      const rawName = isObject ? nameOrCategory.name ?? "" : nameOrCategory;
+      const translations = isObject ? nameOrCategory.name_translations : null;
+      if (translations && translations[locale]) return translations[locale];
+      if (!rawName) return "";
       const map = t.categories as Record<string, string>;
-      return map[name] ?? name;
+      return map[rawName] ?? rawName;
     },
-    [t]
+    [t, locale]
   );
 
   const value: I18nContextValue = {

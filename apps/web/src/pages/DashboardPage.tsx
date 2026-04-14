@@ -202,7 +202,7 @@ export function DashboardPage() {
     for (const tx of transactions ?? []) {
       if (tx.type !== "expense") continue;
       const rawName = tx.category?.name ?? "Outros";
-      const displayName = translateCategory(rawName);
+      const displayName = tx.category ? translateCategory(tx.category) : translateCategory(rawName);
       const color = tx.category?.color ?? "#AEB6BF";
       const existing = map.get(rawName);
       if (existing) {
@@ -411,7 +411,7 @@ export function DashboardPage() {
 function TransactionRow({ transaction: tx }: { transaction: TransactionWithCategory }) {
   const { formatCurrency, formatCurrencyCompact, formatDate, translateCategory } = useI18n();
   const isExpense = tx.type === "expense";
-  const categoryLabel = translateCategory(tx.category?.name);
+  const categoryLabel = translateCategory(tx.category);
 
   return (
     <Link

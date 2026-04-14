@@ -44,7 +44,7 @@ export default function Transactions() {
       (tx) =>
         tx.description.toLowerCase().includes(q) ||
         tx.category?.name?.toLowerCase().includes(q) ||
-        translateCategory(tx.category?.name).toLowerCase().includes(q)
+        translateCategory(tx.category).toLowerCase().includes(q)
     );
   }, [transactions, searchQuery, translateCategory]);
 
@@ -162,7 +162,7 @@ export default function Transactions() {
           )
         }
         renderItem={({ item: tx }) => {
-          const categoryLabel = translateCategory(tx.category?.name);
+          const categoryLabel = translateCategory(tx.category);
           return (
           <View className="flex-row items-center gap-3 py-3 border-b border-gray-100 dark:border-gray-700/50">
             <View

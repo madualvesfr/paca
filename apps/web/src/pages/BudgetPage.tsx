@@ -169,12 +169,12 @@ function BudgetOverview({ budget }: { budget: BudgetWithCategories }) {
                       className="text-sm font-bold"
                       style={{ color: bc.category?.color ?? "#AEB6BF" }}
                     >
-                      {translateCategory(bc.category?.name).charAt(0) || "?"}
+                      {translateCategory(bc.category).charAt(0) || "?"}
                     </span>
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
-                      {translateCategory(bc.category?.name)}
+                      {translateCategory(bc.category)}
                     </p>
                     <p
                       className="text-xs text-gray-400 tabular-nums truncate"
@@ -350,7 +350,7 @@ function BudgetSetup({
       </p>
       <div className="space-y-3 mb-4">
         {categories.map((cat) => {
-          const catLabel = translateCategory(cat.name);
+          const catLabel = translateCategory(cat);
           return (
           <div key={cat.id} className="flex items-center gap-3">
             <div

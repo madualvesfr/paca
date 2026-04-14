@@ -14,6 +14,7 @@ import { EditTransactionPage } from "@/pages/EditTransactionPage";
 import { BillsPage } from "@/pages/BillsPage";
 import { AdvisorPage } from "@/pages/AdvisorPage";
 import { AdminUsagePage } from "@/pages/AdminUsagePage";
+import { CategoriesPage } from "@/pages/CategoriesPage";
 
 export function App() {
   return (
@@ -61,6 +62,7 @@ export function App() {
         <Route path="budget" element={<BudgetPage />} />
         <Route path="bills" element={<BillsPage />} />
         <Route path="profile" element={<ProfilePage />} />
+        <Route path="categories" element={<CategoriesPage />} />
         <Route path="scan" element={<ScanReceiptPage />} />
         <Route path="advisor" element={<AdvisorPage />} />
         <Route path="admin/usage" element={<AdminUsagePage />} />

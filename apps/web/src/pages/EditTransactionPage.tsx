@@ -29,6 +29,9 @@ export function EditTransactionPage() {
   const [error, setError] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currency, setCurrencyCode] = useState<string>("");
+  const [originalAmount, setOriginalAmount] = useState<number | null>(null);
+  const [originalCurrency, setOriginalCurrency] = useState<string | null>(null);
 
   // Fetch categories
   useEffect(() => {
@@ -65,6 +68,9 @@ export function EditTransactionPage() {
       setCategoryId(data.category_id);
       setDate(data.date);
       setNotes(data.notes ?? "");
+      setCurrencyCode(data.currency ?? "");
+      setOriginalAmount(data.original_amount ?? null);
+      setOriginalCurrency(data.original_currency ?? null);
       setLoading(false);
     };
     fetchTransaction();
@@ -78,6 +84,17 @@ export function EditTransactionPage() {
 
     const amountCents = Math.round(parseFloat(amount.replace(",", ".")) * 100);
 
+    // If transaction was auto-converted and user changed the converted amount,
+    // recompute exchange_rate to keep original_amount * rate ≈ amount.
+    const wasConverted =
+      originalAmount != null &&
+      originalCurrency != null &&
+      originalCurrency !== currency;
+    const recomputedRate =
+      wasConverted && originalAmount && originalAmount > 0
+        ? amountCents / originalAmount
+        : undefined;
+
     const result = transactionUpdateSchema.safeParse({
       type,
       amount: amountCents,
@@ -85,6 +102,7 @@ export function EditTransactionPage() {
       category_id: categoryId,
       date,
       notes: notes || null,
+      ...(recomputedRate !== undefined ? { exchange_rate: recomputedRate } : {}),
     });
 
     if (!result.success) {
@@ -161,6 +179,7 @@ export function EditTransactionPage() {
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
             {t.transactions.amountCurrency}
+            {currency ? ` (${currency})` : ""}
           </label>
           <input
             type="text"
@@ -170,6 +189,16 @@ export function EditTransactionPage() {
             onChange={(e) => setAmount(e.target.value)}
             className="w-full px-3 sm:px-4 py-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-2xl sm:text-3xl font-display font-bold text-center tabular-nums text-gray-800 dark:text-gray-100 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-primary/50 focus:border-pink-primary transition-all"
           />
+          {originalAmount != null &&
+            originalCurrency &&
+            originalCurrency !== currency && (
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                {t.transactions.originalAmountLabel}:{" "}
+                <span className="font-semibold tabular-nums">
+                  {(originalAmount / 100).toFixed(2).replace(".", ",")} {originalCurrency}
+                </span>
+              </p>
+            )}
         </div>
 
         {/* Description */}
@@ -187,7 +216,7 @@ export function EditTransactionPage() {
           </label>
           <div className="grid grid-cols-3 gap-2">
             {categories.map((cat) => {
-              const catLabel = translateCategory(cat.name);
+              const catLabel = translateCategory(cat);
               return (
               <button
                 key={cat.id}

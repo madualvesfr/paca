@@ -9,6 +9,10 @@ export const transactionInsertSchema = z.object({
   notes: z.string().max(500).nullable().optional(),
   is_recurring: z.boolean().optional().default(false),
   recurrence_rule: z.string().nullable().optional(),
+  currency: z.string().length(3).optional(),
+  original_amount: z.number().positive().nullable().optional(),
+  original_currency: z.string().length(3).nullable().optional(),
+  exchange_rate: z.number().positive().nullable().optional(),
 });
 
 export const transactionUpdateSchema = transactionInsertSchema.partial();

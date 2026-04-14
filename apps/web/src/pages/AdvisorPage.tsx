@@ -187,7 +187,7 @@ export function AdvisorPage() {
               <option value="">{t.advisor.categoryNone}</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
-                  {translateCategory(cat.name)}
+                  {translateCategory(cat)}
                 </option>
               ))}
             </select>

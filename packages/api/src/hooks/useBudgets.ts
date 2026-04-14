@@ -69,13 +69,22 @@ export function useCreateBudget() {
       budget: BudgetInsert;
       categories: Omit<BudgetCategoryInsert, "budget_id">[];
     }) => {
+      // Upsert budget on (couple_id, month) so saving again edits instead of 409-ing.
       const { data: newBudget, error } = await supabase
         .from("budgets")
-        .insert(budget)
+        .upsert(budget, { onConflict: "couple_id,month" })
         .select()
         .single();
 
       if (error) throw error;
+
+      // Reset category allocations: delete existing then reinsert the submitted ones.
+      const { error: delError } = await supabase
+        .from("budget_categories")
+        .delete()
+        .eq("budget_id", newBudget.id);
+
+      if (delError) throw delError;
 
       if (categories.length > 0) {
         const { error: catError } = await supabase

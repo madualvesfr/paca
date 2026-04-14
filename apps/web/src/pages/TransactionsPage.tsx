@@ -63,7 +63,7 @@ export function TransactionsPage() {
         (tx) =>
           tx.description.toLowerCase().includes(q) ||
           tx.category?.name?.toLowerCase().includes(q) ||
-          translateCategory(tx.category?.name).toLowerCase().includes(q)
+          translateCategory(tx.category).toLowerCase().includes(q)
       );
     }
 
@@ -291,7 +291,7 @@ export function TransactionsPage() {
                       className="text-sm font-bold"
                       style={{ color: tx.category?.color ?? "#AEB6BF" }}
                     >
-                      {translateCategory(tx.category?.name).charAt(0) || "?"}
+                      {translateCategory(tx.category).charAt(0) || "?"}
                     </span>
                   </div>
 
@@ -311,7 +311,7 @@ export function TransactionsPage() {
                       )}
                     </div>
                     <p className="text-xs text-gray-400 truncate">
-                      {translateCategory(tx.category?.name)} ·{" "}
+                      {translateCategory(tx.category)} ·{" "}
                       {tx.paid_by_profile?.display_name ?? ""}
                     </p>
                   </div>

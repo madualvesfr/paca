@@ -68,10 +68,28 @@ Deno.serve(async (req) => {
 
     const { data: couple } = await supabase
       .from("couples")
-      .select("primary_currency")
+      .select("primary_currency, auto_convert_currency")
       .eq("id", profile.couple_id)
       .single();
     const primaryCurrency: string = (couple?.primary_currency ?? "BRL").toUpperCase();
+    const autoConvert: boolean = couple?.auto_convert_currency ?? true;
+
+    // Fetch the categories the AI is allowed to pick from (defaults + this couple's custom).
+    const { data: categoryRows } = await supabase
+      .from("categories")
+      .select("name, name_translations, is_default")
+      .or(`is_default.eq.true,couple_id.eq.${profile.couple_id}`);
+    const categoryNames = Array.from(
+      new Set(
+        (categoryRows ?? []).flatMap((c: { name: string; name_translations: Record<string, string> | null }) => [
+          c.name,
+          ...Object.values(c.name_translations ?? {}),
+        ])
+      )
+    ).filter(Boolean);
+    const categoryList = categoryNames.length > 0
+      ? categoryNames.join(", ")
+      : "Alimentacao, Transporte, Moradia, Lazer, Saude, Educacao, Compras, Entretenimento, Outros";
 
     const { image } = await req.json();
     if (!image) return jsonResponse({ error: "Image required" }, 400);
@@ -94,7 +112,7 @@ Extract the following information and return ONLY a valid JSON:
   "amount": number in cents, ALWAYS POSITIVE (e.g. 1500 for 15.00 - never negative, use "type" to distinguish),
   "currency": "ISO 4217 code of the currency (e.g. BRL, USD, EUR, GBP, UAH, RUB, ARS, MXN, JPY). Detect it from symbols (R$ = BRL, $ = USD unless another country context is clear, € = EUR, £ = GBP, ₴ = UAH, ₽ = RUB, ¥ = JPY or CNY depending on context) or from text. Default to BRL if truly unknown.",
   "description": "store name or description",
-  "category": "one of: Alimentacao, Transporte, Moradia, Lazer, Saude, Educacao, Compras, Entretenimento, Outros",
+  "category": "one of: ${categoryList}. Pick the closest match in any language; the client will normalize the name.",
   "date": "YYYY-MM-DD - if the year is not visible, use the current year (${new Date().getFullYear()}). Never assume a past year.",
   "type": "expense" or "income",
   "confidence": number from 0 to 1 indicating extraction confidence
@@ -184,7 +202,10 @@ If you cannot identify a field, use null.`,
       .toUpperCase()
       .slice(0, 3) || primaryCurrency;
 
-    const { converted, rate } = await convert(rawAmount, rawCurrency, primaryCurrency);
+    const { converted, rate } = autoConvert
+      ? await convert(rawAmount, rawCurrency, primaryCurrency)
+      : { converted: rawAmount, rate: 1 };
+    const storedCurrency = autoConvert ? primaryCurrency : rawCurrency;
 
     // Log usage (fire-and-forget — don't block the response on it)
     supabase
@@ -207,7 +228,7 @@ If you cannot identify a field, use null.`,
     return jsonResponse({
       ...parsed,
       amount: converted,
-      currency: primaryCurrency,
+      currency: storedCurrency,
       original_amount: rawAmount,
       original_currency: rawCurrency,
       exchange_rate: rate,

@@ -3,6 +3,7 @@ export interface Couple {
   invite_code: string;
   partner_since: string;
   primary_currency: string;
+  auto_convert_currency: boolean;
   created_by: string;
   created_at: string;
   updated_at: string;

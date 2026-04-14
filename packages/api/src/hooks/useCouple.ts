@@ -138,7 +138,7 @@ export function useUpdateCouple() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (updates: { primary_currency?: string }) => {
+    mutationFn: async (updates: { primary_currency?: string; auto_convert_currency?: boolean }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Não autenticado");
 
