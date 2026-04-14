@@ -11,10 +11,13 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Trash2,
   Pencil,
   FileDown,
   StickyNote,
+  Tag,
+  X,
 } from "lucide-react";
 import { TransactionsSkeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/Toast";
@@ -57,6 +60,7 @@ export function TransactionsPage() {
   const [paidByFilter, setPaidByFilter] = useState<PaidByFilter>(saved.paidByFilter ?? "all");
   const [searchQuery, setSearchQuery] = useState(saved.searchQuery ?? "");
   const [categoryId, setCategoryId] = useState<string>(saved.categoryId ?? "");
+  const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -272,19 +276,105 @@ export function TransactionsPage() {
         </div>
 
         {/* Category filter */}
-        <select
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          className="px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-primary/50 focus:border-pink-primary"
-          aria-label={t.transactions.category}
-        >
-          <option value="">{t.transactions.allCategories}</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {translateCategory(cat)}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setCategoryMenuOpen((v) => !v)}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium transition-all ${
+              categoryId
+                ? "bg-pink-50 dark:bg-pink-primary/10 border-pink-primary/30 text-pink-primary"
+                : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            }`}
+            aria-haspopup="listbox"
+            aria-expanded={categoryMenuOpen}
+          >
+            <Tag className="w-4 h-4" />
+            <span className="truncate max-w-[140px]">
+              {categoryId
+                ? translateCategory(categories.find((c) => c.id === categoryId))
+                : t.transactions.allCategories}
+            </span>
+            {categoryId ? (
+              <button
+                type="button"
+                aria-label={t.common.cancel ?? "Clear"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCategoryId("");
+                  setCategoryMenuOpen(false);
+                }}
+                className="p-0.5 -mr-1 rounded-full hover:bg-pink-primary/20"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <ChevronDown className="w-4 h-4 text-gray-400" />
+            )}
+          </button>
+
+          {categoryMenuOpen && (
+            <>
+              <button
+                type="button"
+                aria-label="Close"
+                onClick={() => setCategoryMenuOpen(false)}
+                className="fixed inset-0 z-10 bg-transparent cursor-default"
+              />
+              <div
+                role="listbox"
+                className="absolute z-20 mt-2 right-0 w-64 max-h-72 overflow-auto bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-xl py-1"
+              >
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={!categoryId}
+                  onClick={() => {
+                    setCategoryId("");
+                    setCategoryMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors ${
+                    !categoryId
+                      ? "bg-pink-50 dark:bg-pink-primary/10 text-pink-primary font-semibold"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  {t.transactions.allCategories}
+                </button>
+                {categories.map((cat) => {
+                  const selected = categoryId === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      role="option"
+                      aria-selected={selected}
+                      onClick={() => {
+                        setCategoryId(cat.id);
+                        setCategoryMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors ${
+                        selected
+                          ? "bg-pink-50 dark:bg-pink-primary/10 text-pink-primary font-semibold"
+                          : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      <span
+                        className="w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-bold shrink-0"
+                        style={{
+                          backgroundColor: `${cat.color}20`,
+                          color: cat.color,
+                        }}
+                      >
+                        {translateCategory(cat).charAt(0).toUpperCase() || "?"}
+                      </span>
+                      <span className="truncate">{translateCategory(cat)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
 
         {/* Paid by filter */}
         {couple?.partner && (
