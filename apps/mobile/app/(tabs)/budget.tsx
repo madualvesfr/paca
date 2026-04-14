@@ -119,8 +119,18 @@ function BudgetOverviewMobile({ budget }: { budget: BudgetWithCategories }) {
       {/* Categories */}
       <View className="px-6 gap-3 pb-6">
         {budget.categories.map((bc) => {
-          const ratio = bc.allocated_amount > 0 ? bc.spent / bc.allocated_amount : 0;
-          const percent = Math.round(ratio * 100);
+          const hasAllocation = bc.allocated_amount > 0;
+          const hasSpending = bc.spent > 0;
+          const ratio = hasAllocation
+            ? bc.spent / bc.allocated_amount
+            : hasSpending
+              ? 1.5
+              : 0;
+          const percent = hasAllocation
+            ? Math.round(ratio * 100)
+            : hasSpending
+              ? null
+              : 0;
 
           return (
             <View
@@ -160,14 +170,14 @@ function BudgetOverviewMobile({ budget }: { budget: BudgetWithCategories }) {
                           : "#6B7280",
                   }}
                 >
-                  {percent}%
+                  {percent != null ? `${percent}%` : "—"}
                 </Text>
               </View>
               <View className="h-2.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                 <View
                   className="h-full rounded-full"
                   style={{
-                    width: `${Math.min(percent, 100)}%`,
+                    width: `${Math.min(percent ?? 100, 100)}%`,
                     backgroundColor: getBarColor(ratio),
                   }}
                 />

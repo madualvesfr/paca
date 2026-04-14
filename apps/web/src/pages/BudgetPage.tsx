@@ -151,8 +151,10 @@ function BudgetOverview({ budget }: { budget: BudgetWithCategories }) {
       {/* Categories grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {budget.categories.map((bc) => {
-          const ratio = bc.allocated_amount > 0 ? bc.spent / bc.allocated_amount : 0;
-          const percent = Math.round(ratio * 100);
+          const hasAllocation = bc.allocated_amount > 0;
+          const hasSpending = bc.spent > 0;
+          const ratio = hasAllocation ? bc.spent / bc.allocated_amount : hasSpending ? 1.5 : 0;
+          const percent = hasAllocation ? Math.round(ratio * 100) : hasSpending ? null : 0;
 
           return (
             <div
@@ -193,13 +195,13 @@ function BudgetOverview({ budget }: { budget: BudgetWithCategories }) {
                         : "text-gray-600 dark:text-gray-300"
                   }`}
                 >
-                  {percent}%
+                  {percent != null ? `${percent}%` : "—"}
                 </span>
               </div>
               <div className="w-full h-2.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${getBarColor(ratio)}`}
-                  style={{ width: `${Math.min(percent, 100)}%` }}
+                  style={{ width: `${Math.min(percent ?? 100, 100)}%` }}
                 />
               </div>
             </div>

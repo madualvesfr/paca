@@ -19,7 +19,7 @@ export function useBudget(options: UseBudgetOptions) {
           *,
           categories:budget_categories(
             *,
-            category:categories(name, icon, color)
+            category:categories(id, name, icon, color, name_translations)
           )
         `)
         .eq("couple_id", coupleId)
@@ -46,12 +46,40 @@ export function useBudget(options: UseBudgetOptions) {
         {} as Record<string, number>
       );
 
+      const allocatedIds = new Set<string>(
+        (budget.categories ?? []).map((bc: any) => bc.category_id)
+      );
+      const missingIds = Object.keys(spentByCategory).filter(
+        (id) => !allocatedIds.has(id)
+      );
+
+      // Fetch category metadata for spent-but-unallocated categories so we can
+      // render them alongside the configured ones with allocated_amount = 0.
+      let phantomCategories: any[] = [];
+      if (missingIds.length > 0) {
+        const { data: phantomMeta } = await supabase
+          .from("categories")
+          .select("id, name, icon, color, name_translations")
+          .in("id", missingIds);
+        phantomCategories = (phantomMeta ?? []).map((cat) => ({
+          id: `phantom-${cat.id}`,
+          budget_id: budget.id,
+          category_id: cat.id,
+          allocated_amount: 0,
+          spent: spentByCategory[cat.id] ?? 0,
+          category: cat,
+        }));
+      }
+
       return {
         ...budget,
-        categories: budget.categories.map((bc: any) => ({
-          ...bc,
-          spent: spentByCategory[bc.category_id] ?? 0,
-        })),
+        categories: [
+          ...budget.categories.map((bc: any) => ({
+            ...bc,
+            spent: spentByCategory[bc.category_id] ?? 0,
+          })),
+          ...phantomCategories,
+        ],
       } as BudgetWithCategories;
     },
     enabled: !!coupleId,
