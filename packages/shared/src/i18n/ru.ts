@@ -104,6 +104,7 @@ export const ru: TranslationKeys = {
     expense: "Расход",
     income: "Доход",
     allTypes: "Все",
+    allCategories: "Все категории",
     deleteConfirm: "Удалить эту транзакцию?",
     deleted: "Транзакция удалена",
     amountLabel: "Сумма",

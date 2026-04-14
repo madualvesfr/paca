@@ -107,6 +107,7 @@ export const en = {
     expense: "Expense",
     income: "Income",
     allTypes: "All",
+    allCategories: "All categories",
     deleteConfirm: "Delete this transaction?",
     deleted: "Transaction deleted",
     amountLabel: "Amount",

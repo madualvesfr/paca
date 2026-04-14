@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useProfile, useCouple, useTransactions, useDeleteTransaction, useRealtimeTransactions, useI18n } from "@paca/api";
+import { useState, useMemo, useEffect } from "react";
+import { useProfile, useCouple, useTransactions, useDeleteTransaction, useRealtimeTransactions, useI18n, useCategories } from "@paca/api";
 import {
   getCurrentMonth,
   DEFAULT_CATEGORIES,
@@ -24,16 +24,50 @@ import { exportMonthlyReport } from "@/utils/exportPdf";
 type TypeFilter = "all" | "income" | "expense";
 type PaidByFilter = "all" | "me" | "partner";
 
+interface PersistedFilters {
+  month?: string;
+  typeFilter?: TypeFilter;
+  paidByFilter?: PaidByFilter;
+  searchQuery?: string;
+  categoryId?: string;
+}
+
+const FILTERS_STORAGE_KEY = "paca_transactions_filters";
+
+function loadFilters(): PersistedFilters {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(FILTERS_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as PersistedFilters) : {};
+  } catch {
+    return {};
+  }
+}
+
 export function TransactionsPage() {
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: couple } = useCouple();
+  const { data: categories = [] } = useCategories();
   const { t, formatCurrency, formatCurrencyCompact, formatDate, formatMonthYear, translateCategory } = useI18n();
   const coupleId = profile?.couple_id ?? "";
 
-  const [month, setMonth] = useState(getCurrentMonth());
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
-  const [paidByFilter, setPaidByFilter] = useState<PaidByFilter>("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const saved = useMemo(loadFilters, []);
+  const [month, setMonth] = useState(saved.month ?? getCurrentMonth());
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>(saved.typeFilter ?? "all");
+  const [paidByFilter, setPaidByFilter] = useState<PaidByFilter>(saved.paidByFilter ?? "all");
+  const [searchQuery, setSearchQuery] = useState(saved.searchQuery ?? "");
+  const [categoryId, setCategoryId] = useState<string>(saved.categoryId ?? "");
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        FILTERS_STORAGE_KEY,
+        JSON.stringify({ month, typeFilter, paidByFilter, searchQuery, categoryId })
+      );
+    } catch {
+      // ignore quota errors
+    }
+  }, [month, typeFilter, paidByFilter, searchQuery, categoryId]);
   const deleteTransaction = useDeleteTransaction();
   const { toast } = useToast();
 
@@ -41,6 +75,7 @@ export function TransactionsPage() {
     coupleId,
     month,
     type: typeFilter === "all" ? undefined : typeFilter,
+    categoryId: categoryId || undefined,
   });
 
   useRealtimeTransactions(coupleId || undefined);
@@ -235,6 +270,21 @@ export function TransactionsPage() {
             </button>
           ))}
         </div>
+
+        {/* Category filter */}
+        <select
+          value={categoryId}
+          onChange={(e) => setCategoryId(e.target.value)}
+          className="px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-pink-primary/50 focus:border-pink-primary"
+          aria-label={t.transactions.category}
+        >
+          <option value="">{t.transactions.allCategories}</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {translateCategory(cat)}
+            </option>
+          ))}
+        </select>
 
         {/* Paid by filter */}
         {couple?.partner && (

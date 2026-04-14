@@ -104,6 +104,7 @@ export const uk: TranslationKeys = {
     expense: "Витрата",
     income: "Дохід",
     allTypes: "Усі",
+    allCategories: "Усі категорії",
     deleteConfirm: "Видалити цю транзакцію?",
     deleted: "Транзакцію видалено",
     amountLabel: "Сума",

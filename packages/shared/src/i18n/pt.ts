@@ -104,6 +104,7 @@ export const pt: TranslationKeys = {
     expense: "Despesa",
     income: "Receita",
     allTypes: "Todas",
+    allCategories: "Todas as categorias",
     deleteConfirm: "Excluir esta transação?",
     deleted: "Transação excluída",
     amountLabel: "Valor",
