@@ -154,6 +154,24 @@ export function useDeleteCategory() {
           if (error) throw error;
         }
       } else {
+        // Reassign any transaction/budget using this category to the "Outros"
+        // default, otherwise the FK blocks the delete with a 409.
+        const { data: fallback } = await supabase
+          .from("categories")
+          .select("id")
+          .eq("is_default", true)
+          .eq("name", "Outros")
+          .maybeSingle();
+        if (fallback?.id) {
+          await supabase
+            .from("transactions")
+            .update({ category_id: fallback.id })
+            .eq("category_id", category.id);
+          await supabase
+            .from("budget_categories")
+            .delete()
+            .eq("category_id", category.id);
+        }
         const { error } = await supabase
           .from("categories")
           .delete()
