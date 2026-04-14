@@ -71,7 +71,10 @@ export default function CategoriesScreen() {
         style: "destructive",
         onPress: async () => {
           try {
-            await deleteCategory.mutateAsync(cat.id);
+            await deleteCategory.mutateAsync({
+              id: cat.id,
+              is_default: cat.is_default,
+            });
           } catch (err) {
             console.error(err);
           }
@@ -188,11 +191,9 @@ export default function CategoriesScreen() {
                 category={cat}
                 label={translateCategory(cat)}
                 defaultBadge={t.categoryManager.defaultBadge}
+                onDelete={() => handleDelete(cat)}
               />
             ))}
-            <Text className="px-5 py-3 text-xs text-gray-400 border-t border-gray-50 dark:border-gray-700/50">
-              {t.categoryManager.deleteHelp}
-            </Text>
           </View>
         )}
       </ScrollView>

@@ -4,6 +4,7 @@ export interface Couple {
   partner_since: string;
   primary_currency: string;
   auto_convert_currency: boolean;
+  hidden_category_ids: string[];
   created_by: string;
   created_at: string;
   updated_at: string;
