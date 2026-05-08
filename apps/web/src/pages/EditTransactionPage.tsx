@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/Toast";
+import { localizeZodError } from "@/lib/zodError";
 import { ArrowLeft } from "lucide-react";
 
 export function EditTransactionPage() {
@@ -106,7 +107,7 @@ export function EditTransactionPage() {
     });
 
     if (!result.success) {
-      setError(result.error.errors[0].message);
+      setError(localizeZodError(result.error.errors[0], t.validation));
       return;
     }
 

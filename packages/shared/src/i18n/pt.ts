@@ -42,6 +42,23 @@ export const pt: TranslationKeys = {
     label: "Modo",
   },
 
+  validation: {
+    amountPositive: "Valor deve ser maior que zero",
+    descriptionRequired: "Descrição obrigatória",
+    descriptionTooLong: "Descrição muito longa",
+    categoryInvalid: "Categoria inválida",
+    dateInvalid: "Data inválida",
+    nameRequired: "Nome obrigatório",
+    nameTooLong: "Nome muito longo",
+    urlInvalid: "URL inválida",
+    emailInvalid: "Email inválido",
+    passwordTooShort: "Senha deve ter pelo menos 6 caracteres",
+    inviteCodeInvalid: "Código de convite inválido",
+    monthInvalid: "Mês inválido",
+    dayInvalid: "Dia de vencimento inválido (1-31)",
+    generic: "Campo inválido",
+  },
+
   auth: {
     login: "Entrar",
     signup: "Criar conta",

@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/Toast";
+import { localizeZodError } from "@/lib/zodError";
 import { ArrowLeft, ScanLine, Lightbulb } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -79,7 +80,7 @@ export function NewTransactionPage() {
     });
 
     if (!result.success) {
-      setError(result.error.errors[0].message);
+      setError(localizeZodError(result.error.errors[0], t.validation));
       return;
     }
 

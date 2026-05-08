@@ -42,6 +42,23 @@ export const uk: TranslationKeys = {
     label: "Режим",
   },
 
+  validation: {
+    amountPositive: "Сума має бути більше нуля",
+    descriptionRequired: "Вкажіть опис",
+    descriptionTooLong: "Опис занадто довгий",
+    categoryInvalid: "Неправильна категорія",
+    dateInvalid: "Неправильна дата",
+    nameRequired: "Вкажіть ім'я",
+    nameTooLong: "Ім'я занадто довге",
+    urlInvalid: "Неправильний URL",
+    emailInvalid: "Неправильний email",
+    passwordTooShort: "Пароль має бути не менше 6 символів",
+    inviteCodeInvalid: "Неправильний код запрошення",
+    monthInvalid: "Неправильний місяць",
+    dayInvalid: "Неправильний день оплати (1-31)",
+    generic: "Недійсне поле",
+  },
+
   auth: {
     login: "Увійти",
     signup: "Створити акаунт",

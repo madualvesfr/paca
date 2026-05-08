@@ -4,6 +4,7 @@ import { useAuth, useI18n } from "@paca/api";
 import { loginSchema, signupSchema } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { localizeZodError } from "@/lib/zodError";
 
 type Mode = "login" | "signup";
 
@@ -134,7 +135,7 @@ export function AuthPage() {
     if (mode === "login") {
       const result = loginSchema.safeParse({ email, password });
       if (!result.success) {
-        setError(result.error.errors[0].message);
+        setError(localizeZodError(result.error.errors[0], t.validation));
         return;
       }
       setLoading(true);
@@ -153,7 +154,7 @@ export function AuthPage() {
     } else {
       const result = signupSchema.safeParse({ email, password, display_name: displayName });
       if (!result.success) {
-        setError(result.error.errors[0].message);
+        setError(localizeZodError(result.error.errors[0], t.validation));
         return;
       }
       setLoading(true);

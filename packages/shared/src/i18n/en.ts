@@ -42,6 +42,23 @@ export const en = {
     label: "Mode",
   },
 
+  validation: {
+    amountPositive: "Amount must be greater than zero",
+    descriptionRequired: "Description is required",
+    descriptionTooLong: "Description is too long",
+    categoryInvalid: "Invalid category",
+    dateInvalid: "Invalid date",
+    nameRequired: "Name is required",
+    nameTooLong: "Name is too long",
+    urlInvalid: "Invalid URL",
+    emailInvalid: "Invalid email",
+    passwordTooShort: "Password must be at least 6 characters",
+    inviteCodeInvalid: "Invalid invite code",
+    monthInvalid: "Invalid month",
+    dayInvalid: "Invalid due day (1-31)",
+    generic: "Invalid field",
+  },
+
   // Auth
   auth: {
     login: "Sign In",

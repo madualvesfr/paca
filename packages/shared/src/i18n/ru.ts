@@ -42,6 +42,23 @@ export const ru: TranslationKeys = {
     label: "Режим",
   },
 
+  validation: {
+    amountPositive: "Сумма должна быть больше нуля",
+    descriptionRequired: "Укажите описание",
+    descriptionTooLong: "Описание слишком длинное",
+    categoryInvalid: "Неверная категория",
+    dateInvalid: "Неверная дата",
+    nameRequired: "Укажите имя",
+    nameTooLong: "Имя слишком длинное",
+    urlInvalid: "Неверный URL",
+    emailInvalid: "Неверный email",
+    passwordTooShort: "Пароль должен быть не менее 6 символов",
+    inviteCodeInvalid: "Неверный код приглашения",
+    monthInvalid: "Неверный месяц",
+    dayInvalid: "Неверный день оплаты (1-31)",
+    generic: "Поле недействительно",
+  },
+
   auth: {
     login: "Войти",
     signup: "Создать аккаунт",
