@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useProfile, useCouple, useTransactions, useDeleteTransaction, useRealtimeTransactions, useI18n, useCategories } from "@paca/api";
+import { useProfile, useCouple, useTransactions, useDeleteTransaction, useRealtimeTransactions, useI18n, useCategories, useAppStore } from "@paca/api";
 import {
   getCurrentMonth,
   DEFAULT_CATEGORIES,
@@ -50,7 +50,8 @@ function loadFilters(): PersistedFilters {
 export function TransactionsPage() {
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: couple } = useCouple();
-  const { data: categories = [] } = useCategories();
+  const mode = useAppStore((s) => s.mode);
+  const { data: categories = [] } = useCategories(mode);
   const { t, formatCurrency, formatCurrencyCompact, formatDate, formatMonthYear, translateCategory } = useI18n();
   const coupleId = profile?.couple_id ?? "";
 
@@ -77,6 +78,7 @@ export function TransactionsPage() {
 
   const { data: transactions, isLoading } = useTransactions({
     coupleId,
+    mode,
     month,
     type: typeFilter === "all" ? undefined : typeFilter,
     categoryId: categoryId || undefined,
@@ -376,8 +378,8 @@ export function TransactionsPage() {
           )}
         </div>
 
-        {/* Paid by filter */}
-        {couple?.partner && (
+        {/* Paid by filter — couple mode only (personal txns are always mine) */}
+        {mode === "couple" && couple?.partner && (
           <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
             {(["all", "me", "partner"] as PaidByFilter[]).map((filter) => (
               <button

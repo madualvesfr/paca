@@ -41,4 +41,5 @@ export interface AdviceRequest {
   urgency: AdviceUrgency;
   notes?: string | null;
   language?: string;
+  mode?: "couple" | "personal";  // financial scope to consider
 }

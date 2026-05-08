@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useProfile, useBudget, useCreateBudget, useI18n } from "@paca/api";
+import { useProfile, useBudget, useCreateBudget, useI18n, useAppStore } from "@paca/api";
 import { supabase } from "@paca/api";
 import {
   getCurrentMonth,
@@ -21,10 +21,12 @@ export function BudgetPage() {
   const { data: profile } = useProfile();
   const { t, formatMonthYear } = useI18n();
   const coupleId = profile?.couple_id ?? "";
+  const mode = useAppStore((s) => s.mode);
+  const ownerId = mode === "personal" ? profile?.id ?? null : null;
   const [month, setMonth] = useState(getCurrentMonth());
   const [showSetup, setShowSetup] = useState(false);
 
-  const { data: budget, isLoading } = useBudget({ coupleId, month });
+  const { data: budget, isLoading } = useBudget({ coupleId, month, mode, ownerId });
 
   const prevMonth = () => {
     setShowSetup(false);
@@ -85,6 +87,8 @@ export function BudgetPage() {
         <BudgetSetup
           coupleId={coupleId}
           month={month}
+          mode={mode}
+          ownerId={ownerId}
           existingBudget={budget ?? null}
           onDone={() => setShowSetup(false)}
         />
@@ -217,11 +221,15 @@ function BudgetOverview({ budget }: { budget: BudgetWithCategories }) {
 function BudgetSetup({
   coupleId,
   month,
+  mode,
+  ownerId,
   existingBudget,
   onDone,
 }: {
   coupleId: string;
   month: string;
+  mode: "couple" | "personal";
+  ownerId: string | null;
   existingBudget: BudgetWithCategories | null;
   onDone: () => void;
 }) {
@@ -251,6 +259,8 @@ function BudgetSetup({
       .from("categories")
       .insert({
         couple_id: coupleId,
+        scope: mode,
+        owner_id: mode === "personal" ? ownerId : null,
         name: newCatName.trim(),
         icon: newCatName.trim().charAt(0).toUpperCase(),
         color: newCatColor,
@@ -274,11 +284,19 @@ function BudgetSetup({
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await supabase
-        .from("categories")
-        .select("*")
-        .or(`is_default.eq.true,couple_id.eq.${coupleId}`)
-        .order("name");
+      let query = supabase.from("categories").select("*").order("name");
+      if (mode === "couple") {
+        query = query.or(
+          `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${coupleId})`
+        );
+      } else if (ownerId) {
+        query = query.or(
+          `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${ownerId})`
+        );
+      } else {
+        query = query.eq("is_default", true);
+      }
+      const { data } = await query;
       if (data) {
         setCategories(data);
         // Pre-fill from existing
@@ -292,7 +310,7 @@ function BudgetSetup({
       }
     };
     fetch();
-  }, [coupleId]);
+  }, [coupleId, mode, ownerId]);
 
   const handleSave = async () => {
     setError("");
@@ -315,6 +333,8 @@ function BudgetSetup({
       await createBudget.mutateAsync({
         budget: {
           couple_id: coupleId,
+          scope: mode,
+          owner_id: mode === "personal" ? ownerId : null,
           month,
           total_amount: totalCents,
         },

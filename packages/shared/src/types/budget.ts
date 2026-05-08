@@ -1,6 +1,10 @@
+import type { FinanceScope } from "./transaction";
+
 export interface Budget {
   id: string;
   couple_id: string;
+  scope: FinanceScope;
+  owner_id: string | null;
   month: string;
   total_amount: number;
   created_at: string;
@@ -9,6 +13,8 @@ export interface Budget {
 
 export interface BudgetInsert {
   couple_id: string;
+  scope?: FinanceScope;
+  owner_id?: string | null;
   month: string;
   total_amount: number;
 }

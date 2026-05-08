@@ -24,6 +24,7 @@ interface AdvisorRequest {
   urgency: Urgency;
   notes?: string | null;
   language?: string;        // locale hint so Gemini replies in the user's language
+  mode?: "couple" | "personal";  // financial scope to consider in context
 }
 
 // ---- FX helper (same approach as scan functions) ----
@@ -181,6 +182,7 @@ Deno.serve(async (req) => {
     if (!body?.item?.trim() || !body?.amount || body.amount <= 0) {
       return jsonResponse({ error: "Missing item or amount" }, 400);
     }
+    const requestedMode: "couple" | "personal" = body.mode === "personal" ? "personal" : "couple";
 
     const rawAmount = Math.abs(Math.round(body.amount));
     const rawCurrency = (body.currency ?? primaryCurrency).toUpperCase().slice(0, 3) || primaryCurrency;
@@ -196,13 +198,19 @@ Deno.serve(async (req) => {
     const threeMonthsAgo = isoDaysAgo(90);
     const thirtyDaysAgo = isoDaysAgo(30);
 
-    // Transactions this month
-    const { data: monthTx } = await supabase
+    // Transactions this month — scoped to the requested mode so personal advice
+    // doesn't leak couple data and vice versa.
+    let monthTxQuery = supabase
       .from("transactions")
       .select("type, amount, category_id")
       .eq("couple_id", profile.couple_id)
+      .eq("scope", requestedMode)
       .gte("date", currentMonthStart)
       .lte("date", currentMonthEnd);
+    if (requestedMode === "personal") {
+      monthTxQuery = monthTxQuery.eq("paid_by", profile.id);
+    }
+    const { data: monthTx } = await monthTxQuery;
 
     let totalIncomeThisMonth = 0;
     let totalExpenseThisMonth = 0;
@@ -216,35 +224,50 @@ Deno.serve(async (req) => {
     }
 
     // 3-month income average
-    const { data: incomeHistory } = await supabase
+    let incomeQuery = supabase
       .from("transactions")
       .select("amount, date")
       .eq("couple_id", profile.couple_id)
+      .eq("scope", requestedMode)
       .eq("type", "income")
       .gte("date", threeMonthsAgo);
+    if (requestedMode === "personal") {
+      incomeQuery = incomeQuery.eq("paid_by", profile.id);
+    }
+    const { data: incomeHistory } = await incomeQuery;
     const totalIncome3m = (incomeHistory ?? []).reduce((s, t) => s + t.amount, 0);
     const avgMonthlyIncome = Math.round(totalIncome3m / 3);
 
     // Category spent in the last 30 days
     let categorySpent30d: number | null = null;
     if (body.category_id) {
-      const { data: catHistory } = await supabase
+      let catHistoryQuery = supabase
         .from("transactions")
         .select("amount")
         .eq("couple_id", profile.couple_id)
+        .eq("scope", requestedMode)
         .eq("type", "expense")
         .eq("category_id", body.category_id)
         .gte("date", thirtyDaysAgo);
+      if (requestedMode === "personal") {
+        catHistoryQuery = catHistoryQuery.eq("paid_by", profile.id);
+      }
+      const { data: catHistory } = await catHistoryQuery;
       categorySpent30d = (catHistory ?? []).reduce((s, t) => s + t.amount, 0);
     }
 
-    // Budget for category this month
-    const { data: budget } = await supabase
+    // Budget for category this month — couple budget if requestedMode='couple',
+    // owner's personal budget if 'personal'.
+    let budgetQuery = supabase
       .from("budgets")
       .select("id, categories:budget_categories(category_id, allocated_amount)")
       .eq("couple_id", profile.couple_id)
-      .eq("month", currentMonthStart)
-      .maybeSingle();
+      .eq("scope", requestedMode)
+      .eq("month", currentMonthStart);
+    if (requestedMode === "personal") {
+      budgetQuery = budgetQuery.eq("owner_id", profile.id);
+    }
+    const { data: budget } = await budgetQuery.maybeSingle();
     let budgetAllocated: number | null = null;
     if (budget && body.category_id) {
       const entry = budget.categories?.find(

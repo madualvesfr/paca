@@ -36,6 +36,12 @@ export const pt: TranslationKeys = {
     closeMenu: "Fechar menu",
   },
 
+  mode: {
+    couple: "Casal",
+    personal: "Pessoal",
+    label: "Modo",
+  },
+
   auth: {
     login: "Entrar",
     signup: "Criar conta",

@@ -19,6 +19,7 @@ import {
   useUpdateCouple,
   supabase,
   useI18n,
+  useAppStore,
 } from "@paca/api";
 import { LOCALE_LABELS, SUPPORTED_CURRENCIES, type Locale } from "@paca/shared";
 
@@ -30,6 +31,8 @@ export default function Profile() {
   const { data: couple } = useCouple();
   const updateProfile = useUpdateProfile();
   const updateCouple = useUpdateCouple();
+  const mode = useAppStore((s) => s.mode);
+  const setMode = useAppStore((s) => s.setMode);
 
   const handleLanguageChange = async (newLocale: Locale) => {
     setLocale(newLocale);
@@ -129,6 +132,56 @@ export default function Profile() {
             {t.profile.titleMobile}
           </Text>
         </View>
+
+        {/* Mode toggle (couple ↔ personal) — hidden when user has no couple */}
+        {couple && (
+          <View className="px-6 pb-3">
+            <View className="flex-row bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
+              <TouchableOpacity
+                onPress={() => setMode("couple")}
+                className={`flex-1 flex-row items-center justify-center gap-1.5 py-2.5 rounded-lg ${
+                  mode === "couple" ? "bg-white dark:bg-gray-700" : ""
+                }`}
+              >
+                <Ionicons
+                  name="heart"
+                  size={14}
+                  color={mode === "couple" ? "#FF8FB1" : "#9CA3AF"}
+                />
+                <Text
+                  className={`text-xs font-semibold ${
+                    mode === "couple"
+                      ? "text-pink-primary"
+                      : "text-gray-500 dark:text-gray-400"
+                  }`}
+                >
+                  {t.mode.couple}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setMode("personal")}
+                className={`flex-1 flex-row items-center justify-center gap-1.5 py-2.5 rounded-lg ${
+                  mode === "personal" ? "bg-white dark:bg-gray-700" : ""
+                }`}
+              >
+                <Ionicons
+                  name="person-circle-outline"
+                  size={14}
+                  color={mode === "personal" ? "#FF8FB1" : "#9CA3AF"}
+                />
+                <Text
+                  className={`text-xs font-semibold ${
+                    mode === "personal"
+                      ? "text-pink-primary"
+                      : "text-gray-500 dark:text-gray-400"
+                  }`}
+                >
+                  {t.mode.personal}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
 
         {/* Couple Card */}
         {couple && (

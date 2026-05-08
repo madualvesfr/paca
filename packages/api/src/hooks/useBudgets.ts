@@ -1,19 +1,26 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../supabase";
-import type { BudgetWithCategories, BudgetInsert, BudgetCategoryInsert } from "@paca/shared";
+import type {
+  BudgetWithCategories,
+  BudgetInsert,
+  BudgetCategoryInsert,
+  FinanceScope,
+} from "@paca/shared";
 
 interface UseBudgetOptions {
   coupleId: string;
   month: string;
+  mode: FinanceScope;
+  ownerId?: string | null;
 }
 
 export function useBudget(options: UseBudgetOptions) {
-  const { coupleId, month } = options;
+  const { coupleId, month, mode, ownerId } = options;
 
   return useQuery({
-    queryKey: ["budget", coupleId, month],
+    queryKey: ["budget", coupleId, mode, ownerId ?? null, month],
     queryFn: async (): Promise<BudgetWithCategories | null> => {
-      const { data: budget, error } = await supabase
+      let budgetQuery = supabase
         .from("budgets")
         .select(`
           *,
@@ -23,20 +30,35 @@ export function useBudget(options: UseBudgetOptions) {
           )
         `)
         .eq("couple_id", coupleId)
-        .eq("month", month)
-        .maybeSingle();
+        .eq("scope", mode)
+        .eq("month", month);
+
+      if (mode === "personal") {
+        if (!ownerId) return null;
+        budgetQuery = budgetQuery.eq("owner_id", ownerId);
+      }
+
+      const { data: budget, error } = await budgetQuery.maybeSingle();
 
       if (error) throw error;
       if (!budget) return null;
 
-      // Calculate spent per category
-      const { data: transactions } = await supabase
+      // Calculate spent per category — scoped to the same mode + (for personal)
+      // owner so a personal budget doesn't get charged with couple spending.
+      let txQuery = supabase
         .from("transactions")
         .select("category_id, amount")
         .eq("couple_id", coupleId)
+        .eq("scope", mode)
         .eq("type", "expense")
         .gte("date", month)
         .lt("date", nextMonth(month));
+
+      if (mode === "personal" && ownerId) {
+        txQuery = txQuery.eq("paid_by", ownerId);
+      }
+
+      const { data: transactions } = await txQuery;
 
       const spentByCategory = (transactions ?? []).reduce(
         (acc, t) => {
@@ -82,7 +104,7 @@ export function useBudget(options: UseBudgetOptions) {
         ],
       } as BudgetWithCategories;
     },
-    enabled: !!coupleId,
+    enabled: !!coupleId && (mode !== "personal" || !!ownerId),
   });
 }
 
@@ -97,20 +119,53 @@ export function useCreateBudget() {
       budget: BudgetInsert;
       categories: Omit<BudgetCategoryInsert, "budget_id">[];
     }) => {
-      // Upsert budget on (couple_id, month) so saving again edits instead of 409-ing.
-      const { data: newBudget, error } = await supabase
-        .from("budgets")
-        .upsert(budget, { onConflict: "couple_id,month" })
-        .select()
-        .single();
+      // Partial unique indexes prevent PostgREST from upserting cleanly, so do
+      // a manual select-then-update/insert keyed on (couple_id, scope, month)
+      // for couple budgets and (owner_id, scope, month) for personal ones.
+      const scope = budget.scope ?? "couple";
 
-      if (error) throw error;
+      let existingQuery = supabase
+        .from("budgets")
+        .select("id")
+        .eq("couple_id", budget.couple_id)
+        .eq("scope", scope)
+        .eq("month", budget.month);
+
+      if (scope === "personal") {
+        if (!budget.owner_id) throw new Error("personal budget needs owner_id");
+        existingQuery = existingQuery.eq("owner_id", budget.owner_id);
+      }
+
+      const { data: existing } = await existingQuery.maybeSingle();
+
+      let savedBudget: { id: string } | null = null;
+
+      if (existing) {
+        const { data, error } = await supabase
+          .from("budgets")
+          .update({ total_amount: budget.total_amount })
+          .eq("id", existing.id)
+          .select()
+          .single();
+        if (error) throw error;
+        savedBudget = data;
+      } else {
+        const { data, error } = await supabase
+          .from("budgets")
+          .insert({ ...budget, scope })
+          .select()
+          .single();
+        if (error) throw error;
+        savedBudget = data;
+      }
+
+      if (!savedBudget) throw new Error("failed to save budget");
 
       // Reset category allocations: delete existing then reinsert the submitted ones.
       const { error: delError } = await supabase
         .from("budget_categories")
         .delete()
-        .eq("budget_id", newBudget.id);
+        .eq("budget_id", savedBudget.id);
 
       if (delError) throw delError;
 
@@ -118,13 +173,13 @@ export function useCreateBudget() {
         const { error: catError } = await supabase
           .from("budget_categories")
           .insert(
-            categories.map((c) => ({ ...c, budget_id: newBudget.id }))
+            categories.map((c) => ({ ...c, budget_id: savedBudget!.id }))
           );
 
         if (catError) throw catError;
       }
 
-      return newBudget;
+      return savedBudget;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["budget"] });

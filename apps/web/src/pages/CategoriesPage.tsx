@@ -5,6 +5,7 @@ import {
   useCreateCategory,
   useDeleteCategory,
   useI18n,
+  useAppStore,
 } from "@paca/api";
 import type { Category } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
@@ -25,7 +26,8 @@ const PALETTE = [
 
 export function CategoriesPage() {
   const navigate = useNavigate();
-  const { data: categories = [], isLoading } = useCategories();
+  const mode = useAppStore((s) => s.mode);
+  const { data: categories = [], isLoading } = useCategories(mode);
   const createCategory = useCreateCategory();
   const deleteCategory = useDeleteCategory();
   const { t, translateCategory, locale } = useI18n();
@@ -44,6 +46,7 @@ export function CategoriesPage() {
         icon: trimmed.charAt(0).toUpperCase(),
         color,
         locale,
+        mode,
       });
       toast(t.categoryManager.translating);
       setName("");

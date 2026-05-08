@@ -1,9 +1,11 @@
 export type TransactionType = "income" | "expense";
+export type FinanceScope = "couple" | "personal";
 
 export interface Transaction {
   id: string;
   couple_id: string;
   paid_by: string;
+  scope: FinanceScope;
   type: TransactionType;
   amount: number;
   currency: string;
@@ -24,6 +26,7 @@ export interface Transaction {
 export interface TransactionInsert {
   couple_id: string;
   paid_by: string;
+  scope?: FinanceScope;
   type: TransactionType;
   amount: number;
   currency?: string;

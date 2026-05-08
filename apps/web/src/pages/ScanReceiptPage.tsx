@@ -8,6 +8,7 @@ import {
   useScanStatement,
   supabase,
   useI18n,
+  useAppStore,
 } from "@paca/api";
 import { DEFAULT_CATEGORIES, type Category } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
@@ -44,6 +45,7 @@ export function ScanReceiptPage() {
   const navigate = useNavigate();
   const { data: profile } = useProfile();
   const { data: couple } = useCouple();
+  const financeMode = useAppStore((s) => s.mode);
   const addTransaction = useAddTransaction();
   const scanReceipt = useScanReceipt();
   const scanStatement = useScanStatement();
@@ -61,15 +63,23 @@ export function ScanReceiptPage() {
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await supabase
-        .from("categories")
-        .select("*")
-        .or(`is_default.eq.true,couple_id.eq.${profile?.couple_id}`)
-        .order("name");
+      let query = supabase.from("categories").select("*").order("name");
+      if (financeMode === "couple") {
+        query = query.or(
+          `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${profile?.couple_id})`
+        );
+      } else if (profile?.id) {
+        query = query.or(
+          `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${profile.id})`
+        );
+      } else {
+        query = query.eq("is_default", true);
+      }
+      const { data } = await query;
       if (data) setCategories(data);
     };
     if (profile?.couple_id) fetch();
-  }, [profile?.couple_id]);
+  }, [profile?.couple_id, profile?.id, financeMode]);
 
   const readFileAsBase64 = (file: File) =>
     new Promise<{ dataUrl: string; base64: string }>((resolve, reject) => {
@@ -110,13 +120,13 @@ export function ScanReceiptPage() {
       try {
         const { base64 } = await readFileAsBase64(file);
         if (mode === "single") {
-          const result = await scanReceipt.mutateAsync(base64);
+          const result = await scanReceipt.mutateAsync({ image: base64, mode: financeMode });
           const valid = Number.isFinite(result.amount) && Math.abs(result.amount) > 0;
           if (result && result.amount != null) {
             allItems.push({ ...result, selected: valid });
           }
         } else {
-          const result = await scanStatement.mutateAsync(base64);
+          const result = await scanStatement.mutateAsync({ image: base64, mode: financeMode });
           for (const tx of result.transactions) {
             allItems.push({
               ...tx,
@@ -176,6 +186,7 @@ export function ScanReceiptPage() {
         await addTransaction.mutateAsync({
           couple_id: profile!.couple_id!,
           paid_by: profile!.id,
+          scope: financeMode,
           type: it.type,
           amount: Math.abs(it.amount),
           currency: it.currency,

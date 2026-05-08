@@ -1,5 +1,5 @@
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import { useAuth, useProfile, useI18n } from "@paca/api";
+import { useAuth, useProfile, useI18n, useAppStore } from "@paca/api";
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -11,6 +11,8 @@ import {
   Menu,
   X,
   Activity,
+  Heart,
+  UserCircle,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { isAdminEmail } from "@/lib/admin";
@@ -19,6 +21,9 @@ export function Sidebar() {
   const { user, signOut } = useAuth();
   const { data: profile } = useProfile();
   const { t } = useI18n();
+  const mode = useAppStore((s) => s.mode);
+  const setMode = useAppStore((s) => s.setMode);
+  const hasCouple = !!profile?.couple_id;
 
   const baseNav = [
     { to: "/", icon: LayoutDashboard, label: t.nav.dashboard },
@@ -57,6 +62,38 @@ export function Sidebar() {
           Paca Finance
         </h1>
       </div>
+
+      {/* Mode toggle (couple ↔ personal) — hidden when user has no couple */}
+      {hasCouple && (
+        <div className="px-4 pt-4">
+          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
+            <button
+              type="button"
+              onClick={() => setMode("couple")}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+                mode === "couple"
+                  ? "bg-white dark:bg-gray-700 text-pink-primary shadow-sm"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              }`}
+            >
+              <Heart className="w-3.5 h-3.5" />
+              {t.mode.couple}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("personal")}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all ${
+                mode === "personal"
+                  ? "bg-white dark:bg-gray-700 text-pink-primary shadow-sm"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              }`}
+            >
+              <UserCircle className="w-3.5 h-3.5" />
+              {t.mode.personal}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1">

@@ -85,10 +85,26 @@ Deno.serve(async (req) => {
     const primaryCurrency: string = (couple?.primary_currency ?? "BRL").toUpperCase();
     const autoConvert: boolean = couple?.auto_convert_currency ?? true;
 
-    const { data: categoryRows } = await supabase
+    const body = await req.json();
+    const { image } = body;
+    const requestedMode = body?.mode === "personal" ? "personal" : "couple";
+    if (!image) return jsonResponse({ error: "Image required" }, 400);
+
+    // Personal mode must exclude the partner's personal categories — sending
+    // those names to Gemini would leak private data through the prompt.
+    let categoryQuery = supabase
       .from("categories")
-      .select("name, name_translations, is_default")
-      .or(`is_default.eq.true,couple_id.eq.${profile.couple_id}`);
+      .select("name, name_translations, is_default");
+    if (requestedMode === "personal") {
+      categoryQuery = categoryQuery.or(
+        `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${profile.id})`
+      );
+    } else {
+      categoryQuery = categoryQuery.or(
+        `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${profile.couple_id})`
+      );
+    }
+    const { data: categoryRows } = await categoryQuery;
     const categoryNames = Array.from(
       new Set(
         (categoryRows ?? []).flatMap((c: { name: string; name_translations: Record<string, string> | null }) => [
@@ -100,9 +116,6 @@ Deno.serve(async (req) => {
     const categoryList = categoryNames.length > 0
       ? categoryNames.join(", ")
       : "Alimentacao, Transporte, Moradia, Lazer, Saude, Educacao, Compras, Entretenimento, Outros";
-
-    const { image } = await req.json();
-    if (!image) return jsonResponse({ error: "Image required" }, 400);
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,

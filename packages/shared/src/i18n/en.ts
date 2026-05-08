@@ -36,6 +36,12 @@ export const en = {
     closeMenu: "Close menu",
   },
 
+  mode: {
+    couple: "Couple",
+    personal: "Personal",
+    label: "Mode",
+  },
+
   // Auth
   auth: {
     login: "Sign In",

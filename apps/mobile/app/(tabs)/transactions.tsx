@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useProfile, useTransactions, useRealtimeTransactions, useI18n } from "@paca/api";
+import { useProfile, useTransactions, useRealtimeTransactions, useI18n, useAppStore } from "@paca/api";
 import {
   getCurrentMonth,
   type TransactionWithCategory,
@@ -22,6 +22,7 @@ export default function Transactions() {
   const router = useRouter();
   const { t, formatCurrency, formatDate, formatMonthYear, translateCategory } = useI18n();
   const { data: profile } = useProfile();
+  const mode = useAppStore((s) => s.mode);
   const coupleId = profile?.couple_id ?? "";
 
   const [month, setMonth] = useState(getCurrentMonth());
@@ -30,6 +31,7 @@ export default function Transactions() {
 
   const { data: transactions, isLoading } = useTransactions({
     coupleId,
+    mode,
     month,
     type: typeFilter === "all" ? undefined : typeFilter,
   });

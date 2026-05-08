@@ -16,6 +16,7 @@ import {
   useCreateCategory,
   useDeleteCategory,
   useI18n,
+  useAppStore,
 } from "@paca/api";
 import type { Category } from "@paca/shared";
 
@@ -33,7 +34,8 @@ const PALETTE = [
 
 export default function CategoriesScreen() {
   const router = useRouter();
-  const { data: categories = [], isLoading } = useCategories();
+  const mode = useAppStore((s) => s.mode);
+  const { data: categories = [], isLoading } = useCategories(mode);
   const createCategory = useCreateCategory();
   const deleteCategory = useDeleteCategory();
   const { t, translateCategory, locale } = useI18n();
@@ -54,6 +56,7 @@ export default function CategoriesScreen() {
         icon: trimmed.charAt(0).toUpperCase(),
         color,
         locale,
+        mode,
       });
       setName("");
       setColor(PALETTE[0]);

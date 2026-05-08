@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from "rea
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useProfile, useCouple, useTransactions, useRealtimeTransactions, useI18n } from "@paca/api";
+import { useProfile, useCouple, useTransactions, useRealtimeTransactions, useI18n, useAppStore } from "@paca/api";
 import {
   getCurrentMonth,
   type TransactionWithCategory,
@@ -13,10 +13,11 @@ export default function Dashboard() {
   const { t, formatCurrency, formatDate, greeting } = useI18n();
   const { data: profile, isLoading: profileLoading } = useProfile();
   const { data: couple } = useCouple();
+  const mode = useAppStore((s) => s.mode);
   const coupleId = profile?.couple_id ?? "";
   const month = getCurrentMonth();
 
-  const { data: transactions, isLoading: txLoading } = useTransactions({ coupleId, month });
+  const { data: transactions, isLoading: txLoading } = useTransactions({ coupleId, mode, month });
   useRealtimeTransactions(coupleId || undefined);
 
   const income = (transactions ?? [])

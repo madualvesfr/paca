@@ -36,6 +36,12 @@ export const ru: TranslationKeys = {
     closeMenu: "Закрыть меню",
   },
 
+  mode: {
+    couple: "Пара",
+    personal: "Личное",
+    label: "Режим",
+  },
+
   auth: {
     login: "Войти",
     signup: "Создать аккаунт",

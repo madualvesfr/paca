@@ -8,6 +8,7 @@ import {
   useShareAdvice,
   supabase,
   useI18n,
+  useAppStore,
 } from "@paca/api";
 import type { PurchaseAdvice, AdviceUrgency, AdviceVerdict, Category } from "@paca/shared";
 import { Button } from "@/components/ui/Button";
@@ -52,6 +53,7 @@ export function AdvisorPage() {
   const navigate = useNavigate();
   const { data: profile } = useProfile();
   const { data: couple } = useCouple();
+  const mode = useAppStore((s) => s.mode);
   const { t, currency, locale, formatCurrency, translateCategory } = useI18n();
   const ask = useAskAdvisor();
   const share = useShareAdvice();
@@ -113,6 +115,7 @@ export function AdvisorPage() {
         urgency,
         notes: notes.trim() || null,
         language: locale,
+        mode,
       });
       setResult(response);
     } catch {

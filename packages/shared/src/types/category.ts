@@ -1,6 +1,10 @@
+import type { FinanceScope } from "./transaction";
+
 export interface Category {
   id: string;
   couple_id: string | null;
+  scope: FinanceScope;
+  owner_id: string | null;
   name: string;
   icon: string;
   color: string;
@@ -12,6 +16,8 @@ export interface Category {
 
 export interface CategoryInsert {
   couple_id?: string | null;
+  scope?: FinanceScope;
+  owner_id?: string | null;
   name: string;
   icon: string;
   color: string;

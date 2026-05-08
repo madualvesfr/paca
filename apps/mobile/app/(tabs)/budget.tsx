@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { useProfile, useBudget, useCreateBudget, supabase, useI18n } from "@paca/api";
+import { useProfile, useBudget, useCreateBudget, supabase, useI18n, useAppStore } from "@paca/api";
 import {
   getCurrentMonth,
   BUDGET_THRESHOLDS,
@@ -22,11 +22,13 @@ type Screen = "overview" | "setup";
 export default function Budget() {
   const { t, formatCurrency, formatMonthYear } = useI18n();
   const { data: profile } = useProfile();
+  const mode = useAppStore((s) => s.mode);
   const coupleId = profile?.couple_id ?? "";
+  const ownerId = mode === "personal" ? profile?.id ?? null : null;
   const [month, setMonth] = useState(getCurrentMonth());
   const [screen, setScreen] = useState<Screen>("overview");
 
-  const { data: budget, isLoading } = useBudget({ coupleId, month });
+  const { data: budget, isLoading } = useBudget({ coupleId, month, mode, ownerId });
 
   const prevMonth = () => {
     const d = new Date(month + "T00:00:00");
@@ -74,6 +76,8 @@ export default function Budget() {
         <BudgetSetupMobile
           coupleId={coupleId}
           month={month}
+          mode={mode}
+          ownerId={ownerId}
           existingBudget={budget ?? null}
           onDone={() => setScreen("overview")}
           isNew={!budget}
@@ -193,12 +197,16 @@ function BudgetOverviewMobile({ budget }: { budget: BudgetWithCategories }) {
 function BudgetSetupMobile({
   coupleId,
   month,
+  mode,
+  ownerId,
   existingBudget,
   onDone,
   isNew,
 }: {
   coupleId: string;
   month: string;
+  mode: "couple" | "personal";
+  ownerId: string | null;
   existingBudget: BudgetWithCategories | null;
   onDone: () => void;
   isNew: boolean;
@@ -214,11 +222,19 @@ function BudgetSetupMobile({
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await supabase
-        .from("categories")
-        .select("*")
-        .or(`is_default.eq.true,couple_id.eq.${coupleId}`)
-        .order("name");
+      let query = supabase.from("categories").select("*").order("name");
+      if (mode === "couple") {
+        query = query.or(
+          `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${coupleId})`
+        );
+      } else if (ownerId) {
+        query = query.or(
+          `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${ownerId})`
+        );
+      } else {
+        query = query.eq("is_default", true);
+      }
+      const { data } = await query;
       if (data) {
         setCategories(data);
         if (existingBudget) {
@@ -231,7 +247,7 @@ function BudgetSetupMobile({
       }
     };
     fetch();
-  }, [coupleId]);
+  }, [coupleId, mode, ownerId]);
 
   const handleSave = async () => {
     setError("");
@@ -250,7 +266,13 @@ function BudgetSetupMobile({
 
     try {
       await createBudget.mutateAsync({
-        budget: { couple_id: coupleId, month, total_amount: totalCents },
+        budget: {
+          couple_id: coupleId,
+          scope: mode,
+          owner_id: mode === "personal" ? ownerId : null,
+          month,
+          total_amount: totalCents,
+        },
         categories: cats,
       });
       onDone();

@@ -12,13 +12,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useProfile, useCouple, useAddTransaction, supabase, useI18n } from "@paca/api";
+import { useProfile, useCouple, useAddTransaction, supabase, useI18n, useAppStore } from "@paca/api";
 import type { TransactionType, Category } from "@paca/shared";
 
 export default function AddTransaction() {
   const router = useRouter();
   const { data: profile } = useProfile();
   const { data: couple } = useCouple();
+  const mode = useAppStore((s) => s.mode);
   const { t, translateCategory } = useI18n();
   const addTransaction = useAddTransaction();
 
@@ -33,18 +34,26 @@ export default function AddTransaction() {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const { data } = await supabase
-        .from("categories")
-        .select("*")
-        .or(`is_default.eq.true,couple_id.eq.${profile?.couple_id}`)
-        .order("name");
+      let query = supabase.from("categories").select("*").order("name");
+      if (mode === "couple") {
+        query = query.or(
+          `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${profile?.couple_id})`
+        );
+      } else if (profile?.id) {
+        query = query.or(
+          `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${profile.id})`
+        );
+      } else {
+        query = query.eq("is_default", true);
+      }
+      const { data } = await query;
       if (data) {
         setCategories(data);
         if (data.length > 0 && !categoryId) setCategoryId(data[0].id);
       }
     };
     if (profile?.couple_id) fetchCategories();
-  }, [profile?.couple_id]);
+  }, [profile?.couple_id, profile?.id, mode]);
 
   const handleSubmit = async () => {
     setError("");
@@ -67,6 +76,7 @@ export default function AddTransaction() {
       await addTransaction.mutateAsync({
         couple_id: profile!.couple_id!,
         paid_by: profile!.id,
+        scope: mode,
         type,
         amount: amountCents,
         description: description.trim(),

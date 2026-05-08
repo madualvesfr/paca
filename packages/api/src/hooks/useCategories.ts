@@ -1,49 +1,62 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../supabase";
-import type { Category } from "@paca/shared";
+import type { Category, FinanceScope } from "@paca/shared";
 
-async function getCoupleId(): Promise<string | null> {
+async function getProfileContext(): Promise<{
+  profileId: string | null;
+  coupleId: string | null;
+}> {
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) return { profileId: null, coupleId: null };
   const { data: profile } = await supabase
     .from("profiles")
-    .select("couple_id")
+    .select("id, couple_id")
     .eq("user_id", user.id)
     .single();
-  return profile?.couple_id ?? null;
+  return {
+    profileId: profile?.id ?? null,
+    coupleId: profile?.couple_id ?? null,
+  };
 }
 
-async function getCoupleContext(): Promise<{
-  coupleId: string | null;
-  hidden: string[];
-}> {
-  const coupleId = await getCoupleId();
-  if (!coupleId) return { coupleId: null, hidden: [] };
+async function getHiddenCategoryIds(coupleId: string | null): Promise<string[]> {
+  if (!coupleId) return [];
   const { data: couple } = await supabase
     .from("couples")
     .select("hidden_category_ids")
     .eq("id", coupleId)
     .single();
-  return {
-    coupleId,
-    hidden: (couple?.hidden_category_ids as string[]) ?? [],
-  };
+  return (couple?.hidden_category_ids as string[]) ?? [];
 }
 
-export function useCategories() {
+export function useCategories(mode: FinanceScope = "couple") {
   return useQuery({
-    queryKey: ["categories"],
+    queryKey: ["categories", mode],
     queryFn: async (): Promise<Category[]> => {
-      const { coupleId, hidden } = await getCoupleContext();
+      const { profileId, coupleId } = await getProfileContext();
+      const hidden = await getHiddenCategoryIds(coupleId);
+
       let query = supabase.from("categories").select("*").order("name");
-      if (coupleId) {
-        query = query.or(`is_default.eq.true,couple_id.eq.${coupleId}`);
+
+      if (mode === "couple" && coupleId) {
+        // Defaults + couple-shared customs (own couple's only)
+        query = query.or(
+          `is_default.eq.true,and(scope.eq.couple,couple_id.eq.${coupleId})`
+        );
+      } else if (mode === "personal" && profileId) {
+        // Defaults + my personal customs
+        query = query.or(
+          `is_default.eq.true,and(scope.eq.personal,owner_id.eq.${profileId})`
+        );
       } else {
+        // Solo / unauth: only defaults
         query = query.eq("is_default", true);
       }
+
       const { data, error } = await query;
       if (error) throw error;
       const all = (data ?? []) as Category[];
+      // Apply soft-hide for defaults consistently across both modes.
       return all.filter((c) => !hidden.includes(c.id));
     },
   });
@@ -73,9 +86,13 @@ export function useCreateCategory() {
       icon: string;
       color: string;
       locale: string;
+      mode: FinanceScope;
     }) => {
-      const coupleId = await getCoupleId();
+      const { profileId, coupleId } = await getProfileContext();
       if (!coupleId) throw new Error("No couple");
+      if (input.mode === "personal" && !profileId) {
+        throw new Error("No profile for personal category");
+      }
 
       const translations = await translateCategoryName(input.name, input.locale);
 
@@ -83,6 +100,8 @@ export function useCreateCategory() {
         .from("categories")
         .insert({
           couple_id: coupleId,
+          scope: input.mode,
+          owner_id: input.mode === "personal" ? profileId : null,
           name: input.name,
           icon: input.icon,
           color: input.color,
@@ -143,8 +162,9 @@ export function useDeleteCategory() {
       if (category.is_default) {
         // Soft-hide: add the category id to the couple's hidden list so the
         // shared default stays intact for every other couple.
-        const { coupleId, hidden } = await getCoupleContext();
+        const { coupleId } = await getProfileContext();
         if (!coupleId) throw new Error("No couple");
+        const hidden = await getHiddenCategoryIds(coupleId);
         if (!hidden.includes(category.id)) {
           const next = [...hidden, category.id];
           const { error } = await supabase

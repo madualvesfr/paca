@@ -4,11 +4,13 @@ import type {
   TransactionWithCategory,
   TransactionInsert,
   TransactionUpdate,
+  FinanceScope,
 } from "@paca/shared";
 import { getMonthRange } from "@paca/shared";
 
 interface UseTransactionsOptions {
   coupleId: string;
+  mode: FinanceScope;
   month?: string;
   type?: "income" | "expense";
   categoryId?: string;
@@ -16,10 +18,10 @@ interface UseTransactionsOptions {
 }
 
 export function useTransactions(options: UseTransactionsOptions) {
-  const { coupleId, month, type, categoryId, paidBy } = options;
+  const { coupleId, mode, month, type, categoryId, paidBy } = options;
 
   return useQuery({
-    queryKey: ["transactions", coupleId, month, type, categoryId, paidBy],
+    queryKey: ["transactions", coupleId, mode, month, type, categoryId, paidBy],
     queryFn: async (): Promise<TransactionWithCategory[]> => {
       let query = supabase
         .from("transactions")
@@ -29,6 +31,7 @@ export function useTransactions(options: UseTransactionsOptions) {
           paid_by_profile:profiles!paid_by(display_name, avatar_url)
         `)
         .eq("couple_id", coupleId)
+        .eq("scope", mode)
         .order("date", { ascending: false });
 
       if (month) {
@@ -72,6 +75,7 @@ export function useAddTransaction() {
             metadata: {
               type: transaction.type,
               currency: transaction.currency ?? null,
+              scope: transaction.scope ?? "couple",
               has_notes: !!transaction.notes,
             },
           })

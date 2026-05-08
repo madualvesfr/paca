@@ -18,6 +18,7 @@ import {
   useShareAdvice,
   supabase,
   useI18n,
+  useAppStore,
 } from "@paca/api";
 import type {
   AdviceUrgency,
@@ -36,6 +37,7 @@ export default function AdvisorScreen() {
   const router = useRouter();
   const { data: profile } = useProfile();
   const { data: couple } = useCouple();
+  const mode = useAppStore((s) => s.mode);
   const { t, currency, locale, formatCurrency, translateCategory } = useI18n();
   const ask = useAskAdvisor();
   const share = useShareAdvice();
@@ -94,6 +96,7 @@ export default function AdvisorScreen() {
         urgency,
         notes: notes.trim() || null,
         language: locale,
+        mode,
       });
       setResult(response);
     } catch {

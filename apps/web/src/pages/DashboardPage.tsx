@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useProfile, useCouple, useTransactions, useBudget, useRealtimeTransactions, useI18n } from "@paca/api";
+import { useProfile, useCouple, useTransactions, useBudget, useRealtimeTransactions, useI18n, useAppStore } from "@paca/api";
 import {
   getCurrentMonth,
   type TransactionWithCategory,
@@ -179,9 +179,15 @@ export function DashboardPage() {
   const { t, greeting, formatCurrency, formatCurrencyCompact, translateCategory } = useI18n();
   const month = getCurrentMonth();
   const coupleId = profile?.couple_id ?? "";
+  const mode = useAppStore((s) => s.mode);
 
-  const { data: transactions, isLoading: txLoading } = useTransactions({ coupleId, month });
-  const { data: budget } = useBudget({ coupleId, month });
+  const { data: transactions, isLoading: txLoading } = useTransactions({ coupleId, mode, month });
+  const { data: budget } = useBudget({
+    coupleId,
+    month,
+    mode,
+    ownerId: mode === "personal" ? profile?.id : null,
+  });
 
   useRealtimeTransactions(coupleId || undefined);
 
@@ -253,7 +259,7 @@ export function DashboardPage() {
             </div>
             <span className="text-white/80 text-sm">{t.common.me}</span>
           </div>
-          {couple?.partner && (
+          {mode === "couple" && couple?.partner && (
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                 <span className="text-sm">
