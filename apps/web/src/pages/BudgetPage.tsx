@@ -27,11 +27,13 @@ export function BudgetPage() {
   const { data: budget, isLoading } = useBudget({ coupleId, month });
 
   const prevMonth = () => {
+    setShowSetup(false);
     const d = new Date(month + "T00:00:00");
     d.setMonth(d.getMonth() - 1);
     setMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`);
   };
   const nextMonth = () => {
+    setShowSetup(false);
     const d = new Date(month + "T00:00:00");
     d.setMonth(d.getMonth() + 1);
     setMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`);
