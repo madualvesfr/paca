@@ -247,9 +247,9 @@ export function TransactionsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 mb-6">
-        {/* Search */}
-        <div className="relative flex-1 min-w-[200px]">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-6">
+        {/* Search — full width on mobile so the pills below get their own row */}
+        <div className="relative w-full sm:flex-1 sm:min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
@@ -284,13 +284,13 @@ export function TransactionsPage() {
             onClick={() => setCategoryMenuOpen((v) => !v)}
             className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium transition-all ${
               categoryId
-                ? "bg-pink-50 dark:bg-pink-primary/10 border-pink-primary/30 text-pink-primary"
+                ? "bg-white dark:bg-gray-800 border-pink-primary/40 text-gray-800 dark:text-gray-100"
                 : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
             }`}
             aria-haspopup="listbox"
             aria-expanded={categoryMenuOpen}
           >
-            <Tag className="w-4 h-4" />
+            <Tag className={`w-4 h-4 ${categoryId ? "text-pink-primary" : ""}`} />
             <span className="truncate max-w-[140px]">
               {categoryId
                 ? translateCategory(categories.find((c) => c.id === categoryId))
@@ -305,7 +305,7 @@ export function TransactionsPage() {
                   setCategoryId("");
                   setCategoryMenuOpen(false);
                 }}
-                className="p-0.5 -mr-1 rounded-full hover:bg-pink-primary/20"
+                className="p-0.5 -mr-1 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -324,7 +324,7 @@ export function TransactionsPage() {
               />
               <div
                 role="listbox"
-                className="absolute z-20 mt-2 right-0 w-64 max-h-72 overflow-auto bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-xl py-1"
+                className="absolute z-20 mt-2 left-0 sm:left-auto sm:right-0 w-64 max-w-[calc(100vw-1.5rem)] max-h-72 overflow-auto bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-xl py-1"
               >
                 <button
                   type="button"
