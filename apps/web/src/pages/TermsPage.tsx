@@ -82,7 +82,7 @@ export function TermsPage() {
 
       <h2>Contact</h2>
       <p>
-        Questions: <a href="mailto:thelucasdkp@gmail.com">thelucasdkp@gmail.com</a>.
+        Questions: <a href="mailto:madualvesfr@gmail.com">madualvesfr@gmail.com</a>.
       </p>
     </LegalLayout>
   );

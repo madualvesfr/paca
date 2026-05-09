@@ -57,8 +57,8 @@ export function LegalLayout({ title, updated, children }: LegalLayoutProps) {
 
         <footer className="mt-16 pt-6 border-t border-gray-100 dark:border-gray-800 text-sm text-gray-400">
           © {new Date().getFullYear()} Paca Finance ·{" "}
-          <a href="mailto:thelucasdkp@gmail.com" className="hover:text-pink-primary">
-            thelucasdkp@gmail.com
+          <a href="mailto:madualvesfr@gmail.com" className="hover:text-pink-primary">
+            madualvesfr@gmail.com
           </a>
         </footer>
       </main>

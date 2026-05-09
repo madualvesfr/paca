@@ -10,7 +10,7 @@ export function SupportPage() {
 
       <h2>Contact</h2>
       <p>
-        Email: <a href="mailto:thelucasdkp@gmail.com">thelucasdkp@gmail.com</a>
+        Email: <a href="mailto:madualvesfr@gmail.com">madualvesfr@gmail.com</a>
         <br />
         Response time: typically within 48 hours, slower on weekends.
       </p>
