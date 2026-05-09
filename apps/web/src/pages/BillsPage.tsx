@@ -79,18 +79,18 @@ export function BillsPage() {
   return (
     <div className="max-w-4xl mx-auto page-enter">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-display font-bold text-gray-800 dark:text-gray-100">
+      <div className="flex items-center justify-between gap-3 mb-8 min-w-0">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-2xl font-display font-bold text-gray-800 dark:text-gray-100 truncate">
             {t.bills.title}
           </h1>
-          <p className="text-gray-400 text-sm mt-1">
+          <p className="text-gray-400 text-sm mt-1 truncate">
             {t.bills.subtitle}
           </p>
         </div>
-        <Button size="sm" onClick={() => setShowForm(true)}>
+        <Button size="sm" onClick={() => setShowForm(true)} className="shrink-0">
           <Plus className="w-4 h-4" />
-          {t.bills.newBill}
+          <span className="hidden sm:inline">{t.bills.newBill}</span>
         </Button>
       </div>
 
@@ -244,17 +244,17 @@ function BillRow({
       </div>
 
       {/* Amount */}
-      <p className={`text-sm font-semibold whitespace-nowrap ${
+      <p className={`text-sm font-semibold whitespace-nowrap shrink-0 ${
         isPaid ? "text-emerald-500" : "text-gray-700 dark:text-gray-300"
       }`}>
         {formatCurrency(bill.amount)}
       </p>
 
-      {/* Delete */}
+      {/* Delete — always visible on touch, hover-revealed on desktop */}
       <button
         type="button"
         onClick={onDelete}
-        className="p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-400 hover:text-red-primary transition-all"
+        className="p-2 rounded-lg sm:opacity-0 sm:group-hover:opacity-100 hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-400 hover:text-red-primary transition-all shrink-0"
         aria-label={t.bills.deleteBillLabel}
       >
         <Trash2 className="w-4 h-4" />
@@ -327,7 +327,7 @@ function NewBillForm({
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Input
           label={t.profile.name}
           placeholder={t.bills.namePlaceholder}

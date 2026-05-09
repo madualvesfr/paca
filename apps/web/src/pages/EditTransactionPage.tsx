@@ -215,7 +215,7 @@ export function EditTransactionPage() {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {t.transactions.category}
           </label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {categories.map((cat) => {
               const catLabel = translateCategory(cat);
               return (

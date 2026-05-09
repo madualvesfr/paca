@@ -152,7 +152,7 @@ export function ProfilePage() {
               {couple.partner?.display_name?.charAt(0).toUpperCase() ?? "?"}
             </div>
           </div>
-          <p className="text-center text-white/90 font-semibold text-lg">
+          <p className="text-center text-white/90 font-semibold text-lg truncate px-2">
             {profile?.display_name} & {couple.partner?.display_name ?? t.profile.waiting}
           </p>
           <p className="text-center text-white/60 text-sm mt-1">
@@ -173,12 +173,12 @@ export function ProfilePage() {
           label={t.profile.name}
           action={
             editingName ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap justify-end">
                 <input
                   type="text"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="px-3 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm text-gray-800 dark:text-gray-100 w-40 focus:outline-none focus:ring-2 focus:ring-pink-primary/50"
+                  className="px-3 py-1.5 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm text-gray-800 dark:text-gray-100 w-28 sm:w-40 focus:outline-none focus:ring-2 focus:ring-pink-primary/50"
                   autoFocus
                   onKeyDown={(e) => e.key === "Enter" && handleSaveName()}
                 />
@@ -258,7 +258,7 @@ export function ProfilePage() {
           icon={<Globe className="w-5 h-5" />}
           label={t.profile.language}
           action={
-            <div className="flex gap-1">
+            <div className="flex gap-1 flex-wrap justify-end">
               {(Object.entries(LOCALE_LABELS) as [Locale, string][]).map(([key, label]) => (
                 <button
                   key={key}
@@ -420,11 +420,11 @@ function SettingRow({
   action: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 px-5 py-4">
-      <div className="flex items-start gap-3 text-gray-500 dark:text-gray-400 min-w-0">
+    <div className="flex items-center justify-between gap-3 px-4 sm:px-5 py-4 min-w-0">
+      <div className="flex items-start gap-3 text-gray-500 dark:text-gray-400 min-w-0 flex-1">
         <div className="shrink-0 mt-0.5">{icon}</div>
         <div className="min-w-0">
-          <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <div className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
             {label}
           </div>
           {hint && (
@@ -434,7 +434,7 @@ function SettingRow({
           )}
         </div>
       </div>
-      <div className="shrink-0">{action}</div>
+      <div className="shrink-0 max-w-[60%]">{action}</div>
     </div>
   );
 }

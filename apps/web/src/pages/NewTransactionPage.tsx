@@ -191,7 +191,7 @@ export function NewTransactionPage() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t.transactions.category}
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {categories.map((cat) => {
                 const catLabel = translateCategory(cat);
                 return (
@@ -227,19 +227,19 @@ export function NewTransactionPage() {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {t.transactions.whoPaid}
           </label>
-          <div className="flex gap-2">
-            <div className="flex-1 flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-pink-primary bg-pink-50 dark:bg-pink-primary/10">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-primary to-pink-light flex items-center justify-center text-white text-sm font-bold">
+          <div className="flex flex-col sm:flex-row gap-2 min-w-0">
+            <div className="flex-1 min-w-0 flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-pink-primary bg-pink-50 dark:bg-pink-primary/10">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-primary to-pink-light flex items-center justify-center text-white text-sm font-bold shrink-0">
                 {profile?.display_name?.charAt(0).toUpperCase()}
               </div>
-              <span className="text-sm font-medium text-pink-primary">{t.common.me}</span>
+              <span className="text-sm font-medium text-pink-primary truncate">{t.common.me}</span>
             </div>
             {couple?.partner && (
-              <div className="flex-1 flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-gray-700 text-gray-500 opacity-50 cursor-not-allowed">
-                <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 text-sm font-bold">
+              <div className="flex-1 min-w-0 flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-gray-700 text-gray-500 opacity-50 cursor-not-allowed">
+                <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 text-sm font-bold shrink-0">
                   {couple.partner.display_name.charAt(0).toUpperCase()}
                 </div>
-                <span className="text-sm font-medium">
+                <span className="text-sm font-medium truncate">
                   {couple.partner.display_name}
                 </span>
               </div>

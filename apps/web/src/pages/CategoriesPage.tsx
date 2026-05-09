@@ -71,20 +71,20 @@ export function CategoriesPage() {
 
   return (
     <div className="max-w-2xl mx-auto page-enter">
-      <div className="flex items-center gap-2 sm:gap-4 mb-6">
+      <div className="flex items-center gap-2 sm:gap-4 mb-6 min-w-0">
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0"
           aria-label="Back"
         >
           <ArrowLeft className="w-5 h-5 text-gray-500" />
         </button>
-        <div>
-          <h1 className="text-xl sm:text-2xl font-display font-bold text-gray-800 dark:text-gray-100">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xl sm:text-2xl font-display font-bold text-gray-800 dark:text-gray-100 truncate">
             {t.categoryManager.title}
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">
             {t.categoryManager.description}
           </p>
         </div>

@@ -127,13 +127,13 @@ export function NotificationsPopover() {
           className="absolute top-full right-0 mt-2 w-80 sm:w-96 max-w-[calc(100vw-2rem)] rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-2xl z-50 overflow-hidden animate-fadeIn"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-2 min-w-0">
-              <h3 className="text-sm font-display font-bold text-gray-800 dark:text-gray-100">
+          <div className="flex items-center justify-between gap-2 px-5 pt-4 pb-3 border-b border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <h3 className="text-sm font-display font-bold text-gray-800 dark:text-gray-100 truncate">
                 {t.notifications.title}
               </h3>
               {unreadCount > 0 && (
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-pink-50 dark:bg-pink-primary/10 text-pink-primary">
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-pink-50 dark:bg-pink-primary/10 text-pink-primary shrink-0">
                   {unreadCount} {t.notifications.unread}
                 </span>
               )}

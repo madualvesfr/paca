@@ -226,7 +226,7 @@ export function ScanReceiptPage() {
   return (
     <div className="max-w-3xl mx-auto page-enter">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex items-center gap-3 sm:gap-4 mb-8 min-w-0">
         <button
           onClick={() => {
             if (step !== "upload" || mode !== "choose") {
@@ -239,15 +239,15 @@ export function ScanReceiptPage() {
               navigate(-1);
             }
           }}
-          className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0"
         >
           <ArrowLeft className="w-5 h-5 text-gray-500" />
         </button>
-        <div>
-          <h1 className="text-2xl font-display font-bold text-gray-800 dark:text-gray-100">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-2xl font-display font-bold text-gray-800 dark:text-gray-100 truncate">
             {t.scan.title}
           </h1>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-400 line-clamp-2">
             {t.scan.subtitle}
           </p>
         </div>
@@ -394,11 +394,11 @@ export function ScanReceiptPage() {
                     : "border-gray-100 dark:border-gray-700 opacity-50"
                 }`}
               >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-start justify-between gap-3 mb-3 min-w-0">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     <button
                       onClick={() => toggleItem(i)}
-                      className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
+                      className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all shrink-0 ${
                         item.selected
                           ? "bg-pink-primary border-pink-primary"
                           : "border-gray-300 dark:border-gray-600"
@@ -406,13 +406,13 @@ export function ScanReceiptPage() {
                     >
                       {item.selected && <Check className="w-4 h-4 text-white" />}
                     </button>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <input
                         value={item.description}
                         onChange={(e) => updateItem(i, "description", e.target.value)}
-                        className="text-sm font-semibold text-gray-800 dark:text-gray-100 bg-transparent border-none outline-none w-full"
+                        className="text-sm font-semibold text-gray-800 dark:text-gray-100 bg-transparent border-none outline-none w-full min-w-0"
                       />
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-gray-400 truncate">
                         {translateCategory(item.category)} · {item.date} ·{" "}
                         <span className="text-pink-primary">
                           {Math.round(item.confidence * 100)}% {t.scan.confidence}
@@ -420,7 +420,7 @@ export function ScanReceiptPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right shrink-0">
                     <input
                       value={(Math.abs(item.amount) / 100).toFixed(2)}
                       onChange={(e) =>

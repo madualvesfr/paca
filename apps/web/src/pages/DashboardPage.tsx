@@ -39,7 +39,7 @@ function DonutChart({ data }: { data: { name: string; color: string; value: numb
   let cumulativePercent = 0;
 
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex items-center gap-4 sm:gap-6 min-w-0">
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="shrink-0 -rotate-90">
         {data.map((segment) => {
           const percent = segment.value / total;
@@ -64,7 +64,7 @@ function DonutChart({ data }: { data: { name: string; color: string; value: numb
           );
         })}
       </svg>
-      <div className="space-y-2 min-w-0">
+      <div className="flex-1 min-w-0 space-y-2">
         {data.map((d) => (
           <div key={d.name} className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
