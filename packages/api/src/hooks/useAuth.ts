@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../supabase";
 import { useAppStore } from "../store";
 import type { Session, User } from "@supabase/supabase-js";
@@ -88,4 +88,19 @@ export function useAuth() {
     signInWithApple,
     signOut,
   };
+}
+
+export function useDeleteAccount() {
+  const queryClient = useQueryClient();
+  const reset = useAppStore((s) => s.reset);
+  return useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.functions.invoke("delete-account");
+      if (error) throw error;
+      // Sign out locally; the auth user is already gone server-side.
+      await supabase.auth.signOut();
+      reset();
+      queryClient.clear();
+    },
+  });
 }

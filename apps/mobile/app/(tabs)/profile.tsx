@@ -8,6 +8,7 @@ import {
   Share,
   Alert,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -17,6 +18,7 @@ import {
   useUpdateProfile,
   useCouple,
   useUpdateCouple,
+  useDeleteAccount,
   supabase,
   useI18n,
   useAppStore,
@@ -31,8 +33,45 @@ export default function Profile() {
   const { data: couple } = useCouple();
   const updateProfile = useUpdateProfile();
   const updateCouple = useUpdateCouple();
+  const deleteAccount = useDeleteAccount();
   const mode = useAppStore((s) => s.mode);
   const setMode = useAppStore((s) => s.setMode);
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      t.profile.deleteAccountTitle,
+      t.profile.deleteAccountWarning,
+      [
+        { text: t.common.cancel, style: "cancel" },
+        {
+          text: t.profile.deleteAccountButton,
+          style: "destructive",
+          onPress: () => {
+            // Second confirmation — Apple recommends two taps for destructive actions.
+            Alert.alert(
+              t.profile.deleteAccountTitle,
+              t.profile.deleteAccountConfirmText,
+              [
+                { text: t.common.cancel, style: "cancel" },
+                {
+                  text: t.profile.deleteAccountButton,
+                  style: "destructive",
+                  onPress: async () => {
+                    try {
+                      await deleteAccount.mutateAsync();
+                      router.replace("/(auth)/login");
+                    } catch {
+                      Alert.alert(t.profile.deleteAccountTitle, t.profile.deleteAccountError);
+                    }
+                  },
+                },
+              ]
+            );
+          },
+        },
+      ]
+    );
+  };
 
   const handleLanguageChange = async (newLocale: Locale) => {
     setLocale(newLocale);
@@ -449,7 +488,11 @@ export default function Profile() {
         {/* Support */}
         <SectionTitle title={t.profile.support} />
         <View className="mx-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 mb-4">
-          <View className="flex-row items-center justify-between px-5 py-4 border-b border-gray-50 dark:border-gray-700/50">
+          <TouchableOpacity
+            onPress={() => Linking.openURL("https://paca-web-twmh.vercel.app/terms")}
+            className="flex-row items-center justify-between px-5 py-4 border-b border-gray-50 dark:border-gray-700/50"
+            activeOpacity={0.7}
+          >
             <View className="flex-row items-center gap-3">
               <Ionicons name="shield-outline" size={20} color="#9CA3AF" />
               <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -457,8 +500,12 @@ export default function Profile() {
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#D1D5DB" />
-          </View>
-          <View className="flex-row items-center justify-between px-5 py-4">
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => Linking.openURL("https://paca-web-twmh.vercel.app/privacy")}
+            className="flex-row items-center justify-between px-5 py-4"
+            activeOpacity={0.7}
+          >
             <View className="flex-row items-center gap-3">
               <Ionicons name="shield-outline" size={20} color="#9CA3AF" />
               <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -466,11 +513,11 @@ export default function Profile() {
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#D1D5DB" />
-          </View>
+          </TouchableOpacity>
         </View>
 
         {/* Logout */}
-        <View className="mx-6 mb-12">
+        <View className="mx-6 mb-6">
           <TouchableOpacity
             onPress={handleSignOut}
             className="border-2 border-red-200 dark:border-red-800 rounded-2xl py-4 items-center flex-row justify-center gap-2"
@@ -478,6 +525,29 @@ export default function Profile() {
           >
             <Ionicons name="log-out-outline" size={20} color="#FF6B6B" />
             <Text className="text-red-500 font-semibold">{t.profile.signOut}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Danger zone */}
+        <SectionTitle title={t.profile.dangerZone} />
+        <View className="mx-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 mb-12">
+          <TouchableOpacity
+            onPress={handleDeleteAccount}
+            disabled={deleteAccount.isPending}
+            className="flex-row items-center justify-between px-5 py-4"
+            activeOpacity={0.7}
+          >
+            <View className="flex-row items-center gap-3">
+              <Ionicons name="trash-outline" size={20} color="#FF6B6B" />
+              <Text className="text-sm font-medium text-red-500">
+                {t.profile.deleteAccount}
+              </Text>
+            </View>
+            {deleteAccount.isPending ? (
+              <ActivityIndicator color="#FF6B6B" />
+            ) : (
+              <Ionicons name="chevron-forward" size={18} color="#D1D5DB" />
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>

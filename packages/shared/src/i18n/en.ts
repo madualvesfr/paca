@@ -244,6 +244,17 @@ export const en = {
     shareInvite: "Join me on Paca Finance! Use the code:",
     signOutConfirm: "Sign out",
     signOutMessage: "Do you want to sign out?",
+    dangerZone: "Danger zone",
+    deleteAccount: "Delete account",
+    deleteAccountTitle: "Delete account?",
+    deleteAccountWarning:
+      "This is permanent. Your personal transactions, budgets, and personal categories will be deleted. If you're in a couple, your partner keeps access to shared data, but your name will show as 'Removed user' on old transactions.",
+    deleteAccountConfirmText: "Type DELETE to confirm",
+    deleteAccountConfirmKeyword: "DELETE",
+    deleteAccountButton: "Delete forever",
+    deleteAccountSuccess: "Account deleted.",
+    deleteAccountError: "Couldn't delete the account. Try again in a few minutes.",
+    removedUser: "Removed user",
   },
 
   // Onboarding

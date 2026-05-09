@@ -238,6 +238,17 @@ export const pt: TranslationKeys = {
     shareInvite: "Entra no Paca Finance comigo! Use o código:",
     signOutConfirm: "Sair",
     signOutMessage: "Deseja sair da sua conta?",
+    dangerZone: "Zona de perigo",
+    deleteAccount: "Apagar conta",
+    deleteAccountTitle: "Apagar conta?",
+    deleteAccountWarning:
+      "Isso é permanente. Suas transações pessoais, orçamentos e categorias pessoais serão apagados. Se você está em um casal, seu parceiro mantém acesso aos dados compartilhados, mas seu nome aparecerá como 'Usuário removido' nas transações antigas.",
+    deleteAccountConfirmText: "Digite APAGAR para confirmar",
+    deleteAccountConfirmKeyword: "APAGAR",
+    deleteAccountButton: "Apagar para sempre",
+    deleteAccountSuccess: "Conta apagada.",
+    deleteAccountError: "Não foi possível apagar a conta. Tente de novo em alguns minutos.",
+    removedUser: "Usuário removido",
   },
 
   onboarding: {

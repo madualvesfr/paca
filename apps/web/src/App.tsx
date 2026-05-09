@@ -15,10 +15,18 @@ import { BillsPage } from "@/pages/BillsPage";
 import { AdvisorPage } from "@/pages/AdvisorPage";
 import { AdminUsagePage } from "@/pages/AdminUsagePage";
 import { CategoriesPage } from "@/pages/CategoriesPage";
+import { PrivacyPage } from "@/pages/PrivacyPage";
+import { TermsPage } from "@/pages/TermsPage";
+import { SupportPage } from "@/pages/SupportPage";
 
 export function App() {
   return (
     <Routes>
+      {/* Public routes (legal + support) — no auth required */}
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/support" element={<SupportPage />} />
+
       {/* Guest routes */}
       <Route
         path="/login"

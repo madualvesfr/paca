@@ -6,6 +6,7 @@ import {
   useUpdateProfile,
   useCouple,
   useUpdateCouple,
+  useDeleteAccount,
   supabase,
   useI18n,
 } from "@paca/api";
@@ -34,6 +35,8 @@ import {
   Coins,
   GraduationCap,
   Repeat,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 
 export function ProfilePage() {
@@ -43,7 +46,21 @@ export function ProfilePage() {
   const { data: couple } = useCouple();
   const updateProfile = useUpdateProfile();
   const updateCouple = useUpdateCouple();
+  const deleteAccount = useDeleteAccount();
   const { t, dateLocale, locale, setLocale, currency, setCurrency, translateCategory } = useI18n();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+
+  const handleDeleteAccount = async () => {
+    setDeleteError("");
+    try {
+      await deleteAccount.mutateAsync();
+      navigate("/login");
+    } catch {
+      setDeleteError(t.profile.deleteAccountError);
+    }
+  };
 
   const handleLanguageChange = async (newLocale: Locale) => {
     setLocale(newLocale);
@@ -361,20 +378,36 @@ export function ProfilePage() {
 
       {/* Support */}
       <Section title={t.profile.support}>
-        <SettingRow
-          icon={<Shield className="w-5 h-5" />}
-          label={t.profile.termsOfUse}
-          action={<ChevronRight className="w-4 h-4 text-gray-400" />}
-        />
-        <SettingRow
-          icon={<Shield className="w-5 h-5" />}
-          label={t.profile.privacyPolicy}
-          action={<ChevronRight className="w-4 h-4 text-gray-400" />}
-        />
+        <a
+          href="/terms"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={t.profile.termsOfUse}
+          className="block hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+        >
+          <SettingRow
+            icon={<Shield className="w-5 h-5" />}
+            label={t.profile.termsOfUse}
+            action={<ChevronRight className="w-4 h-4 text-gray-400" />}
+          />
+        </a>
+        <a
+          href="/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={t.profile.privacyPolicy}
+          className="block hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+        >
+          <SettingRow
+            icon={<Shield className="w-5 h-5" />}
+            label={t.profile.privacyPolicy}
+            action={<ChevronRight className="w-4 h-4 text-gray-400" />}
+          />
+        </a>
       </Section>
 
       {/* Logout */}
-      <div className="mt-6 mb-12">
+      <div className="mt-6 mb-6">
         <Button
           variant="outline"
           fullWidth
@@ -385,6 +418,89 @@ export function ProfilePage() {
           {t.profile.signOut}
         </Button>
       </div>
+
+      {/* Danger zone */}
+      <Section title={t.profile.dangerZone}>
+        <SettingRow
+          icon={<Trash2 className="w-5 h-5 text-red-primary" />}
+          label={t.profile.deleteAccount}
+          action={
+            <button
+              type="button"
+              onClick={() => {
+                setDeleteConfirm("");
+                setDeleteError("");
+                setDeleteOpen(true);
+              }}
+              className="text-sm text-red-primary font-medium hover:underline"
+            >
+              {t.profile.deleteAccount}
+            </button>
+          }
+        />
+      </Section>
+      <div className="h-12" />
+
+      {/* Delete account modal */}
+      {deleteOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => !deleteAccount.isPending && setDeleteOpen(false)}
+        >
+          <div
+            className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5 text-red-primary" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-lg font-display font-bold text-gray-800 dark:text-gray-100">
+                  {t.profile.deleteAccountTitle}
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  {t.profile.deleteAccountWarning}
+                </p>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <Input
+                label={t.profile.deleteAccountConfirmText}
+                value={deleteConfirm}
+                onChange={(e) => setDeleteConfirm(e.target.value)}
+                placeholder={t.profile.deleteAccountConfirmKeyword}
+                autoFocus
+              />
+            </div>
+
+            {deleteError && (
+              <div className="mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-primary/10 text-red-primary text-sm">
+                {deleteError}
+              </div>
+            )}
+
+            <div className="flex gap-3 justify-end">
+              <Button
+                variant="ghost"
+                onClick={() => setDeleteOpen(false)}
+                disabled={deleteAccount.isPending}
+              >
+                {t.common.cancel}
+              </Button>
+              <Button
+                onClick={handleDeleteAccount}
+                loading={deleteAccount.isPending}
+                disabled={deleteConfirm !== t.profile.deleteAccountConfirmKeyword}
+                className="!bg-red-primary hover:!bg-red-600 !text-white"
+              >
+                {t.profile.deleteAccountButton}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

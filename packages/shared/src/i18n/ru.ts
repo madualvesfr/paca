@@ -238,6 +238,17 @@ export const ru: TranslationKeys = {
     shareInvite: "Присоединяйся к Paca Finance! Используй код:",
     signOutConfirm: "Выход",
     signOutMessage: "Вы хотите выйти из аккаунта?",
+    dangerZone: "Опасная зона",
+    deleteAccount: "Удалить аккаунт",
+    deleteAccountTitle: "Удалить аккаунт?",
+    deleteAccountWarning:
+      "Это навсегда. Ваши личные транзакции, бюджеты и личные категории будут удалены. Если вы в паре, партнёр сохраняет доступ к общим данным, но ваше имя в старых транзакциях будет показано как «Удалённый пользователь».",
+    deleteAccountConfirmText: "Введите УДАЛИТЬ для подтверждения",
+    deleteAccountConfirmKeyword: "УДАЛИТЬ",
+    deleteAccountButton: "Удалить навсегда",
+    deleteAccountSuccess: "Аккаунт удалён.",
+    deleteAccountError: "Не удалось удалить аккаунт. Попробуйте снова через несколько минут.",
+    removedUser: "Удалённый пользователь",
   },
 
   onboarding: {
