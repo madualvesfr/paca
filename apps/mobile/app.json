@@ -15,19 +15,52 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.pacafinance.app"
+      "bundleIdentifier": "com.pacafinance.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Paca Finance usa a câmera pra escanear recibos e extratos automaticamente, criando suas transações sem digitação.",
+        "NSPhotoLibraryUsageDescription": "Paca Finance acessa suas fotos pra escanear recibos e extratos salvos na galeria.",
+        "NSFaceIDUsageDescription": "Paca Finance usa Face ID pra proteger seu acesso ao app.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FF8FB1"
       },
-      "package": "com.pacafinance.app"
+      "package": "com.pacafinance.app",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
+      ]
     },
     "plugins": [
       "expo-router",
-      "expo-image-picker",
-      "expo-local-authentication"
-    ]
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Paca Finance usa a câmera pra escanear recibos e extratos automaticamente.",
+          "photosPermission": "Paca Finance acessa suas fotos pra escanear recibos e extratos salvos na galeria."
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Paca Finance usa Face ID pra proteger seu acesso ao app."
+        }
+      ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "67ee7ffd-d457-4a04-8afd-ffbfa3b5153b"
+      }
+    },
+    "owner": "madualvesfr"
   }
 }
