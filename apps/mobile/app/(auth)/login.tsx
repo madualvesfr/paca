@@ -120,6 +120,16 @@ export default function Login() {
                 </Text>
               )}
             </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => router.push("/(auth)/forgot-password")}
+              className="items-center mt-1"
+              activeOpacity={0.7}
+            >
+              <Text className="text-pink-primary font-medium text-sm">
+                {t.auth.forgotPassword}
+              </Text>
+            </TouchableOpacity>
           </View>
 
           <View className="flex-row justify-center mt-8">

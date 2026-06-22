@@ -15,6 +15,8 @@ import {
   getCurrentMonth,
   type TransactionWithCategory,
 } from "@paca/shared";
+import { ErrorState } from "../../components/ErrorState";
+import { ScreenContainer } from "../../components/ScreenContainer";
 
 type TypeFilter = "all" | "income" | "expense";
 
@@ -29,7 +31,7 @@ export default function Transactions() {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: transactions, isLoading } = useTransactions({
+  const { data: transactions, isLoading, isError, refetch } = useTransactions({
     coupleId,
     mode,
     month,
@@ -66,6 +68,7 @@ export default function Transactions() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900" edges={["top"]}>
+      <ScreenContainer className="flex-1">
       {/* Header */}
       <View className="px-6 pt-4 pb-2">
         <Text className="text-2xl font-bold text-gray-800 dark:text-gray-100">
@@ -152,6 +155,8 @@ export default function Transactions() {
             <View className="items-center py-12">
               <ActivityIndicator color="#FF8FB1" />
             </View>
+          ) : isError ? (
+            <ErrorState onRetry={refetch} />
           ) : (
             <View className="items-center py-12">
               <View className="w-14 h-14 rounded-2xl bg-pink-50 dark:bg-pink-900/20 items-center justify-center mb-3">
@@ -212,6 +217,7 @@ export default function Transactions() {
           );
         }}
       />
+      </ScreenContainer>
 
       {/* FAB */}
       <TouchableOpacity

@@ -23,6 +23,9 @@ export const pt: TranslationKeys = {
     share: "Compartilhar",
     saving: "Salvando...",
     new: "Nova",
+    tryAgain: "Tentar de novo",
+    errorBoundaryMessage: "Algo deu errado. Tente de novo.",
+    loadError: "Não foi possível carregar seus dados.",
   },
 
   nav: {
@@ -84,6 +87,13 @@ export const pt: TranslationKeys = {
     rememberMe: "Lembrar de mim",
     brandDescription: "Finanças a dois, simplificadas. Gerencie gastos, orçamentos e metas junto com seu amor.",
     brandSignupDescription: "Comece a organizar as finanças do casal hoje mesmo.",
+    forgotPassword: "Esqueci minha senha",
+    resetPasswordTitle: "Redefinir senha",
+    resetPasswordSubtitle: "Digite seu email e enviaremos um link para redefinir sua senha.",
+    sendResetLink: "Enviar link",
+    resetLinkSent: "Verifique seu email para o link de redefinição de senha.",
+    resetError: "Não foi possível enviar o email. Tente de novo.",
+    backToLogin: "Voltar ao login",
   },
 
   dashboard: {
