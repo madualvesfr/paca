@@ -34,8 +34,8 @@
       },
       "env": {
         "EXPO_PUBLIC_APP_ENV": "production",
-        "EXPO_PUBLIC_SUPABASE_URL": "https://REPLACE_WITH_PROD_PROJECT.supabase.co",
-        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "REPLACE_WITH_PROD_PUBLISHABLE_KEY"
+        "EXPO_PUBLIC_SUPABASE_URL": "https://gtumyiwokhroizmqcbve.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_RjWe8x2AN420Tkw_fnJMwg_TMTuJ4Yn"
       }
     }
   },
