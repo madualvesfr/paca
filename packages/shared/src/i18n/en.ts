@@ -489,6 +489,14 @@ export const en = {
     comingSoonTitle: "Coming soon",
     comingSoon: "Subscriptions are coming soon.",
   },
+
+  recommendations: {
+    title: "Recommendations",
+    subtitle: "Partner offers for couples. We may earn a commission.",
+    paidPartnership: "Paid partnership",
+    cta: "See offer",
+    empty: "No recommendations right now. Check back soon.",
+  },
 } as const;
 
 // Deep-convert literal string types to `string` so other locales can assign freely

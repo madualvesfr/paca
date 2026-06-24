@@ -10,3 +10,4 @@ export * from "./useI18n";
 export * from "./usePurchaseAdvice";
 export * from "./useNotifications";
 export * from "./useSubscription";
+export * from "./usePartnerOffers";

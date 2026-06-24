@@ -7,3 +7,4 @@ export * from "./notification";
 export * from "./bill";
 export * from "./advice";
 export * from "./subscription";
+export * from "./offer";

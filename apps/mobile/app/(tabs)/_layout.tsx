@@ -85,6 +85,15 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
+          name="recommendations"
+          options={{
+            title: t.recommendations.title,
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="gift-outline" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="profile"
           options={{
             title: t.nav.profile,

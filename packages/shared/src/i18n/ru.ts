@@ -477,4 +477,12 @@ export const ru: TranslationKeys = {
     comingSoonTitle: "Скоро",
     comingSoon: "Подписки появятся совсем скоро.",
   },
+
+  recommendations: {
+    title: "Рекомендации",
+    subtitle: "Предложения партнёров для пар. Мы можем получать комиссию.",
+    paidPartnership: "Платное партнёрство",
+    cta: "Смотреть предложение",
+    empty: "Сейчас рекомендаций нет. Загляните позже.",
+  },
 } as const;

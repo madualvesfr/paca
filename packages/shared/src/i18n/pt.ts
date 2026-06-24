@@ -477,4 +477,12 @@ export const pt: TranslationKeys = {
     comingSoonTitle: "Em breve",
     comingSoon: "As assinaturas chegam em breve.",
   },
+
+  recommendations: {
+    title: "Recomendações",
+    subtitle: "Ofertas de parceiros para casais. Podemos receber uma comissão.",
+    paidPartnership: "Parceria paga",
+    cta: "Ver oferta",
+    empty: "Nenhuma recomendação no momento. Volte em breve.",
+  },
 } as const;
