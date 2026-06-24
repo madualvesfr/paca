@@ -24,6 +24,7 @@ import {
   useAppStore,
 } from "@paca/api";
 import { LOCALE_LABELS, SUPPORTED_CURRENCIES, type Locale } from "@paca/shared";
+import { ScreenContainer } from "../../components/ScreenContainer";
 
 export default function Profile() {
   const router = useRouter();
@@ -165,6 +166,7 @@ export default function Profile() {
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900" edges={["top"]}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <ScreenContainer>
         {/* Header */}
         <View className="px-6 pt-4 pb-2">
           <Text className="text-2xl font-bold text-gray-800 dark:text-gray-100">
@@ -550,6 +552,7 @@ export default function Profile() {
             )}
           </TouchableOpacity>
         </View>
+        </ScreenContainer>
       </ScrollView>
     </SafeAreaView>
   );

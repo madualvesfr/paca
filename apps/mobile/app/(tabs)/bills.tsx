@@ -15,6 +15,8 @@ import {
   getCurrentMonth,
   type BillWithPayment,
 } from "@paca/shared";
+import { ErrorState } from "../../components/ErrorState";
+import { ScreenContainer } from "../../components/ScreenContainer";
 
 export default function Bills() {
   const { t, formatCurrency, formatMonthYear } = useI18n();
@@ -24,7 +26,7 @@ export default function Bills() {
   const [month, setMonth] = useState(getCurrentMonth());
   const [showForm, setShowForm] = useState(false);
 
-  const { data: bills, isLoading } = useBills({ coupleId, month });
+  const { data: bills, isLoading, isError, refetch } = useBills({ coupleId, month });
   const toggleBill = useToggleBill();
   const deleteBill = useDeleteBill();
 
@@ -84,6 +86,7 @@ export default function Bills() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900" edges={["top"]}>
+      <ScreenContainer className="flex-1">
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 pt-4 pb-2">
         <Text className="text-2xl font-bold text-gray-800 dark:text-gray-100">
@@ -182,6 +185,8 @@ export default function Bills() {
             <View className="items-center py-12">
               <ActivityIndicator color="#FF8FB1" />
             </View>
+          ) : isError ? (
+            <ErrorState onRetry={refetch} />
           ) : (
             <View className="items-center py-12">
               <View className="w-14 h-14 rounded-2xl bg-pink-50 dark:bg-pink-900/20 items-center justify-center mb-3">
@@ -204,6 +209,7 @@ export default function Bills() {
           />
         )}
       />
+      </ScreenContainer>
     </SafeAreaView>
   );
 }

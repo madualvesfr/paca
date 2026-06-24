@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import { supabase, I18nProvider } from "@paca/api";
 import type { Session } from "@supabase/supabase-js";
+import { AppErrorBoundary } from "../components/ErrorBoundary";
+import { EnvBadge } from "../components/EnvBadge";
 import "../global.css";
 
 const queryClient = new QueryClient({
@@ -64,33 +66,36 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
-      <StatusBar style="auto" />
-      <AuthGate>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            animation: "fade",
-          }}
-        >
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="onboarding" />
-          <Stack.Screen
-            name="add-transaction"
-            options={{
-              presentation: "modal",
-              animation: "slide_from_bottom",
-            }}
-          />
-          <Stack.Screen
-            name="scan"
-            options={{
-              presentation: "modal",
-              animation: "slide_from_bottom",
-            }}
-          />
-        </Stack>
-      </AuthGate>
+        <AppErrorBoundary>
+          <StatusBar style="auto" />
+          <EnvBadge />
+          <AuthGate>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                animation: "fade",
+              }}
+            >
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="onboarding" />
+              <Stack.Screen
+                name="add-transaction"
+                options={{
+                  presentation: "modal",
+                  animation: "slide_from_bottom",
+                }}
+              />
+              <Stack.Screen
+                name="scan"
+                options={{
+                  presentation: "modal",
+                  animation: "slide_from_bottom",
+                }}
+              />
+            </Stack>
+          </AuthGate>
+        </AppErrorBoundary>
       </I18nProvider>
     </QueryClientProvider>
   );

@@ -23,6 +23,9 @@ export const uk: TranslationKeys = {
     share: "Поділитися",
     saving: "Збереження...",
     new: "Новий",
+    tryAgain: "Спробувати ще раз",
+    errorBoundaryMessage: "Щось пішло не так. Спробуйте ще раз.",
+    loadError: "Не вдалося завантажити дані.",
   },
 
   nav: {
@@ -84,6 +87,13 @@ export const uk: TranslationKeys = {
     rememberMe: "Запам'ятати мене",
     brandDescription: "Фінанси удвох, просто. Керуйте витратами, бюджетами та цілями разом з коханою людиною.",
     brandSignupDescription: "Почніть керувати фінансами пари вже сьогодні.",
+    forgotPassword: "Забули пароль?",
+    resetPasswordTitle: "Скидання пароля",
+    resetPasswordSubtitle: "Введіть email, і ми надішлемо посилання для скидання пароля.",
+    sendResetLink: "Надіслати посилання",
+    resetLinkSent: "Перевірте пошту — ми надіслали посилання для скидання пароля.",
+    resetError: "Не вдалося надіслати лист. Спробуйте ще раз.",
+    backToLogin: "Повернутися до входу",
   },
 
   dashboard: {

@@ -7,6 +7,8 @@ import {
   getCurrentMonth,
   type TransactionWithCategory,
 } from "@paca/shared";
+import { ErrorState } from "../../components/ErrorState";
+import { ScreenContainer } from "../../components/ScreenContainer";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -17,7 +19,7 @@ export default function Dashboard() {
   const coupleId = profile?.couple_id ?? "";
   const month = getCurrentMonth();
 
-  const { data: transactions, isLoading: txLoading } = useTransactions({ coupleId, mode, month });
+  const { data: transactions, isLoading: txLoading, isError: txError, refetch: refetchTx } = useTransactions({ coupleId, mode, month });
   useRealtimeTransactions(coupleId || undefined);
 
   const income = (transactions ?? [])
@@ -40,6 +42,7 @@ export default function Dashboard() {
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900" edges={["top"]}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <ScreenContainer>
         {/* Header */}
         <View className="flex-row items-center justify-between px-6 pt-4 pb-6">
           <View>
@@ -50,9 +53,6 @@ export default function Dashboard() {
               {t.dashboard.coupleSummary}
             </Text>
           </View>
-          <TouchableOpacity className="w-10 h-10 bg-white dark:bg-gray-800 rounded-xl items-center justify-center border border-gray-100 dark:border-gray-700">
-            <Ionicons name="notifications-outline" size={20} color="#9CA3AF" />
-          </TouchableOpacity>
         </View>
 
         {/* Balance Card */}
@@ -153,6 +153,8 @@ export default function Dashboard() {
             <View className="p-8 items-center">
               <ActivityIndicator color="#FF8FB1" />
             </View>
+          ) : txError ? (
+            <ErrorState onRetry={refetchTx} />
           ) : recent.length === 0 ? (
             <View className="p-8 items-center">
               <View className="w-14 h-14 rounded-2xl bg-pink-50 dark:bg-pink-900/20 items-center justify-center mb-3">
@@ -174,6 +176,7 @@ export default function Dashboard() {
 
         {/* FAB spacer */}
         <View className="h-20" />
+        </ScreenContainer>
       </ScrollView>
 
       {/* FAB */}

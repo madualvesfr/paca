@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { checkRateLimit, rateLimitedResponse } from "../_shared/rateLimit.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 
@@ -65,6 +66,14 @@ Deno.serve(async (req) => {
       .single();
 
     if (!profile?.couple_id) return jsonResponse({ error: "No couple found" }, 403);
+
+    // Throttle the paid Gemini scan per user to prevent runaway billing abuse.
+    const rateLimit = await checkRateLimit(supabase, profile.id, {
+      action: "scan_receipt",
+      windowSeconds: 3600,
+      max: 30,
+    });
+    if (!rateLimit.allowed) return rateLimitedResponse(rateLimit, corsHeaders);
 
     const { data: couple } = await supabase
       .from("couples")

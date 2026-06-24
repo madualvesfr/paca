@@ -8,6 +8,7 @@ import {
   Share,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ScreenContainer } from "../components/ScreenContainer";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { supabase, useI18n } from "@paca/api";
@@ -90,7 +91,7 @@ export default function Onboarding() {
 
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
-      <View className="flex-1 px-8 justify-center">
+      <ScreenContainer className="flex-1 px-8 justify-center">
         {/* Welcome */}
         {step === "welcome" && (
           <View className="items-center">
@@ -272,7 +273,7 @@ export default function Onboarding() {
             </View>
           </View>
         )}
-      </View>
+      </ScreenContainer>
     </SafeAreaView>
   );
 }

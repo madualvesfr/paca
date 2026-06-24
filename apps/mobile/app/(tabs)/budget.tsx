@@ -16,6 +16,8 @@ import {
   type Category,
   type BudgetWithCategories,
 } from "@paca/shared";
+import { ErrorState } from "../../components/ErrorState";
+import { ScreenContainer } from "../../components/ScreenContainer";
 
 type Screen = "overview" | "setup";
 
@@ -28,7 +30,7 @@ export default function Budget() {
   const [month, setMonth] = useState(getCurrentMonth());
   const [screen, setScreen] = useState<Screen>("overview");
 
-  const { data: budget, isLoading } = useBudget({ coupleId, month, mode, ownerId });
+  const { data: budget, isLoading, isError, refetch } = useBudget({ coupleId, month, mode, ownerId });
 
   const prevMonth = () => {
     const d = new Date(month + "T00:00:00");
@@ -43,6 +45,7 @@ export default function Budget() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900" edges={["top"]}>
+      <ScreenContainer className="flex-1">
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 pt-4 pb-2">
         <Text className="text-2xl font-bold text-gray-800 dark:text-gray-100">
@@ -72,6 +75,8 @@ export default function Budget() {
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator color="#FF8FB1" />
         </View>
+      ) : isError ? (
+        <ErrorState onRetry={refetch} />
       ) : screen === "setup" || (!budget && screen === "overview") ? (
         <BudgetSetupMobile
           coupleId={coupleId}
@@ -85,6 +90,7 @@ export default function Budget() {
       ) : (
         <BudgetOverviewMobile budget={budget!} />
       )}
+      </ScreenContainer>
     </SafeAreaView>
   );
 }

@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ScreenContainer } from "../components/ScreenContainer";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -88,6 +89,7 @@ export default function CategoriesScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900" edges={["top"]}>
+      <ScreenContainer className="flex-1">
       <View className="flex-row items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-800">
         <TouchableOpacity onPress={() => router.back()} className="p-2">
           <Ionicons name="arrow-back" size={22} color="#9CA3AF" />
@@ -200,6 +202,7 @@ export default function CategoriesScreen() {
           </View>
         )}
       </ScrollView>
+      </ScreenContainer>
     </SafeAreaView>
   );
 }

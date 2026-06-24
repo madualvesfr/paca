@@ -22,6 +22,9 @@ export const en = {
     share: "Share",
     saving: "Saving...",
     new: "New",
+    tryAgain: "Try again",
+    errorBoundaryMessage: "Something went wrong. Please try again.",
+    loadError: "Couldn't load your data.",
   },
 
   // Navigation
@@ -85,6 +88,13 @@ export const en = {
     rememberMe: "Remember me",
     brandDescription: "Couple finances, simplified. Manage expenses, budgets and goals together with your partner.",
     brandSignupDescription: "Start organizing your couple finances today.",
+    forgotPassword: "Forgot password?",
+    resetPasswordTitle: "Reset password",
+    resetPasswordSubtitle: "Enter your email and we'll send you a link to reset your password.",
+    sendResetLink: "Send reset link",
+    resetLinkSent: "Check your email for a link to reset your password.",
+    resetError: "Couldn't send the reset email. Try again.",
+    backToLogin: "Back to login",
   },
 
   // Dashboard

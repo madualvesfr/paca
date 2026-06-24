@@ -23,6 +23,9 @@ export const ru: TranslationKeys = {
     share: "Поделиться",
     saving: "Сохранение...",
     new: "Новый",
+    tryAgain: "Попробовать снова",
+    errorBoundaryMessage: "Что-то пошло не так. Попробуйте снова.",
+    loadError: "Не удалось загрузить данные.",
   },
 
   nav: {
@@ -84,6 +87,13 @@ export const ru: TranslationKeys = {
     rememberMe: "Запомнить меня",
     brandDescription: "Финансы вдвоём, просто. Управляйте расходами, бюджетами и целями вместе с любимым человеком.",
     brandSignupDescription: "Начните управлять финансами пары уже сегодня.",
+    forgotPassword: "Забыли пароль?",
+    resetPasswordTitle: "Сброс пароля",
+    resetPasswordSubtitle: "Введите email, и мы отправим ссылку для сброса пароля.",
+    sendResetLink: "Отправить ссылку",
+    resetLinkSent: "Проверьте почту — мы отправили ссылку для сброса пароля.",
+    resetError: "Не удалось отправить письмо. Попробуйте снова.",
+    backToLogin: "Вернуться ко входу",
   },
 
   dashboard: {
