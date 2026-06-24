@@ -184,6 +184,8 @@ export default function Dashboard() {
         onPress={() => router.push("/add-transaction")}
         className="absolute bottom-6 right-6 w-14 h-14 bg-pink-primary rounded-2xl items-center justify-center shadow-lg"
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel={t.transactions.newTransaction}
       >
         <Ionicons name="add" size={28} color="#fff" />
       </TouchableOpacity>
