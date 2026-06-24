@@ -22,9 +22,11 @@ import {
   supabase,
   useI18n,
   useAppStore,
+  useIsPremium,
 } from "@paca/api";
 import { LOCALE_LABELS, SUPPORTED_CURRENCIES, type Locale } from "@paca/shared";
 import { ScreenContainer } from "../../components/ScreenContainer";
+import { PaywallModal, type PaywallReason } from "../../components/PaywallModal";
 
 export default function Profile() {
   const router = useRouter();
@@ -37,6 +39,8 @@ export default function Profile() {
   const deleteAccount = useDeleteAccount();
   const mode = useAppStore((s) => s.mode);
   const setMode = useAppStore((s) => s.setMode);
+  const isPremium = useIsPremium();
+  const [paywall, setPaywall] = useState<PaywallReason | null>(null);
 
   const handleDeleteAccount = () => {
     Alert.alert(
@@ -412,19 +416,28 @@ export default function Profile() {
               <View className="flex-row items-start gap-3 flex-1">
                 <Ionicons name="swap-horizontal-outline" size={20} color="#9CA3AF" />
                 <View className="flex-1">
-                  <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t.profile.autoConvertCurrency}
-                  </Text>
+                  <View className="flex-row items-center gap-2">
+                    <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {t.profile.autoConvertCurrency}
+                    </Text>
+                    {!isPremium && (
+                      <View className="bg-pink-primary/15 rounded-full px-2 py-0.5">
+                        <Text className="text-[10px] font-bold text-pink-primary uppercase">
+                          {t.premium.badge}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
                   <Text className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                     {t.profile.autoConvertCurrencyHint}
                   </Text>
                 </View>
               </View>
               <TouchableOpacity
-                onPress={handleToggleAutoConvert}
+                onPress={isPremium ? handleToggleAutoConvert : () => setPaywall("multi_currency")}
                 accessibilityLabel={t.profile.autoConvertCurrency}
                 className={`relative w-12 h-7 rounded-full ${
-                  couple?.auto_convert_currency
+                  isPremium && couple?.auto_convert_currency
                     ? "bg-pink-primary"
                     : "bg-gray-200 dark:bg-gray-700"
                 }`}
@@ -433,7 +446,7 @@ export default function Profile() {
                   style={{
                     position: "absolute",
                     top: 2,
-                    left: couple?.auto_convert_currency ? 22 : 2,
+                    left: isPremium && couple?.auto_convert_currency ? 22 : 2,
                     width: 24,
                     height: 24,
                     borderRadius: 12,
@@ -554,6 +567,11 @@ export default function Profile() {
         </View>
         </ScreenContainer>
       </ScrollView>
+      <PaywallModal
+        visible={!!paywall}
+        reason={paywall ?? "multi_currency"}
+        onClose={() => setPaywall(null)}
+      />
     </SafeAreaView>
   );
 }

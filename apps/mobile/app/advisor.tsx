@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScreenContainer } from "../components/ScreenContainer";
+import { PaywallModal, type PaywallReason } from "../components/PaywallModal";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -20,6 +21,7 @@ import {
   supabase,
   useI18n,
   useAppStore,
+  QuotaExceededError,
 } from "@paca/api";
 import type {
   AdviceUrgency,
@@ -52,6 +54,7 @@ export default function AdvisorScreen() {
   const [error, setError] = useState("");
   const [result, setResult] = useState<PurchaseAdvice | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [paywall, setPaywall] = useState<PaywallReason | null>(null);
 
   useEffect(() => {
     const fetch = async () => {
@@ -100,8 +103,9 @@ export default function AdvisorScreen() {
         mode,
       });
       setResult(response);
-    } catch {
-      setError(t.advisor.genericError);
+    } catch (e) {
+      if (e instanceof QuotaExceededError) setPaywall("advisor_limit");
+      else setError(t.advisor.genericError);
     }
   };
 
@@ -348,6 +352,11 @@ export default function AdvisorScreen() {
         </View>
       </ScrollView>
       </ScreenContainer>
+      <PaywallModal
+        visible={!!paywall}
+        reason={paywall ?? "advisor_limit"}
+        onClose={() => setPaywall(null)}
+      />
     </SafeAreaView>
   );
 }

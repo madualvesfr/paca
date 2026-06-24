@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../supabase";
+import { detectQuotaError } from "../quotaError";
 import type { AdviceRequest, PurchaseAdvice } from "@paca/shared";
 
 /**
@@ -37,7 +38,7 @@ export function useAskAdvisor() {
       const { data, error } = await supabase.functions.invoke("advise-purchase", {
         body: payload,
       });
-      if (error) throw error;
+      if (error) throw (await detectQuotaError(error, "advisor")) ?? error;
       return data as PurchaseAdvice;
     },
     onSuccess: () => {

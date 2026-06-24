@@ -466,6 +466,29 @@ export const en = {
     deleteHelp: "Default categories cannot be removed.",
     translating: "Translating...",
   },
+
+  premium: {
+    badge: "Premium",
+    title: "Paca Premium",
+    subtitleScan: "You've used your 10 free scans this month.",
+    subtitleAdvisor: "You've used your 3 free advisor questions this month.",
+    subtitleMultiCurrency: "Automatic currency conversion is a Premium feature.",
+    forCouple: "Covers both of you in the couple.",
+    featureAi: "Unlimited AI: receipts, statements and advice",
+    featureMultiCurrency: "Automatic currency conversion",
+    featureSupport: "Support Paca's development",
+    monthly: "Monthly",
+    annual: "Annual",
+    perMonth: "/mo",
+    perYear: "/yr",
+    bestValue: "Best value",
+    trialNote: "7 days free · cancel anytime",
+    subscribe: "Subscribe",
+    restore: "Restore purchase",
+    notNow: "Not now",
+    comingSoonTitle: "Coming soon",
+    comingSoon: "Subscriptions are coming soon.",
+  },
 } as const;
 
 // Deep-convert literal string types to `string` so other locales can assign freely
