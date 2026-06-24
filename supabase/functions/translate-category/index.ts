@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { checkRateLimit, rateLimitedResponse } from "../_shared/rateLimit.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 
@@ -33,6 +34,21 @@ Deno.serve(async (req) => {
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return jsonResponse({ error: "Not authenticated" }, 401);
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id, couple_id")
+      .eq("user_id", user.id)
+      .single();
+    if (!profile) return jsonResponse({ error: "Profile not found" }, 403);
+
+    // Throttle the paid Gemini translation per user to prevent runaway billing abuse.
+    const rateLimit = await checkRateLimit(supabase, profile.id, {
+      action: "translate",
+      windowSeconds: 3600,
+      max: 30,
+    });
+    if (!rateLimit.allowed) return rateLimitedResponse(rateLimit, corsHeaders);
 
     const { name, sourceLocale } = await req.json();
     if (!name || typeof name !== "string") {
@@ -94,6 +110,19 @@ Keep the translation concise (1-3 words). Preserve the original for the source l
       const v = typeof parsed[loc] === "string" ? parsed[loc].trim() : "";
       translations[loc] = v || name;
     }
+
+    // Log usage (fire-and-forget — don't block the response on it)
+    supabase
+      .from("usage_stats")
+      .insert({
+        profile_id: profile.id,
+        couple_id: profile.couple_id,
+        action: "translate",
+        metadata: { source },
+      })
+      .then((res: { error: unknown }) => {
+        if (res.error) console.error("usage log failed:", res.error);
+      });
 
     return jsonResponse({ translations });
   } catch (error) {
