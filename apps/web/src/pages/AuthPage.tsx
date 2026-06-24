@@ -57,10 +57,30 @@ function BrandingPanel({ mode }: { mode: Mode }) {
   );
 }
 
+function GoogleIcon() {
+  return (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden>
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z" />
+      <path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z" />
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z" />
+    </svg>
+  );
+}
+
+function AppleIcon() {
+  return (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M16.37 12.78c.03 3.16 2.77 4.21 2.8 4.22-.02.07-.44 1.5-1.45 2.97-.87 1.28-1.78 2.55-3.21 2.58-1.4.03-1.86-.83-3.46-.83-1.6 0-2.1.8-3.43.86-1.38.05-2.43-1.38-3.31-2.65-1.8-2.6-3.18-7.36-1.33-10.57.92-1.6 2.56-2.6 4.34-2.63 1.36-.03 2.64.92 3.47.92.83 0 2.39-1.13 4.03-.97.69.03 2.62.28 3.86 2.1-.1.06-2.3 1.35-2.28 4z" />
+      <path d="M13.9 3.5c.74-.9 1.24-2.15 1.1-3.4-1.07.04-2.36.71-3.12 1.61-.69.8-1.29 2.07-1.13 3.29 1.19.09 2.41-.6 3.15-1.5z" />
+    </svg>
+  );
+}
+
 export function AuthPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, signInWithGoogle, signInWithApple } = useAuth();
   const { t } = useI18n();
 
   const initialMode: Mode = location.pathname === "/signup" ? "signup" : "login";
@@ -75,6 +95,7 @@ export function AuthPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<"google" | "apple" | null>(null);
 
   // Validation state
   const [emailTouched, setEmailTouched] = useState(false);
@@ -170,6 +191,19 @@ export function AuthPage() {
       } finally {
         setLoading(false);
       }
+    }
+  };
+
+  const handleOAuth = async (provider: "google" | "apple") => {
+    setError("");
+    setOauthLoading(provider);
+    try {
+      if (provider === "google") await signInWithGoogle();
+      else await signInWithApple();
+      // Supabase redirects the page to the provider; nothing else to do here.
+    } catch {
+      setError(t.auth.loginError);
+      setOauthLoading(null);
     }
   };
 
@@ -300,6 +334,37 @@ export function AuthPage() {
                 </Button>
               </div>
             </form>
+
+            {/* Social login */}
+            <div className="mt-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                <span className="text-xs text-gray-400 uppercase tracking-wide">
+                  {t.auth.orDivider}
+                </span>
+                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+              </div>
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("google")}
+                  disabled={!!oauthLoading}
+                  className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-60"
+                >
+                  <GoogleIcon />
+                  {t.auth.continueWithGoogle}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("apple")}
+                  disabled={!!oauthLoading}
+                  className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-60"
+                >
+                  <AppleIcon />
+                  {t.auth.continueWithApple}
+                </button>
+              </div>
+            </div>
 
             {/* Switch mode */}
             <p className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">

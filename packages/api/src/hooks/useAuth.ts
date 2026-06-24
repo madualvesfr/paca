@@ -65,14 +65,30 @@ export function useAuth() {
     return data;
   }, []);
 
-  const signInWithApple = useCallback(async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "apple",
-      options: { redirectTo: window.location.origin },
-    });
-    if (error) throw error;
-    return data;
-  }, []);
+  // Web OAuth: Supabase redirects the page to the provider and back to
+  // redirectTo, where the client auto-detects the session. window is guarded so
+  // this stays import-safe on native (mobile uses a browser-session flow).
+  const signInWithProvider = useCallback(
+    async (provider: "google" | "apple") => {
+      const redirectTo =
+        typeof window !== "undefined" ? window.location.origin : undefined;
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo },
+      });
+      if (error) throw error;
+      return data;
+    },
+    []
+  );
+  const signInWithGoogle = useCallback(
+    () => signInWithProvider("google"),
+    [signInWithProvider]
+  );
+  const signInWithApple = useCallback(
+    () => signInWithProvider("apple"),
+    [signInWithProvider]
+  );
 
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
@@ -85,6 +101,7 @@ export function useAuth() {
     ...authState,
     signUp,
     signIn,
+    signInWithGoogle,
     signInWithApple,
     signOut,
   };

@@ -95,6 +95,9 @@ export const en = {
     resetLinkSent: "Check your email for a link to reset your password.",
     resetError: "Couldn't send the reset email. Try again.",
     backToLogin: "Back to login",
+    orDivider: "or",
+    continueWithGoogle: "Continue with Google",
+    continueWithApple: "Continue with Apple",
   },
 
   // Dashboard

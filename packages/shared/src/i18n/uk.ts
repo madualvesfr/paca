@@ -94,6 +94,9 @@ export const uk: TranslationKeys = {
     resetLinkSent: "Перевірте пошту — ми надіслали посилання для скидання пароля.",
     resetError: "Не вдалося надіслати лист. Спробуйте ще раз.",
     backToLogin: "Повернутися до входу",
+    orDivider: "або",
+    continueWithGoogle: "Продовжити з Google",
+    continueWithApple: "Продовжити з Apple",
   },
 
   dashboard: {

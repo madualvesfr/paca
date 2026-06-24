@@ -94,6 +94,9 @@ export const ru: TranslationKeys = {
     resetLinkSent: "Проверьте почту — мы отправили ссылку для сброса пароля.",
     resetError: "Не удалось отправить письмо. Попробуйте снова.",
     backToLogin: "Вернуться ко входу",
+    orDivider: "или",
+    continueWithGoogle: "Продолжить с Google",
+    continueWithApple: "Продолжить с Apple",
   },
 
   dashboard: {

@@ -94,6 +94,9 @@ export const pt: TranslationKeys = {
     resetLinkSent: "Verifique seu email para o link de redefinição de senha.",
     resetError: "Não foi possível enviar o email. Tente de novo.",
     backToLogin: "Voltar ao login",
+    orDivider: "ou",
+    continueWithGoogle: "Continuar com Google",
+    continueWithApple: "Continuar com Apple",
   },
 
   dashboard: {
