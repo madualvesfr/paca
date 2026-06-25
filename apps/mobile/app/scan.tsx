@@ -216,6 +216,8 @@ export default function ScanScreen() {
             }
           }}
           className="p-1"
+          accessibilityRole="button"
+          accessibilityLabel={t.common.back}
         >
           <Ionicons name="arrow-back" size={24} color="#9CA3AF" />
         </TouchableOpacity>

@@ -102,13 +102,23 @@ export default function Bills() {
 
       {/* Month nav */}
       <View className="flex-row items-center justify-between mx-6 mb-4 bg-white dark:bg-gray-800 rounded-2xl p-3 border border-gray-100 dark:border-gray-700">
-        <TouchableOpacity onPress={prevMonth} className="p-2">
+        <TouchableOpacity
+          onPress={prevMonth}
+          className="p-2"
+          accessibilityRole="button"
+          accessibilityLabel={t.format.previousMonth}
+        >
           <Ionicons name="chevron-back" size={20} color="#9CA3AF" />
         </TouchableOpacity>
         <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 capitalize">
           {formatMonthYear(month)}
         </Text>
-        <TouchableOpacity onPress={nextMonth} className="p-2">
+        <TouchableOpacity
+          onPress={nextMonth}
+          className="p-2"
+          accessibilityRole="button"
+          accessibilityLabel={t.format.nextMonth}
+        >
           <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
         </TouchableOpacity>
       </View>
@@ -233,7 +243,12 @@ function BillRow({
       className="flex-row items-center gap-3 py-3.5 border-b border-gray-100 dark:border-gray-700/50"
     >
       {/* Checkbox */}
-      <TouchableOpacity onPress={onToggle} activeOpacity={0.6}>
+      <TouchableOpacity
+        onPress={onToggle}
+        activeOpacity={0.6}
+        accessibilityRole="button"
+        accessibilityLabel={isPaid ? t.bills.unmarkAsPaid : t.bills.markAsPaid}
+      >
         <View
           className={`w-7 h-7 rounded-lg border-2 items-center justify-center ${
             isPaid
