@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import {
+  useAuth,
   useProfile,
   useUpdateProfile,
   useCouple,
@@ -31,6 +32,7 @@ export default function Profile() {
   const router = useRouter();
   const { t, dateLocale, locale, setLocale, currency, setCurrency, translateCategory } = useI18n();
 
+  const { user } = useAuth();
   const { data: profile } = useProfile();
   const { data: couple } = useCouple();
   const updateProfile = useUpdateProfile();
@@ -289,7 +291,7 @@ export default function Profile() {
                 {t.profile.email}
               </Text>
             </View>
-            <Text className="text-sm text-gray-400">{profile?.user_id ? "..." : ""}</Text>
+            <Text className="text-sm text-gray-400">{user?.email ?? "--"}</Text>
           </View>
         </View>
 
