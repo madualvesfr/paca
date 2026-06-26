@@ -9,11 +9,13 @@ import {
   Alert,
   ActivityIndicator,
   Linking,
+  Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import {
+  useAuth,
   useProfile,
   useUpdateProfile,
   useCouple,
@@ -22,14 +24,17 @@ import {
   supabase,
   useI18n,
   useAppStore,
+  useIsPremium,
 } from "@paca/api";
 import { LOCALE_LABELS, SUPPORTED_CURRENCIES, type Locale } from "@paca/shared";
 import { ScreenContainer } from "../../components/ScreenContainer";
+import { PaywallModal, type PaywallReason } from "../../components/PaywallModal";
 
 export default function Profile() {
   const router = useRouter();
   const { t, dateLocale, locale, setLocale, currency, setCurrency, translateCategory } = useI18n();
 
+  const { user } = useAuth();
   const { data: profile } = useProfile();
   const { data: couple } = useCouple();
   const updateProfile = useUpdateProfile();
@@ -37,41 +42,26 @@ export default function Profile() {
   const deleteAccount = useDeleteAccount();
   const mode = useAppStore((s) => s.mode);
   const setMode = useAppStore((s) => s.setMode);
+  const isPremium = useIsPremium();
+  const [paywall, setPaywall] = useState<PaywallReason | null>(null);
 
-  const handleDeleteAccount = () => {
-    Alert.alert(
-      t.profile.deleteAccountTitle,
-      t.profile.deleteAccountWarning,
-      [
-        { text: t.common.cancel, style: "cancel" },
-        {
-          text: t.profile.deleteAccountButton,
-          style: "destructive",
-          onPress: () => {
-            // Second confirmation — Apple recommends two taps for destructive actions.
-            Alert.alert(
-              t.profile.deleteAccountTitle,
-              t.profile.deleteAccountConfirmText,
-              [
-                { text: t.common.cancel, style: "cancel" },
-                {
-                  text: t.profile.deleteAccountButton,
-                  style: "destructive",
-                  onPress: async () => {
-                    try {
-                      await deleteAccount.mutateAsync();
-                      router.replace("/(auth)/login");
-                    } catch {
-                      Alert.alert(t.profile.deleteAccountTitle, t.profile.deleteAccountError);
-                    }
-                  },
-                },
-              ]
-            );
-          },
-        },
-      ]
-    );
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+
+  const openDeleteAccount = () => {
+    setDeleteConfirm("");
+    setDeleteOpen(true);
+  };
+
+  const handleDeleteAccount = async () => {
+    // Guard against firing while the typed keyword doesn't match exactly.
+    if (deleteConfirm !== t.profile.deleteAccountConfirmKeyword) return;
+    try {
+      await deleteAccount.mutateAsync();
+      router.replace("/(auth)/login");
+    } catch {
+      Alert.alert(t.profile.deleteAccountTitle, t.profile.deleteAccountError);
+    }
   };
 
   const handleLanguageChange = async (newLocale: Locale) => {
@@ -305,7 +295,7 @@ export default function Profile() {
                 {t.profile.email}
               </Text>
             </View>
-            <Text className="text-sm text-gray-400">{profile?.user_id ? "..." : ""}</Text>
+            <Text className="text-sm text-gray-400">{user?.email ?? "--"}</Text>
           </View>
         </View>
 
@@ -412,19 +402,28 @@ export default function Profile() {
               <View className="flex-row items-start gap-3 flex-1">
                 <Ionicons name="swap-horizontal-outline" size={20} color="#9CA3AF" />
                 <View className="flex-1">
-                  <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t.profile.autoConvertCurrency}
-                  </Text>
+                  <View className="flex-row items-center gap-2">
+                    <Text className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {t.profile.autoConvertCurrency}
+                    </Text>
+                    {!isPremium && (
+                      <View className="bg-pink-primary/15 rounded-full px-2 py-0.5">
+                        <Text className="text-[10px] font-bold text-pink-primary uppercase">
+                          {t.premium.badge}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
                   <Text className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                     {t.profile.autoConvertCurrencyHint}
                   </Text>
                 </View>
               </View>
               <TouchableOpacity
-                onPress={handleToggleAutoConvert}
+                onPress={isPremium ? handleToggleAutoConvert : () => setPaywall("multi_currency")}
                 accessibilityLabel={t.profile.autoConvertCurrency}
                 className={`relative w-12 h-7 rounded-full ${
-                  couple?.auto_convert_currency
+                  isPremium && couple?.auto_convert_currency
                     ? "bg-pink-primary"
                     : "bg-gray-200 dark:bg-gray-700"
                 }`}
@@ -433,7 +432,7 @@ export default function Profile() {
                   style={{
                     position: "absolute",
                     top: 2,
-                    left: couple?.auto_convert_currency ? 22 : 2,
+                    left: isPremium && couple?.auto_convert_currency ? 22 : 2,
                     width: 24,
                     height: 24,
                     borderRadius: 12,
@@ -534,7 +533,7 @@ export default function Profile() {
         <SectionTitle title={t.profile.dangerZone} />
         <View className="mx-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 mb-12">
           <TouchableOpacity
-            onPress={handleDeleteAccount}
+            onPress={openDeleteAccount}
             disabled={deleteAccount.isPending}
             className="flex-row items-center justify-between px-5 py-4"
             activeOpacity={0.7}
@@ -554,6 +553,83 @@ export default function Profile() {
         </View>
         </ScreenContainer>
       </ScrollView>
+      <PaywallModal
+        visible={!!paywall}
+        reason={paywall ?? "multi_currency"}
+        onClose={() => setPaywall(null)}
+      />
+
+      {/* Delete account confirmation — requires typing the keyword exactly */}
+      <Modal
+        visible={deleteOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setDeleteOpen(false)}
+      >
+        <View className="flex-1 bg-black/60 items-center justify-center px-6">
+          <View className="w-full max-w-md bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-2xl">
+            <View className="flex-row items-start gap-3 mb-4">
+              <View className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-500/10 items-center justify-center">
+                <Ionicons name="warning-outline" size={20} color="#FF6B6B" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-lg font-bold text-gray-800 dark:text-gray-100">
+                  {t.profile.deleteAccountTitle}
+                </Text>
+                <Text className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  {t.profile.deleteAccountWarning}
+                </Text>
+              </View>
+            </View>
+
+            <Text className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1.5">
+              {t.profile.deleteAccountConfirmText}
+            </Text>
+            <TextInput
+              value={deleteConfirm}
+              onChangeText={setDeleteConfirm}
+              placeholder={t.profile.deleteAccountConfirmKeyword}
+              placeholderTextColor="#9CA3AF"
+              autoCapitalize="characters"
+              autoCorrect={false}
+              className="bg-gray-50 dark:bg-gray-700 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-gray-100 mb-4"
+            />
+
+            <View className="flex-row justify-end gap-3">
+              <TouchableOpacity
+                onPress={() => setDeleteOpen(false)}
+                disabled={deleteAccount.isPending}
+                className="px-4 py-3 rounded-xl"
+                activeOpacity={0.7}
+              >
+                <Text className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                  {t.common.cancel}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleDeleteAccount}
+                disabled={
+                  deleteAccount.isPending ||
+                  deleteConfirm !== t.profile.deleteAccountConfirmKeyword
+                }
+                className={`px-4 py-3 rounded-xl flex-row items-center gap-2 ${
+                  deleteConfirm === t.profile.deleteAccountConfirmKeyword
+                    ? "bg-red-500"
+                    : "bg-red-200 dark:bg-red-900"
+                }`}
+                activeOpacity={0.7}
+              >
+                {deleteAccount.isPending && (
+                  <ActivityIndicator size="small" color="#fff" />
+                )}
+                <Text className="text-sm font-semibold text-white">
+                  {t.profile.deleteAccountButton}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

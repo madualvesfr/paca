@@ -6,16 +6,17 @@
 // message groups and locales here rather than hardcoding strings inside a
 // function. Portuguese is the safe fallback (see `resolveLang`).
 
-export type Lang = "pt" | "en";
+export type Lang = "pt" | "en" | "ru" | "uk";
 
 /**
  * Maps a raw `profiles.language` value to a supported {@link Lang}. Anything
- * that isn't an explicitly supported locale — empty, null, undefined, "ru",
- * "uk", or garbage — falls back to Portuguese.
+ * that isn't an explicitly supported locale — empty, null, undefined, or
+ * garbage — falls back to Portuguese.
  */
 export function resolveLang(language?: string | null): Lang {
   const code = (language ?? "").slice(0, 2).toLowerCase();
-  return code === "en" ? "en" : "pt";
+  if (code === "en" || code === "ru" || code === "uk") return code;
+  return "pt";
 }
 
 export type BudgetAlertKey =
@@ -64,6 +65,42 @@ const BUDGET_ALERTS: Record<Lang, Record<BudgetAlertKey, BudgetAlertCopy>> = {
     exceededCouple: {
       title: "Budget exceeded!",
       body: (pct) => `This month's budget has been exceeded (${pct}%).`,
+    },
+  },
+  ru: {
+    nearPersonal: {
+      title: "Ваш личный бюджет почти исчерпан!",
+      body: (pct) => `Вы уже потратили ${pct}% личного бюджета в этом месяце.`,
+    },
+    exceededPersonal: {
+      title: "Личный бюджет превышен!",
+      body: (pct) => `Ваш личный бюджет превышен (${pct}%).`,
+    },
+    nearCouple: {
+      title: "Бюджет почти исчерпан!",
+      body: (pct) => `Вы уже потратили ${pct}% бюджета этого месяца.`,
+    },
+    exceededCouple: {
+      title: "Бюджет превышен!",
+      body: (pct) => `Бюджет этого месяца превышен (${pct}%).`,
+    },
+  },
+  uk: {
+    nearPersonal: {
+      title: "Ваш особистий бюджет майже вичерпано!",
+      body: (pct) => `Ви вже витратили ${pct}% особистого бюджету цього місяця.`,
+    },
+    exceededPersonal: {
+      title: "Особистий бюджет перевищено!",
+      body: (pct) => `Ваш особистий бюджет перевищено (${pct}%).`,
+    },
+    nearCouple: {
+      title: "Бюджет майже вичерпано!",
+      body: (pct) => `Ви вже витратили ${pct}% бюджету цього місяця.`,
+    },
+    exceededCouple: {
+      title: "Бюджет перевищено!",
+      body: (pct) => `Бюджет цього місяця перевищено (${pct}%).`,
     },
   },
 };

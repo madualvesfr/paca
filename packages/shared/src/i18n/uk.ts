@@ -94,6 +94,9 @@ export const uk: TranslationKeys = {
     resetLinkSent: "Перевірте пошту — ми надіслали посилання для скидання пароля.",
     resetError: "Не вдалося надіслати лист. Спробуйте ще раз.",
     backToLogin: "Повернутися до входу",
+    orDivider: "або",
+    continueWithGoogle: "Продовжити з Google",
+    continueWithApple: "Продовжити з Apple",
   },
 
   dashboard: {
@@ -453,5 +456,36 @@ export const uk: TranslationKeys = {
     deleteConfirm: "Видалити цю категорію?",
     deleteHelp: "Стандартні категорії не можна видалити.",
     translating: "Переклад...",
+  },
+
+  premium: {
+    badge: "Premium",
+    title: "Paca Premium",
+    subtitleScan: "Ви використали 10 безкоштовних сканів цього місяця.",
+    subtitleAdvisor: "Ви використали 3 безкоштовні запитання до радника цього місяця.",
+    subtitleMultiCurrency: "Автоматична конвертація валют — функція Premium.",
+    forCouple: "Діє для обох у парі.",
+    featureAi: "Безлімітний ШІ: чеки, виписки та поради",
+    featureMultiCurrency: "Автоматична конвертація валют",
+    featureSupport: "Підтримайте розвиток Paca",
+    monthly: "Щомісяця",
+    annual: "Щороку",
+    perMonth: "/міс",
+    perYear: "/рік",
+    bestValue: "Найвигідніше",
+    trialNote: "7 днів безкоштовно · скасуйте будь-коли",
+    subscribe: "Підписатися",
+    restore: "Відновити покупку",
+    notNow: "Не зараз",
+    comingSoonTitle: "Незабаром",
+    comingSoon: "Підписки з’являться незабаром.",
+  },
+
+  recommendations: {
+    title: "Рекомендації",
+    subtitle: "Пропозиції партнерів для пар. Ми можемо отримувати комісію.",
+    paidPartnership: "Платне партнерство",
+    cta: "Дивитися пропозицію",
+    empty: "Зараз рекомендацій немає. Завітайте пізніше.",
   },
 } as const;

@@ -98,7 +98,12 @@ export default function AddTransaction() {
       >
         {/* Header */}
         <View className="flex-row items-center gap-3 px-6 py-4 border-b border-gray-100 dark:border-gray-800">
-          <TouchableOpacity onPress={() => router.back()} className="p-1">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="p-1"
+            accessibilityRole="button"
+            accessibilityLabel={t.common.close}
+          >
             <Ionicons name="close" size={24} color="#9CA3AF" />
           </TouchableOpacity>
           <Text className="text-lg font-bold text-gray-800 dark:text-gray-100 flex-1">

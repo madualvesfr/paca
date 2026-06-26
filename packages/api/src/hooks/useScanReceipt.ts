@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { supabase } from "../supabase";
+import { detectQuotaError } from "../quotaError";
 import type { FinanceScope } from "@paca/shared";
 
 interface ScanResult {
@@ -36,7 +37,7 @@ export function useScanReceipt() {
         body: payload,
       });
 
-      if (error) throw error;
+      if (error) throw (await detectQuotaError(error, "scan")) ?? error;
       return data;
     },
   });
@@ -52,7 +53,7 @@ export function useScanStatement() {
         body: payload,
       });
 
-      if (error) throw error;
+      if (error) throw (await detectQuotaError(error, "scan")) ?? error;
       return data;
     },
   });

@@ -1,6 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { budgetAlert, resolveLang } from "../_shared/i18n.ts";
+import { notifyAndPush } from "../_shared/push.ts";
 
 Deno.serve(async (req) => {
   try {
@@ -82,7 +83,7 @@ Deno.serve(async (req) => {
             isPersonal ? "nearPersonal" : "nearCouple",
             pct
           );
-          await supabase.from("notifications").insert({
+          await notifyAndPush(supabase, {
             couple_id: budget.couple_id,
             target_user_id: member.id,
             type: "budget_alert",
@@ -102,7 +103,7 @@ Deno.serve(async (req) => {
             isPersonal ? "exceededPersonal" : "exceededCouple",
             pct
           );
-          await supabase.from("notifications").insert({
+          await notifyAndPush(supabase, {
             couple_id: budget.couple_id,
             target_user_id: member.id,
             type: "budget_alert",
