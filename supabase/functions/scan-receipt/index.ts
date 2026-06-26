@@ -1,6 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { checkRateLimit, rateLimitedResponse } from "../_shared/rateLimit.ts";
+import { createAdminClient, isPremium, checkMonthlyQuota, quotaExceededResponse } from "../_shared/quota.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
 
@@ -74,6 +75,19 @@ Deno.serve(async (req) => {
       max: 30,
     });
     if (!rateLimit.allowed) return rateLimitedResponse(rateLimit, corsHeaders);
+
+    // Free tier: 10 AI scans/month per couple (receipt + statement share the pool).
+    // Premium couples bypass. Counted server-side across both partners (service_role).
+    const admin = createAdminClient();
+    if (!(await isPremium(admin, profile.couple_id))) {
+      const quota = await checkMonthlyQuota(
+        admin,
+        profile.couple_id,
+        ["scan_receipt", "scan_statement"],
+        10,
+      );
+      if (!quota.allowed) return quotaExceededResponse(quota, corsHeaders);
+    }
 
     const { data: couple } = await supabase
       .from("couples")

@@ -21,8 +21,10 @@ import {
   supabase,
   useI18n,
   useAppStore,
+  QuotaExceededError,
 } from "@paca/api";
 import type { Category } from "@paca/shared";
+import { PaywallModal, type PaywallReason } from "../components/PaywallModal";
 
 type Mode = "choose" | "single" | "batch";
 type ScanStep = "upload" | "scanning" | "review";
@@ -58,6 +60,7 @@ export default function ScanScreen() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [scanProgress, setScanProgress] = useState({ done: 0, total: 0 });
+  const [paywall, setPaywall] = useState<PaywallReason | null>(null);
 
   useEffect(() => {
     const fetch = async () => {
@@ -107,6 +110,7 @@ export default function ScanScreen() {
 
     const allItems: ScannedTransaction[] = [];
     let failures = 0;
+    let quotaHit = false;
 
     for (const asset of assets) {
       try {
@@ -125,11 +129,18 @@ export default function ScanScreen() {
             });
           }
         }
-      } catch {
+      } catch (e) {
+        if (e instanceof QuotaExceededError) { quotaHit = true; break; }
         failures++;
       } finally {
         setScanProgress((prev) => ({ ...prev, done: prev.done + 1 }));
       }
+    }
+
+    if (quotaHit) {
+      setStep("upload");
+      setPaywall("scan_limit");
+      return;
     }
 
     if (allItems.length === 0) {
@@ -432,6 +443,11 @@ export default function ScanScreen() {
           </View>
         )}
       </ScrollView>
+      <PaywallModal
+        visible={!!paywall}
+        reason="scan_limit"
+        onClose={() => setPaywall(null)}
+      />
     </SafeAreaView>
   );
 }

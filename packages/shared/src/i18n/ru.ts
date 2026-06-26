@@ -94,6 +94,9 @@ export const ru: TranslationKeys = {
     resetLinkSent: "Проверьте почту — мы отправили ссылку для сброса пароля.",
     resetError: "Не удалось отправить письмо. Попробуйте снова.",
     backToLogin: "Вернуться ко входу",
+    orDivider: "или",
+    continueWithGoogle: "Продолжить с Google",
+    continueWithApple: "Продолжить с Apple",
   },
 
   dashboard: {
@@ -453,5 +456,36 @@ export const ru: TranslationKeys = {
     deleteConfirm: "Удалить эту категорию?",
     deleteHelp: "Категории по умолчанию нельзя удалить.",
     translating: "Перевод...",
+  },
+
+  premium: {
+    badge: "Premium",
+    title: "Paca Premium",
+    subtitleScan: "Вы использовали 10 бесплатных сканов в этом месяце.",
+    subtitleAdvisor: "Вы использовали 3 бесплатных вопроса советнику в этом месяце.",
+    subtitleMultiCurrency: "Автоматическая конвертация валют — функция Premium.",
+    forCouple: "Действует для обоих в паре.",
+    featureAi: "Безлимитный ИИ: чеки, выписки и советы",
+    featureMultiCurrency: "Автоматическая конвертация валют",
+    featureSupport: "Поддержите развитие Paca",
+    monthly: "Ежемесячно",
+    annual: "Ежегодно",
+    perMonth: "/мес",
+    perYear: "/год",
+    bestValue: "Выгоднее всего",
+    trialNote: "7 дней бесплатно · отмена в любой момент",
+    subscribe: "Подписаться",
+    restore: "Восстановить покупку",
+    notNow: "Не сейчас",
+    comingSoonTitle: "Скоро",
+    comingSoon: "Подписки появятся совсем скоро.",
+  },
+
+  recommendations: {
+    title: "Рекомендации",
+    subtitle: "Предложения партнёров для пар. Мы можем получать комиссию.",
+    paidPartnership: "Платное партнёрство",
+    cta: "Смотреть предложение",
+    empty: "Сейчас рекомендаций нет. Загляните позже.",
   },
 } as const;

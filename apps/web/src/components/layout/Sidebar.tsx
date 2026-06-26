@@ -13,6 +13,7 @@ import {
   Activity,
   Heart,
   UserCircle,
+  Gift,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { isAdminEmail } from "@/lib/admin";
@@ -30,6 +31,7 @@ export function Sidebar() {
     { to: "/transactions", icon: ArrowLeftRight, label: t.nav.transactions },
     { to: "/budget", icon: PieChart, label: t.nav.budget },
     { to: "/bills", icon: ClipboardCheck, label: t.nav.bills },
+    { to: "/recommendations", icon: Gift, label: t.recommendations.title },
     { to: "/profile", icon: User, label: t.nav.profile },
   ];
   const navItems = isAdminEmail(user?.email)

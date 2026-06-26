@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { notifyAndPush } from "../_shared/push.ts";
 
 Deno.serve(async (req) => {
   try {
@@ -80,7 +81,7 @@ Deno.serve(async (req) => {
       // Alert at 80%
       if (ratio >= 0.8 && ratio < 1.0) {
         for (const member of recipients) {
-          await supabase.from("notifications").insert({
+          await notifyAndPush(supabase, {
             couple_id: budget.couple_id,
             target_user_id: member.id,
             type: "budget_alert",
@@ -94,7 +95,7 @@ Deno.serve(async (req) => {
       // Alert at 100%
       if (ratio >= 1.0) {
         for (const member of recipients) {
-          await supabase.from("notifications").insert({
+          await notifyAndPush(supabase, {
             couple_id: budget.couple_id,
             target_user_id: member.id,
             type: "budget_alert",

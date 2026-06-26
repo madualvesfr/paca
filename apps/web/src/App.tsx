@@ -18,6 +18,7 @@ import { CategoriesPage } from "@/pages/CategoriesPage";
 import { PrivacyPage } from "@/pages/PrivacyPage";
 import { TermsPage } from "@/pages/TermsPage";
 import { SupportPage } from "@/pages/SupportPage";
+import { RecommendationsPage } from "@/pages/RecommendationsPage";
 
 export function App() {
   return (
@@ -69,6 +70,7 @@ export function App() {
         <Route path="transactions/:id/edit" element={<EditTransactionPage />} />
         <Route path="budget" element={<BudgetPage />} />
         <Route path="bills" element={<BillsPage />} />
+        <Route path="recommendations" element={<RecommendationsPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="categories" element={<CategoriesPage />} />
         <Route path="scan" element={<ScanReceiptPage />} />

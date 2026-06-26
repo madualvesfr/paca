@@ -94,6 +94,9 @@ export const pt: TranslationKeys = {
     resetLinkSent: "Verifique seu email para o link de redefinição de senha.",
     resetError: "Não foi possível enviar o email. Tente de novo.",
     backToLogin: "Voltar ao login",
+    orDivider: "ou",
+    continueWithGoogle: "Continuar com Google",
+    continueWithApple: "Continuar com Apple",
   },
 
   dashboard: {
@@ -453,5 +456,36 @@ export const pt: TranslationKeys = {
     deleteConfirm: "Remover esta categoria?",
     deleteHelp: "Categorias padrão não podem ser removidas.",
     translating: "Traduzindo...",
+  },
+
+  premium: {
+    badge: "Premium",
+    title: "Paca Premium",
+    subtitleScan: "Você usou seus 10 scans grátis do mês.",
+    subtitleAdvisor: "Você usou suas 3 perguntas grátis do mês.",
+    subtitleMultiCurrency: "A conversão automática de moedas é um recurso Premium.",
+    forCouple: "Vale para os dois do casal.",
+    featureAi: "IA ilimitada: recibos, extratos e conselhos",
+    featureMultiCurrency: "Conversão automática de moedas",
+    featureSupport: "Apoie o desenvolvimento do Paca",
+    monthly: "Mensal",
+    annual: "Anual",
+    perMonth: "/mês",
+    perYear: "/ano",
+    bestValue: "Melhor valor",
+    trialNote: "7 dias grátis · cancele quando quiser",
+    subscribe: "Assinar",
+    restore: "Restaurar compra",
+    notNow: "Agora não",
+    comingSoonTitle: "Em breve",
+    comingSoon: "As assinaturas chegam em breve.",
+  },
+
+  recommendations: {
+    title: "Recomendações",
+    subtitle: "Ofertas de parceiros para casais. Podemos receber uma comissão.",
+    paidPartnership: "Parceria paga",
+    cta: "Ver oferta",
+    empty: "Nenhuma recomendação no momento. Volte em breve.",
   },
 } as const;
