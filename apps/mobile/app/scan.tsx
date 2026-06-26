@@ -50,7 +50,7 @@ export default function ScanScreen() {
   const addTransaction = useAddTransaction();
   const scanReceipt = useScanReceipt();
   const scanStatement = useScanStatement();
-  const { t, translateCategory } = useI18n();
+  const { t, translateCategory, formatCurrency } = useI18n();
 
   const [mode, setMode] = useState<Mode>("choose");
   const [step, setStep] = useState<ScanStep>("upload");
@@ -227,6 +227,8 @@ export default function ScanScreen() {
             }
           }}
           className="p-1"
+          accessibilityRole="button"
+          accessibilityLabel={t.common.back}
         >
           <Ionicons name="arrow-back" size={24} color="#9CA3AF" />
         </TouchableOpacity>
@@ -390,7 +392,7 @@ export default function ScanScreen() {
                         : "text-emerald-500"
                     }`}
                   >
-                    R$ {(item.amount / 100).toFixed(2)}
+                    {formatCurrency(item.amount, item.currency)}
                   </Text>
                 </View>
 

@@ -91,7 +91,12 @@ export default function CategoriesScreen() {
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900" edges={["top"]}>
       <ScreenContainer className="flex-1">
       <View className="flex-row items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-800">
-        <TouchableOpacity onPress={() => router.back()} className="p-2">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="p-2"
+          accessibilityRole="button"
+          accessibilityLabel={t.common.back}
+        >
           <Ionicons name="arrow-back" size={22} color="#9CA3AF" />
         </TouchableOpacity>
         <View className="flex-1">
@@ -218,6 +223,7 @@ function CategoryRow({
   onDelete?: () => void;
   defaultBadge?: string;
 }) {
+  const { t } = useI18n();
   return (
     <View className="flex-row items-center gap-3 px-5 py-4 border-b border-gray-50 dark:border-gray-700/50">
       <View
@@ -245,7 +251,12 @@ function CategoryRow({
         </Text>
       )}
       {onDelete && (
-        <TouchableOpacity onPress={onDelete} className="p-2">
+        <TouchableOpacity
+          onPress={onDelete}
+          className="p-2"
+          accessibilityRole="button"
+          accessibilityLabel={t.common.delete}
+        >
           <Ionicons name="trash-outline" size={18} color="#9CA3AF" />
         </TouchableOpacity>
       )}
