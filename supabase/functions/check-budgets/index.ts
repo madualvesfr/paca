@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { budgetAlert, resolveLang } from "../_shared/i18n.ts";
 import { notifyAndPush } from "../_shared/push.ts";
 
 Deno.serve(async (req) => {
@@ -51,42 +52,43 @@ Deno.serve(async (req) => {
       const ratio = totalSpent / budget.total_amount;
 
       // Personal budgets notify only the owner; couple budgets notify both.
-      let recipients: { id: string }[] = [];
+      // We also load each recipient's `language` so the notification can be
+      // localized per-user via resolveLang/budgetAlert (../_shared/i18n.ts).
+      let recipients: { id: string; language?: string | null }[] = [];
       if (isPersonal && budget.owner_id) {
-        recipients = [{ id: budget.owner_id }];
+        const { data: owner } = await supabase
+          .from("profiles")
+          .select("id, language")
+          .eq("id", budget.owner_id)
+          .single();
+        // Fall back to a bare id so we still notify the owner if the lookup fails.
+        recipients = owner ? [owner] : [{ id: budget.owner_id }];
       } else {
         const { data: members } = await supabase
           .from("profiles")
-          .select("id")
+          .select("id, language")
           .eq("couple_id", budget.couple_id);
         recipients = members ?? [];
       }
       if (recipients.length === 0) continue;
-
-      const titlePersonal = "Seu orçamento pessoal quase no limite!";
-      const bodyPersonal = (pct: number) =>
-        `Você já gastou ${pct}% do seu orçamento pessoal este mês.`;
-      const titleExceededPersonal = "Orçamento pessoal estourado!";
-      const bodyExceededPersonal = (pct: number) =>
-        `Seu orçamento pessoal foi ultrapassado (${pct}%).`;
-      const titleCouple = "Orçamento quase no limite!";
-      const bodyCouple = (pct: number) =>
-        `Vocês já gastaram ${pct}% do orçamento do mês.`;
-      const titleExceededCouple = "Orçamento estourado!";
-      const bodyExceededCouple = (pct: number) =>
-        `O orçamento do mês foi ultrapassado (${pct}%).`;
 
       const pct = Math.round(ratio * 100);
 
       // Alert at 80%
       if (ratio >= 0.8 && ratio < 1.0) {
         for (const member of recipients) {
+          const lang = resolveLang(member.language);
+          const { title, body } = budgetAlert(
+            lang,
+            isPersonal ? "nearPersonal" : "nearCouple",
+            pct
+          );
           await notifyAndPush(supabase, {
             couple_id: budget.couple_id,
             target_user_id: member.id,
             type: "budget_alert",
-            title: isPersonal ? titlePersonal : titleCouple,
-            body: isPersonal ? bodyPersonal(pct) : bodyCouple(pct),
+            title,
+            body,
           });
           alertsSent++;
         }
@@ -95,12 +97,18 @@ Deno.serve(async (req) => {
       // Alert at 100%
       if (ratio >= 1.0) {
         for (const member of recipients) {
+          const lang = resolveLang(member.language);
+          const { title, body } = budgetAlert(
+            lang,
+            isPersonal ? "exceededPersonal" : "exceededCouple",
+            pct
+          );
           await notifyAndPush(supabase, {
             couple_id: budget.couple_id,
             target_user_id: member.id,
             type: "budget_alert",
-            title: isPersonal ? titleExceededPersonal : titleExceededCouple,
-            body: isPersonal ? bodyExceededPersonal(pct) : bodyExceededCouple(pct),
+            title,
+            body,
           });
           alertsSent++;
         }
