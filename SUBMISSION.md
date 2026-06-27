@@ -1,5 +1,7 @@
 # Paca Finance — App Store & Play Store submission guide
 
+> **Status note (2026-06-27):** the readiness code is **merged to `main`** — the "PR #1 / branch `app-store-readiness`" reference just below is historical. Since then the **monetization/subscription code was also merged** (PR #2): the DB, paywall UI, quota gates and RevenueCat webhook exist, but billing is **not yet active** (no RevenueCat account/products, `apps/mobile/lib/billing.ts` is a stub, `react-native-purchases` not installed). So the **"Free / no IAP"** guidance in §Pricing holds **only if you ship v1 without activating subscriptions**; if you turn RevenueCat on before submitting, update §Pricing and the IAP answers accordingly.
+
 The app **code** is ready and on PR #1 (branch `app-store-readiness`). Everything left to publish is **operational**: store accounts, a couple of Supabase dashboard settings, store assets (screenshots/graphics), and the compliance forms. Work top to bottom.
 
 **Shortest path:** merge PR → deploy edge functions + confirm email-confirmation OFF (§Runbook 1) → create the store apps → build (§Runbook 5) → screenshots + listing copy + privacy forms → submit.
